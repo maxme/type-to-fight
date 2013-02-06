@@ -1,6 +1,11 @@
 extends layout
 
 block content
-	div
-		a(id='sender')='Send a Message'
-		ul(id='receiver')
+    div
+        canvas(id='canvas', width='760', height='350')
+    div
+        span(id='played')
+        a(id='sender')='Send a Message'
+        ul(id='receiver')
+    div
+        ul(id='players')

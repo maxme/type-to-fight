@@ -45,6 +45,10 @@ io.sockets.on('connection', function(socket){
     socket.broadcast.emit('server_message',data);
     socket.emit('server_message',data);
   });
+  socket.on('msgkeypress', function(data){
+      socket.broadcast.emit('msgkeypress',data);
+      socket.emit('msgkeypress',data);
+  });
   socket.on('disconnect', function(){
     console.log('Client Disconnected.');
   });
