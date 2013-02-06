@@ -1,3 +1,4 @@
+"use strict";
 /* Author: Maxime Biais */
 
 /*
@@ -16,6 +17,14 @@ $(document).ready(function () {
     ready();
 });
 
+function log(message, obj) {
+    var tmp = '';
+    if (obj) {
+        tmp = JSON.stringify(obj);
+    }
+    $("#logs").after(message + ' ' + tmp + '<br/>');
+}
+
 var ready = function () {
     // This demo depends on the canvas element
     if (!('getContext' in document.createElement('canvas'))) {
@@ -33,19 +42,34 @@ var ready = function () {
         ctx = canvas[0].getContext('2d'),
         instructions = $('#instructions');
 
-    // Generate an unique ID
-    var id = Math.round($.now() * Math.random());
-
     var clients = {};
     var players = {};
-
+    var gameState = 0; // 0: init, 1: connected, 2: game will start, 3: playing, 4: game ended
     var socket = io.connect(url);
+    var id = 0, oppid = 0, gameid = 0;
+    var words = [];
 
+    socket.on('connection_ok', function (data) {
+        id = data.id;
+        gameState = 1;
+        log('connection ok=', data);
+    });
+
+    socket.on('game_start', function (data) {
+        oppid = data.oppid;
+        words = data.words;
+        gameid = data.gameid;
+        gameState = 2;
+        log('game start=', data);
+    });
+
+
+    /*
     socket.on('msgkeypress', function (data) {
         console.log("msg-keypress received");
         if (!(data.id in clients)) {
             // a new user has come online. create a new li
-            players[data.id] = $('<li id="p' + data.id+ '">player: ' + data.id + '</li>').appendTo('#players');
+            players[data.id] = $('<li id="p' + data.id+ '">player: ' + data.id + ': </li>').appendTo('#players');
             console.log("new client=" + data.id);
         }
         $('<span>'+data.keychar+'</span>').appendTo('#p' + data.id);
@@ -69,16 +93,18 @@ var ready = function () {
 //        }
     });
 
+    */
     // Remove inactive clients after 10 seconds of inactivity
     setInterval(function () {
-        for (ident in clients) {
-            if ($.now() - clients[ident].updated > 20000) {
+        for (var ident in clients) {
+            if ($.now() - clients[ident].updated > 60000) {
                 // Last update was more than 10 seconds ago.
                 // This user has probably closed the page
                 delete clients[ident];
                 delete cursors[ident];
             }
         }
-    }, 20000);
+    }, 60000);
 
+    socket.emit('connection', {lang: "french"});
 };
