@@ -34,6 +34,18 @@ server.listen(port);
 var io = io.listen(server);
 var clients = {};
 var games = {};
+var words = {};
+
+function initWordList() {
+    words['english'] = ["hello", "world", "parking", "code", "you"];
+}
+
+function getRandomWordSet(lang, size) {
+    words[lang].sort( function() { return 0.5 - Math.random() } );
+    return words[lang].slice(0, size);
+}
+
+initWordList();
 
 function createRandomId() {
     var now = new Date().getTime();
@@ -51,6 +63,7 @@ function findOrCreateAGame(playerId) {
     }
     var gameid = createRandomId();
     games[gameid] = {"player1": playerId, "gameid": gameid};
+    games[gameid]["words"] = getRandomWordSet("english", 10);
     games[gameid]["state"] = "waiting";
     return games[gameid];
 }
@@ -61,11 +74,14 @@ io.sockets.on('connection', function (socket) {
         data["id"] = socket.id;
         clients[socket.id] = {"socket": socket, "data": data};
         var game = findOrCreateAGame(socket.id);
-        data["game"] = game;
         socket.emit('connection_ok', data);
         if (game["state"] == "ready") {
             socket.emit('game_start', game);
         }
+    });
+
+    socket.on('start', function (data) {
+        // ok game started...
     });
 
     /*

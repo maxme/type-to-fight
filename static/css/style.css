@@ -93,21 +93,19 @@ textarea {
    Author's custom styles
    ========================================================================== */
 
+.timer {
+    position:absolute;
+    font-size: 200%;
+    top: 200px;
+    left: 200px;
+}
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+.word {
+    position:absolute;
+    font-size: 120%;
+    top: 100px;
+    left: 0px;
+}
 
 /* ==========================================================================
    Helper classes

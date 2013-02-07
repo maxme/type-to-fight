@@ -1,8 +1,11 @@
 extends layout
 
 block content
+    div(id='gametimer')
     div
-        canvas(id='canvas', width='760', height='350')
+        div(id='words')
+        canvas(id='canvas', width='760', height='400')
+    div(id='timer', class="timer")=''
     div
         span(id='played')
     div
