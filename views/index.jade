@@ -1,13 +1,19 @@
 extends layout
 
 block content
-    div(id='gametimer')
     div
         div(id='words')
+        div(id='playingword', class='playingword')
         canvas(id='canvas', width='760', height='400')
     div(id='timer', class="timer")=''
-    div
-        span(id='played')
+    div(id='gametimer')='0'
+    div(id='scorepane')
+        span='Score: '
+        span(id='score')
+    div(class='playingpane')
+        span='Playing: '
+        input(type='text', id='played')
+//-        span(id='played')
     div
         ul(id='players')
     div
