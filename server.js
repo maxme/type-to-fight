@@ -52,7 +52,9 @@ function initWordList() {
 }
 
 function getRandomWordSet(lang, size) {
-    words[lang].sort( function() { return 0.5 - Math.random() } );
+    words[lang].sort(function () {
+        return 0.5 - Math.random()
+    });
     var res = [];
     var tmpArray = words[lang].slice(0, size);
     for (var i = 0; i < size; ++i) {
@@ -120,22 +122,10 @@ io.sockets.on('connection', function (socket) {
         io.sockets.socket(oppid).emit('opp_win_word', {word: data.word, score: data.score});
     });
 
-    /*
-    socket.on('message', function (data) {
-        socket.broadcast.emit('server_message', data);
-        socket.emit('server_message', data);
-    });
-    socket.on('msgkeypress', function (data) {
-        socket.broadcast.emit('msgkeypress', data);
-        socket.emit('msgkeypress', data);
-    });
-    */
-
     socket.on('disconnect', function () {
         console.log('Client Disconnected.');
     });
 });
-
 
 ///////////////////////////////////////////
 //              Routes                   //
@@ -146,11 +136,24 @@ io.sockets.on('connection', function (socket) {
 server.get('/', function (req, res) {
     res.render('index.jade', {
         locals: {
-            title: 'Your Page Title', description: 'Your Page Description', author: 'Your Name', analyticssiteid: 'XXXXXXX'
+            title: 'Play FIXME',
+            description: 'FIXME: Your Page Description',
+            author: 'Maxime Biais',
+            analyticssiteid: 'FIXME: XXXXXXX'
         }
     });
 });
 
+server.get('/game', function (req, res) {
+    res.render('game.jade', {
+        locals: {
+            title: 'New Game',
+            description: 'FIXME: Your Page Description',
+            author: 'Maxime Biais',
+            analyticssiteid: 'FIXME: XXXXXXX'
+        }
+    });
+});
 
 //A Route for Creating a 500 Error (Useful to keep around)
 server.get('/500', function (req, res) {
@@ -167,6 +170,5 @@ function NotFound(msg) {
     Error.call(this, msg);
     Error.captureStackTrace(this, arguments.callee);
 }
-
 
 console.log('Listening on http://0.0.0.0:' + port);

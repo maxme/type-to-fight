@@ -1,0 +1,32 @@
+extends gamelayout
+
+block content
+    div
+        div(id='words')
+        div(id='playingword', class='playingword')
+        canvas(id='canvas', width='760', height='400')
+    div(id='timer', class="timer")=''
+    div(id='gametimer')='0'
+    div(id='scorepane')
+        span='Score: '
+        span(id='score')
+    div(class='playingpane')
+        span='Playing: '
+        span(id='played')
+    div(id='stats')
+        span='Key typed: '
+        span(id='keytyped')='0'
+        br
+        span='Errors: '
+        span(id='errors')='0'
+        br
+        span='Accuracy: '
+        span(id='accuracy')='1'
+        br
+        span='Average Speed: '
+        span(id='avgspeed')='0'
+        span=' keypressed/sec'
+    div
+        ul(id='players')
+    div
+        div(id='logs')

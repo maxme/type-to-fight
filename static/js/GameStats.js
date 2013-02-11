@@ -9,6 +9,8 @@ var GameStats = (function() {
         this.nkeypressed = 0;
         this.nbackspacepressed = 0;
         this.accuracy = 1;
+        this.startTime = 0;
+        this.averageSpeed = 0;
     };
 
     GameStats.prototype.updateStats = function () {
@@ -17,6 +19,9 @@ var GameStats = (function() {
     };
 
     GameStats.prototype.keypress = function () {
+        if (this.nkeypressed === 0) {
+            this.startTime = (new Date()).getTime();
+        }
         this.nkeypressed += 1;
         this.updateStats();
     };
@@ -26,5 +31,12 @@ var GameStats = (function() {
         this.updateStats();
     };
 
+    GameStats.prototype.update = function () {
+        var curTime = (new Date()).getTime();
+        this.averageSpeed = (this.nkeypressed / ((curTime - this.startTime) / 1000) * 60);
+    };
+
     return GameStats;
 })();
+
+module.exports = GameStats;

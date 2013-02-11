@@ -14,12 +14,16 @@ ready = function () {
     // The URL of your web server (the port is set in app.js)
     var url = 'http://localhost:8081';
 
-    var doc, splayed, sscore, sgametimer, stimer, sinstructions, ctx;
+    var doc, splayed, sscore, sgametimer, stimer, sinstructions, skeytyped, serrors, saccuracy, savgspeed, ctx;
     doc = $(document);
     splayed = $('#played');
     sscore = $('#score');
     stimer = $('#timer');
     sgametimer = $('#gametimer');
+    skeytyped = $('#keytyped');
+    serrors = $('#errors');
+    saccuracy = $('#accuracy');
+    savgspeed = $('#avgspeed');
     ctx = $('canvas')[0].getContext('2d');
     sinstructions = $('#instructions');
 
@@ -107,14 +111,14 @@ ready = function () {
     }
 
     function endGame() {
-
+        socket.emit("eng_game", {"gameid": gameid});
     }
 
     function startGame() {
         stimer.hide(300);
         socket.emit("start", {"gameid": gameid});
         gameManager.setGameState(3);
-        runTimer(60, function (remainingSeconds) {
+        runTimer(30, function (remainingSeconds) {
             sgametimer.html(remainingSeconds);
         }, endGame);
     }
@@ -192,7 +196,11 @@ ready = function () {
     }
 
     function updateGameStats() {
-        // FIXME:
+        gameStats.update();
+        skeytyped.html(gameStats.nkeypressed);
+        serrors.html(gameStats.nbackspacepressed);
+        saccuracy.html(Math.floor(gameStats.accuracy * 10000) / 100);
+        savgspeed.html(Math.floor(gameStats.averageSpeed * 100) / 100);
     }
 
     // Bind key press input
