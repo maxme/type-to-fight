@@ -54,3 +54,7 @@ var PlayedWord = (function() {
 
     return PlayedWord;
 })();
+
+if (typeof(module) !== 'undefined') {
+    module.exports = PlayedWord;
+}

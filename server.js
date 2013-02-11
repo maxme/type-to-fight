@@ -1,48 +1,82 @@
+//"use strict";
+
 var _ = require('underscore')._;
 var fs = require('fs');
 
 //setup Dependencies
-var connect = require('connect')
-    , express = require('express')
-    , io = require('socket.io')
-    , port = (process.env.PORT || 8081);
+var connect = require('connect'),
+    express = require('express'),
+    io = require('socket.io'),
+    http = require('http'),
+    https = require('https'),
+    redis = require('redis'),
+    port = (process.env.PORT || 8081);
+
+//setup redis
+var db = redis.createClient();
 
 //Setup Express
-var server = express.createServer();
-server.configure(function () {
-    server.set('views', __dirname + '/views');
-    server.set('view options', { layout: false });
-    server.use(connect.bodyParser());
-    server.use(express.cookieParser());
-    server.use(express.session({ secret: "shhhhecrethhhhh!"}));
-    server.use(connect.static(__dirname + '/static'));
-    server.use(server.router);
+var expressConfigure = function () {
+    app.set('views', __dirname + '/views');
+    app.set('view options', { layout: false });
+    app.use(connect.bodyParser());
+    app.use(express.cookieParser());
+    app.use(require('faceplate').middleware({
+        app_id: '217004898437675',
+        secret: 'b4ba1375a1643fb2669792479836af82',
+        scope: 'user_likes,user_photos,user_photo_video_tags'
+    }));
+    app.use(express.session({ secret: "shhhhecrethhhhh!"}));
+    app.use(connect.static(__dirname + '/static'));
+    app.use(app.router);
+};
+
+var app = express();
+app.configure(expressConfigure);
+
+app.get('/friends', function(req, res) {
+    req.facebook.get('/me/friends', { limit: 4 }, function(friends) {
+        res.send('friends: ' + require('util').inspect(friends));
+    });
 });
 
 //setup the errors
-server.error(function (err, req, res, next) {
+app.use(function (err, req, res, next) {
     if (err instanceof NotFound) {
-        res.render('404.jade', { locals: {
-            title: '404 - Not Found', description: '', author: '', analyticssiteid: 'XXXXXXX'
-        }, status: 404 });
+        res.status(404);
+        res.render('404.jade', {
+            title: '404 - Not Found',
+            description: '',
+            author: '',
+            analyticssiteid: 'XXXXXXX'
+        });
     } else {
-        res.render('500.jade', { locals: {
-            title: 'The Server Encountered an Error', description: '', author: '', analyticssiteid: 'XXXXXXX', error: err
-        }, status: 500 });
+        res.status(500);
+        res.render('500.jade', {
+            title: 'The Server Encountered an Error',
+            description: '',
+            author: '', analyticssiteid: 'XXXXXXX'
+        });
     }
 });
+
+// http
+var server = http.createServer(app);
 server.listen(port);
 
+// https
+var serverHttps = https.createServer({
+    key: fs.readFileSync('ssl/ssl-key.pem'),
+    cert: fs.readFileSync('ssl/ssl-cert.pem')}, app);
+serverHttps.listen(8082);
+
 //Setup Socket.IO
-var io = io.listen(server);
+var io = io.listen(serverHttps);
 var clients = {};
 var games = {};
 var words = {};
 
 function initWordList() {
-    // words['english'] = ["hello", "world", "parking", "code", "you"];
-    // words['english'] = ["hello", "world"];
-
     fs.readFile('english-common-words.json', 'ascii', function (err, data) {
         if (err) {
             return console.log(err);
@@ -133,35 +167,31 @@ io.sockets.on('connection', function (socket) {
 
 /////// ADD ALL YOUR ROUTES HERE  /////////
 
-server.get('/', function (req, res) {
+app.get('/', function (req, res) {
     res.render('index.jade', {
-        locals: {
-            title: 'Play FIXME',
-            description: 'FIXME: Your Page Description',
-            author: 'Maxime Biais',
-            analyticssiteid: 'FIXME: XXXXXXX'
-        }
+        title: 'Play FIXME',
+        description: 'FIXME: Your Page Description',
+        author: 'Maxime Biais',
+        analyticssiteid: 'FIXME: XXXXXXX'
     });
 });
 
-server.get('/game', function (req, res) {
+app.get('/game', function (req, res) {
     res.render('game.jade', {
-        locals: {
-            title: 'New Game',
-            description: 'FIXME: Your Page Description',
-            author: 'Maxime Biais',
-            analyticssiteid: 'FIXME: XXXXXXX'
-        }
+        title: 'New Game',
+        description: 'FIXME: Your Page Description',
+        author: 'Maxime Biais',
+        analyticssiteid: 'FIXME: XXXXXXX'
     });
 });
 
 //A Route for Creating a 500 Error (Useful to keep around)
-server.get('/500', function (req, res) {
+app.get('/500', function (req, res) {
     throw new Error('This is a 500 Error');
 });
 
 //The 404 Route (ALWAYS Keep this as the last route)
-server.get('/*', function (req, res) {
+app.get('/*', function (req, res) {
     throw new NotFound;
 });
 

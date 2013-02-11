@@ -111,7 +111,20 @@ textarea {
     font-size: 200%;
 }
 
+.maincontent {
+}
 
+.button-menu {
+    margin-bottom: 10px;
+}
+
+.btn-menu {
+    width: 300px;
+}
+
+.endmenu {
+    display: none;
+}
 
 /* ==========================================================================
    Helper classes

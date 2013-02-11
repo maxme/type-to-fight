@@ -16,6 +16,7 @@ html.no-js(lang='en')
     meta(name="author", content=author)
     meta(name="viewport", content='width=device-width, initial-scale=1')
     link(rel='stylesheet', href='/css/style.css')
+    link(rel='stylesheet', href='/css/bootstrap.min.css')
     //-script(src='js/libs/modernizr-2.0.6.min.js')
     script(src='js/libs/underscore.js')
     //-script(src='js/libs/backbone.js')
@@ -33,7 +34,10 @@ html.no-js(lang='en')
         script
           window.jQuery || document.write('<script src="js/libs/jquery-1.7.1.min.js"><\\/script>')
         //-script(defer, src='js/plugins.js')
-        script(defer, src='/js/menuscript.js')
+        block pagescript
+
+        script(defer, src='js/libs/bootstrap.min.js')
+        script(defer, src='/socket.io/socket.io.js')
           script
             var _gaq=[['_setAccount','UA-XXXXX-X'],['_trackPageview'],['_trackPageLoadTime']];
             (function(d,t){var g=d.createElement(t),s=d.getElementsByTagName(t)[0];g.async=1;

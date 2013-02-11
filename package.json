@@ -5,10 +5,13 @@
   "version": "0.0.1",
   "dependencies": {
     "connect": "1.8.5",
-    "express": "2.5.2",
+    "express": "3.x",
     "jade": "0.20.0",
     "mongoose": "2.4.8",
     "socket.io": "0.8.7",
+    "redis": "0.8.2",
+    "underscore": "1.4.4",
+    "faceplate": "*",
     "backbone": "0.9.1"
   },
   "devDependencies": {

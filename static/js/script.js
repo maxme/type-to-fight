@@ -12,7 +12,7 @@ function log(message, obj) {
 var ready;
 ready = function () {
     // The URL of your web server (the port is set in app.js)
-    var url = 'http://localhost:8081';
+    var url = 'http://localhost:8082';
 
     var doc, splayed, sscore, sgametimer, stimer, sinstructions, skeytyped, serrors, saccuracy, savgspeed, ctx;
     doc = $(document);
@@ -29,7 +29,7 @@ ready = function () {
 
     var gameManager = new GameManager(30);
     var gameStats = new GameStats();
-    var socket = io.connect(url);
+    var socket = io.connect(url, {secure: true});
     var id = 0, oppid = 0, gameid = 0;
     var words = [];
     var userWords = [];

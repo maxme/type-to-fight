@@ -1,4 +1,7 @@
-extends gamelayout
+extends layout
+
+block pagescript
+    script(defer, src='/js/script.js')
 
 block content
     div
@@ -30,3 +33,10 @@ block content
         ul(id='players')
     div
         div(id='logs')
+    div(class='endmenu')
+        span='Game Over'
+        ul
+            li
+                a(href='/')='Return to Menu'
+            li
+                a(href='/FIXME')='Replay'

@@ -1,6 +1,6 @@
 "use strict";
 
-var GameStats = (function() {
+var GameStats = (function () {
     function GameStats() {
         this.reset();
     }
@@ -39,4 +39,8 @@ var GameStats = (function() {
     return GameStats;
 })();
 
-module.exports = GameStats;
+if (typeof(module) !== 'undefined') {
+    module.exports = GameStats;
+}
+
+

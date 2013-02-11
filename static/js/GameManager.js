@@ -30,3 +30,7 @@ var GameManager = (function() {
 
     return GameManager;
 })();
+
+if (typeof(module) !== 'undefined') {
+    module.exports = GameManager;
+}
