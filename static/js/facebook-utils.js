@@ -1,31 +1,31 @@
 "use strict";
 
-var myFB = null; // GLOBAL
-
 var FBUtils = (function () {
     function FBUtils(params) {
+        this.userInfos = null;
         this.appId = params.appid;
         FB.init({
-            appId      : params.appid, // App ID from the App Dashboard
-            channelUrl : '/channel.html', // Channel File for x-domain communication
-            status     : true, // check the login status upon init?
-            cookie     : true, // set sessions cookies to allow your server to access the session?
-            xfbml      : true  // parse XFBML tags on this page?
+            appId: params.appid, // App ID from the App Dashboard
+            channelUrl: '/channel.html', // Channel File for x-domain communication
+            status: true, // check the login status upon init?
+            cookie: true, // set sessions cookies to allow your server to access the session?
+            frictionlessRequests: true,
+            xfbml: true  // parse XFBML tags on this page?
         });
     };
 
-    FBUtils.prototype.login = function (ok, failed) {
-        FB.login(function(response) {
+    FBUtils.prototype.login = function (scope, ok, failed) {
+        FB.login(function (response) {
             if (response.authResponse) {
                 (ok !== undefined) && ok(response);
             } else {
                 (failed !== undefined) && failed(response);
             }
-        });
+        }, scope);
     };
 
     FBUtils.prototype.getLoginStatus = function (connected, notauth, notlogged) {
-        FB.getLoginStatus(function(response) {
+        FB.getLoginStatus(function (response) {
             if (response.status === 'connected') {
                 (connected !== undefined) && connected(response);
             } else if (response.status === 'not_authorized') {
@@ -36,10 +36,11 @@ var FBUtils = (function () {
         });
     }
 
-    FBUtils.prototype.request = function (message, recipient, cb) {
+    FBUtils.prototype.request = function (message, recipient, data, cb) {
         FB.ui({method: 'apprequests',
             message: message,
-            to: recipient
+            to: recipient,
+            data: JSON.stringify(data)
         }, cb);
     };
 
@@ -49,27 +50,47 @@ var FBUtils = (function () {
         }, cb);
     };
 
+    FBUtils.prototype.getUserInfos = function (ok) {
+        if (this.userInfos === null) {
+            FB.api('/me', function (response) {
+                this.userInfos = response;
+                (ok !== undefined) && ok(response);
+            });
+        } else {
+            (ok !== undefined) && ok(this.userInfos);
+        }
+    };
 
+    FBUtils.prototype.getFriendsWithOnlinePresence = function (cb) {
+        this.fqlRequest({'online_friends': 'SELECT uid, name, pic_square, online_presence FROM user WHERE uid IN (SELECT uid2 FROM friend WHERE uid1 = me());'}, cb);
+    };
+
+    FBUtils.prototype.fqlRequest = function (queries, cb) {
+        FB.api('/fql', {q: queries}, cb);
+    };
 
     return FBUtils;
 })();
-
 
 // Load the SDK's source Asynchronously
 // Note that the debug version is being actively developed and might
 // contain some type checks that are overly strict.
 // Please report such bugs using the bugs tool.
-(function(d, debug){
+(function (d, debug) {
     var js, id = 'facebook-jssdk', ref = d.getElementsByTagName('script')[0];
-    if (d.getElementById(id)) {return;}
-    js = d.createElement('script'); js.id = id; js.async = true;
+    if (d.getElementById(id)) {
+        return;
+    }
+    js = d.createElement('script');
+    js.id = id;
+    js.async = true;
     js.src = "//connect.facebook.net/en_US/all" + (debug ? "/debug" : "") + ".js";
     ref.parentNode.insertBefore(js, ref);
 }(document, /*debug*/ false));
 
-window.fbAsyncInit = function() {
-    myFB = new FBUtils({appid: 217004898437675});
-    myFB.getLoginStatus(function () {
-        console.log('user is logged in facebook');
-    }, function () {myFB.login();}, function () {myFB.login();});
+window.fbAsyncInit = function () {
+    if (typeof(menuInit) !== 'undefined')
+        menuInit();
+    if (typeof(gameInit) !== 'undefined')
+        gameInit();
 };

@@ -2,6 +2,9 @@ extends layout
 
 block pagescript
     script(defer, src='/js/script.js')
+    script
+        var roomId = "!{roomId}"
+        var oppId = "!{oppId}"
 
 block content
     div

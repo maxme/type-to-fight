@@ -3,7 +3,6 @@ extends layout
 block pagescript
     script(defer, src='/js/menuscript.js')
 
-
 block content
     div(class='maincontent')
         div(class='hero-unit')
@@ -14,8 +13,14 @@ block content
                 div(class='button-menu')
                     a(href="/game", class='btn btn-large btn-primary btn-menu')="New Game with Random Opponent"
                 div(class='button-menu')
-                    a(href="/game", class='btn btn-large btn-primary btn-menu')="New Game with Friend"
+                    a(href="#", id='game-with-friend', class='btn btn-large btn-primary btn-menu')="New Game with Friend"
+                div(id='online-friends')
+                    h2='Online friends'
+                    ul(id='online-friends-ul', class='unstyled')
                 div(class='button-menu')
                     a(href="/leaderboards", class='btn btn-large btn-primary btn-menu')="Leaderboards"
                 div(class='button-menu')
                     a(href="#", id="invite-friends", class='btn btn-large btn-primary btn-menu')="Invite Friends"
+            div(id='offline-friends')
+                h2='Offline friends'
+                ul(id='offlne-friends-ul')

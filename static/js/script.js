@@ -9,8 +9,7 @@ function log(message, obj) {
     $("#logs").after(message + ' ' + tmp + '<br/>');
 }
 
-var ready;
-ready = function () {
+var ready = function () {
     // The URL of your web server (the port is set in app.js)
     var url = 'http://localhost:8082';
 
@@ -257,6 +256,21 @@ ready = function () {
     socket.emit('connection', {lang: "french"});
 };
 
-$(document).ready(function () {
-    ready();
-});
+var myFB = null;
+
+var gameInit = function () {
+    var myLogin = function () {
+        var scope = {scope: 'email,publish_actions,friends_online_presence'};
+        myFB.login(scope, secondStepInit, loginError);
+    };
+
+    myFB = new FBUtils({appid: 217004898437675});
+    myFB.getLoginStatus(function () {
+        console.log('user is logged in facebook');
+    }, myLogin, myLogin);
+
+    myFB.getUserInfos(function (response) {
+        console.log("player uid=" + response.id);
+        ready();
+    });
+};

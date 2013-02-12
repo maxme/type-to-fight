@@ -2,6 +2,8 @@
 
 var _ = require('underscore')._;
 var fs = require('fs');
+var SignedRequest = require('facebook-signed-request');
+SignedRequest.secret = 'b4ba1375a1643fb2669792479836af82';
 
 //setup Dependencies
 var connect = require('connect'),
@@ -45,7 +47,7 @@ app.use(function (err, req, res, next) {
         res.render('500.jade', {
             title: 'The Server Encountered an Error',
             description: '',
-            error: 'error...',
+            error: err.stack,
             author: '', analyticssiteid: 'XXXXXXX'
         });
     }
@@ -98,7 +100,7 @@ function createRandomId() {
 
 function findOrCreateAGame(playerId) {
     for (var game in games) {
-        if (games[game]["player2"] == null && games[game]["player1"] != playerId) {
+        if (games[game]["player2"] === null && games[game]["player1"] !== playerId) {
             games[game]["player2"] = playerId;
             games[game]["state"] = "ready";
             io.sockets.socket(games[game]["player1"]).emit('game_start', games[game]);
@@ -157,8 +159,23 @@ io.sockets.on('connection', function (socket) {
 ///////////////////////////////////////////
 
 /////// ADD ALL YOUR ROUTES HERE  /////////
-
 app.all('/', function (req, res) {
+    console.log("get = " + JSON.stringify(req.body));
+    console.log("param = " + JSON.stringify(req.params));
+    console.log("query = " + JSON.stringify(req.query));
+
+    // Check args
+    var request_ids = req.param('request_ids');
+    if (request_ids) {
+        var signed_request = req.param('signed_request');
+        var sr = new SignedRequest(signed_request);
+        sr.parse(function(errors, srequest) {
+            if (srequest.isValid()) {
+                console.log("data=" + JSON.stringify(srequest.data));
+            }
+        });
+    }
+
     res.render('index.jade', {
         title: 'Play FIXME',
         description: 'FIXME: Your Page Description',
@@ -167,36 +184,53 @@ app.all('/', function (req, res) {
     });
 });
 
-app.get('/friends', function(req, res) {
-    if (req.facebook.token) {
-        req.facebook.get('/me/friends', { limit: 4 }, function(friends) {
-            res.send('friends: ' + require('util').inspect(friends));
-        });
-    } else {
-        console.log('user not logged in');
-        req.facebook.app(function (app) {
-            req.facebook.me(function (user) {
-                res.send('req:' + req + ' -user:' + user);
-            });
-        });
-    }
+app.post('/newgame/:playerid/:oppid', function (req, res) {
+    var newRoomId = createRandomId();
+    console.log("new room id=" + newRoomId);
+    res.json({roomid: newRoomId});
 });
 
-app.get('/signed_request', function(req, res) {
-    res.send('Signed Request details: ' + require('util').inspect(req.facebook.signed_request));
+/* FIXME
+app.get('/newgame/:oppid', function (req, res) {
+    var newRoomId = createRandomId();
+    res.redirect('/game/' + newRoomId + '/' + req.params.oppid);
 });
+*/
 
-
-
-app.get('/game', function (req, res) {
+app.get('/game/:roomid', function (req, res) {
     res.render('game.jade', {
         title: 'New Game',
         description: 'FIXME: Your Page Description',
         author: 'Maxime Biais',
+        oppId: req.params.oppid,
+        roomId: req.params.roomid,
         analyticssiteid: 'FIXME: XXXXXXX'
     });
 });
 
+app.post('/stats', function (req, res) {
+//    Sample data: {
+//        "updated_time": "2012-11-27T16:57:33+0000",
+//        "verified": "true",
+//        "locale": "en_US",
+//        "id": "684491308",
+//        "name": "Maxime Biais",
+//        "first_name": "Maxime",
+//        "last_name": "Biais",
+//        "link": "https://www.facebook.com/maxime.biais",
+//        "username": "maxime.biais",
+//        "gender": "male",
+//        "timezone": "1"
+    // Store in redis DB
+    if (req.body.id) {
+        req.body.last_seen = JSON.stringify(new Date()).replace(/"/g, '');
+        db.hmset('user:' + req.body.id, req.body);
+//        db.hgetall('user:' + req.body.id, function (err, obj) {
+//            console.dir(obj);
+//        });
+    }
+    res.send(200);
+});
 
 //The 404 Route (ALWAYS Keep this as the last route)
 app.get('/*', function (req, res) {
