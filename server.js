@@ -21,11 +21,6 @@ var expressConfigure = function () {
     app.set('view options', { layout: false });
     app.use(connect.bodyParser());
     app.use(express.cookieParser());
-    app.use(require('faceplate').middleware({
-        app_id: '217004898437675',
-        secret: 'b4ba1375a1643fb2669792479836af82',
-        scope: 'user_likes,user_photos,user_photo_video_tags'
-    }));
     app.use(express.session({ secret: "shhhhecrethhhhh!"}));
     app.use(connect.static(__dirname + '/static'));
     app.use(app.router);
@@ -34,11 +29,6 @@ var expressConfigure = function () {
 var app = express();
 app.configure(expressConfigure);
 
-app.get('/friends', function(req, res) {
-    req.facebook.get('/me/friends', { limit: 4 }, function(friends) {
-        res.send('friends: ' + require('util').inspect(friends));
-    });
-});
 
 //setup the errors
 app.use(function (err, req, res, next) {
@@ -55,6 +45,7 @@ app.use(function (err, req, res, next) {
         res.render('500.jade', {
             title: 'The Server Encountered an Error',
             description: '',
+            error: 'error...',
             author: '', analyticssiteid: 'XXXXXXX'
         });
     }
@@ -167,7 +158,7 @@ io.sockets.on('connection', function (socket) {
 
 /////// ADD ALL YOUR ROUTES HERE  /////////
 
-app.get('/', function (req, res) {
+app.all('/', function (req, res) {
     res.render('index.jade', {
         title: 'Play FIXME',
         description: 'FIXME: Your Page Description',
@@ -175,6 +166,27 @@ app.get('/', function (req, res) {
         analyticssiteid: 'FIXME: XXXXXXX'
     });
 });
+
+app.get('/friends', function(req, res) {
+    if (req.facebook.token) {
+        req.facebook.get('/me/friends', { limit: 4 }, function(friends) {
+            res.send('friends: ' + require('util').inspect(friends));
+        });
+    } else {
+        console.log('user not logged in');
+        req.facebook.app(function (app) {
+            req.facebook.me(function (user) {
+                res.send('req:' + req + ' -user:' + user);
+            });
+        });
+    }
+});
+
+app.get('/signed_request', function(req, res) {
+    res.send('Signed Request details: ' + require('util').inspect(req.facebook.signed_request));
+});
+
+
 
 app.get('/game', function (req, res) {
     res.render('game.jade', {
@@ -185,10 +197,6 @@ app.get('/game', function (req, res) {
     });
 });
 
-//A Route for Creating a 500 Error (Useful to keep around)
-app.get('/500', function (req, res) {
-    throw new Error('This is a 500 Error');
-});
 
 //The 404 Route (ALWAYS Keep this as the last route)
 app.get('/*', function (req, res) {
