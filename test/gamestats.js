@@ -1,5 +1,5 @@
 var assert = require('should');
-var GameStats = require('../static/js/GameStats.js');
+var GameStats = require('../static/js/gamestats.js');
 
 describe('gamestats', function(){
     describe('#accuracy', function(){

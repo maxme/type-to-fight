@@ -1,7 +1,8 @@
 //"use strict";
 
-var _ = require('underscore')._;
 var fs = require('fs');
+var RoomManager = require('./static/js/roommanager.js');
+
 var SignedRequest = require('facebook-signed-request');
 SignedRequest.secret = 'b4ba1375a1643fb2669792479836af82';
 
@@ -66,76 +67,20 @@ serverHttps.listen(8082);
 //Setup Socket.IO
 var io = io.listen(serverHttps);
 var clients = {};
-var games = {};
-var words = {};
-
-function initWordList() {
-    fs.readFile('english-common-words.json', 'ascii', function (err, data) {
-        if (err) {
-            return console.log(err);
-        }
-        words = JSON.parse(data);
-    });
-}
-
-function getRandomWordSet(lang, size) {
-    words[lang].sort(function () {
-        return 0.5 - Math.random()
-    });
-    var res = [];
-    var tmpArray = words[lang].slice(0, size);
-    for (var i = 0; i < size; ++i) {
-        res.push({word: tmpArray[i % tmpArray.length], delay: _.random(i * 1000, i * 3000)});
-    }
-    // res = [ {word: "word1", delay: 0}, {word:"word2", delay:5000} ];
-    return res;
-}
-
-initWordList();
+var rooms = new RoomManager(clients, db);
 
 function createRandomId() {
     var now = new Date().getTime();
     return Math.round(now * Math.random());
 }
 
-function findOrCreateAGame(playerId, roomid) {
-    for (var game in games) {
-        if (games[game]["player2"] === null && games[game]["player1"] !== playerId) {
-            games[game]["player2"] = playerId;
-            games[game]["state"] = "ready";
-            io.sockets.socket(games[game]["player1"]).emit('game_start', games[game]);
-            return games[game];
-        }
-    }
-    games[roomid] = {"player1": playerId, "roomid": roomid};
-    games[roomid]["words"] = getRandomWordSet("english", 10);
-    games[roomid]["state"] = "waiting";
-    return games[roomid];
-}
-
-function findOpponentFromGameId(gameid, playerid) {
-    var game = games[gameid];
-    if (game.player1 === playerid) {
-        return game.player2;
-    } else {
-        return game.player1;
-    }
-}
-
-function findOpponentFromPlayerId(playerid) {
-    return findOpponentFromGameId(clients[playerid].gameid, playerid);
-}
-
 io.sockets.on('connection', function (socket) {
     console.log('Client Connected: ' + socket.id);
     socket.on('connection', function (data) {
-        data["id"] = socket.id;
-        var game = findOrCreateAGame(socket.id, data.roomid);
-        clients[socket.id] = {"socket": socket, "data": data, 'gameid': game.gameid};
+        data.socket_id = socket.id;
+        clients[data.playerid] = socket;
         socket.emit('connection_ok', data);
-        if (game["state"] == "ready") {
-            socket.emit('game_start', game);
-        }
+        rooms.connectUserToGame(data.roomid, data.playerid);
     });
 
     socket.on('start', function (data) {
@@ -144,8 +89,10 @@ io.sockets.on('connection', function (socket) {
 
     socket.on('win_word', function (data) {
         var playerid = data.playerid;
-        var oppid = findOpponentFromPlayerId(playerid);
-        io.sockets.socket(oppid).emit('opp_win_word', {word: data.word, score: data.score});
+        var roomid = data.roomid;
+        rooms.getOpponentId(roomid, playerid, function (oppid) {
+            clients[oppid].emit('opp_win_word', {word: data.word, score: data.score});
+        });
     });
 
     socket.on('disconnect', function () {
@@ -215,10 +162,6 @@ app.get('/newgame/:oppid', function (req, res) {
 */
 
 app.get('/game/:roomid', function (req, res) {
-    db.hgetall('roomid:' + req.params.roomid, function (err, obj) {
-        console.log('err=' + err);
-        console.log('obj=' + obj);
-    });
     res.render('game.jade', {
         title: 'New Game',
         description: 'FIXME: Your Page Description',

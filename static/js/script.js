@@ -1,6 +1,9 @@
 'use strict';
 /* Author: Maxime Biais */
 
+var myFB = null;
+var playerid = null;
+
 function log(message, obj) {
     var tmp = '';
     if (obj) {
@@ -91,7 +94,7 @@ var ready = function () {
 
     function winWord(pword) {
         score += pword.score;
-        socket.emit('win_word', {word: pword.word, score: score, playerid: playerid});
+        socket.emit('win_word', {word: pword.word, score: score, playerid: playerid, roomid: roomid});
         currentWord = '';
         removePWordFromLists(pword);
     }
@@ -164,6 +167,9 @@ var ready = function () {
     });
 
     socket.on('game_start', function (data) {
+        // hide instructions
+        $('#instructions').modal('hide');
+
         oppid = data.oppid;
         words = data.words;
         gameManager.setGameState(2);
@@ -256,25 +262,33 @@ var ready = function () {
     init();
 
     // Send "connection" msg
-    socket.emit('connection', {lang: "french", roomid: roomid});
+    console.log("playerid=" + playerid);
+    socket.emit('connection', {lang: "french", roomid: roomid, playerid: playerid});
 };
 
-var myFB = null;
-var playerid = null;
+
+var gameInit2 = function () {
+    myFB.getUserInfos(function (response) {
+        playerid = response.id;
+        ready();
+    });
+};
+
+
 
 var gameInit = function () {
+    var loginError = function (response) {
+        console.log('login error: ' + response);
+    };
+
     var myLogin = function () {
         var scope = {scope: 'email,publish_actions,friends_online_presence'};
-        myFB.login(scope, secondStepInit, loginError);
+        myFB.login(scope, gameInit2, loginError);
     };
 
     myFB = new FBUtils({appid: 217004898437675});
     myFB.getLoginStatus(function () {
         console.log('user is logged in facebook');
+        gameInit2();
     }, myLogin, myLogin);
-
-    myFB.getUserInfos(function (response) {
-        playerid = response.id;
-        ready();
-    });
 };
