@@ -45,9 +45,8 @@ var secondStepInit = function () {
         });
     });
 
+    // Send a play request to user: uid
     function sendPlayRequestTo(uid) {
-        // create new game room
-
         myFB.getUserInfos(function (response) {
             $.ajax({
                 type: "POST",
@@ -56,9 +55,24 @@ var secondStepInit = function () {
                     myFB.request('started a game with you! Join him', uid,
                         {roomid: data.roomid},
                         function (reqres) {
-                            if (reqres) {
-                                // FIXME: send a new request to the server to associate reqres.request_id and roomid
-                                window.location = '/game/' + data.roomid;
+                            if (reqres) { // request has been send
+                                myFB.getUserInfos(function (response) {
+                                    var senderid = reponse.id;
+                                    $.ajax({
+                                        type: "POST",
+                                        url: '/associate',
+                                        data: {
+                                            request_id: reqres.request,
+                                            roomid: data.roomid,
+                                            to: reqres.to[0],
+                                            senderid: senderid
+                                        },
+                                        success: function (data) {
+                                            window.location = '/game/' + data.roomid;
+                                        }
+                                    });
+                                });
+
                             }
                         });
                 }

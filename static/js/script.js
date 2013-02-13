@@ -13,7 +13,7 @@ var ready = function () {
     // The URL of your web server (the port is set in app.js)
     var url = 'http://localhost:8082';
 
-    var doc, splayed, sscore, sgametimer, stimer, sinstructions, skeytyped, serrors, saccuracy, savgspeed, ctx;
+    var doc, splayed, sscore, sgametimer, stimer, skeytyped, serrors, saccuracy, savgspeed, smodalmessage, ctx;
     doc = $(document);
     splayed = $('#played');
     sscore = $('#score');
@@ -23,13 +23,17 @@ var ready = function () {
     serrors = $('#errors');
     saccuracy = $('#accuracy');
     savgspeed = $('#avgspeed');
+    smodalmessage = $('#modalmessage');
     ctx = $('canvas')[0].getContext('2d');
-    sinstructions = $('#instructions');
+
+    // Show modal
+    smodalmessage.html('Connecting...');
+    $('#instructions').modal({backdrop: 'static'}).css('top', '25%');
 
     var gameManager = new GameManager(30);
     var gameStats = new GameStats();
     var socket = io.connect(url, {secure: true});
-    var id = 0, oppid = 0, gameid = 0;
+    var oppid = 0;
     var words = [];
     var userWords = [];
     var oppWords = [];
@@ -87,7 +91,7 @@ var ready = function () {
 
     function winWord(pword) {
         score += pword.score;
-        socket.emit('win_word', {word: pword.word, score: score, playerid: id});
+        socket.emit('win_word', {word: pword.word, score: score, playerid: playerid});
         currentWord = '';
         removePWordFromLists(pword);
     }
@@ -110,12 +114,12 @@ var ready = function () {
     }
 
     function endGame() {
-        socket.emit("eng_game", {"gameid": gameid});
+        socket.emit("eng_game", {"gameid": roomid});
     }
 
     function startGame() {
         stimer.hide(300);
-        socket.emit("start", {"gameid": gameid});
+        socket.emit("start", {"gameid": roomid});
         gameManager.setGameState(3);
         runTimer(30, function (remainingSeconds) {
             sgametimer.html(remainingSeconds);
@@ -154,15 +158,14 @@ var ready = function () {
 
     // Bind Messages
     socket.on('connection_ok', function (data) {
-        id = data.id;
         gameManager.setGameState(1);
+        smodalmessage.html('Waiting for your opponent to connect.');
         log('connection ok=', data);
     });
 
     socket.on('game_start', function (data) {
         oppid = data.oppid;
         words = data.words;
-        gameid = data.gameid;
         gameManager.setGameState(2);
         log('game start=', data);
         runTimer(2, function (remainingSeconds) {
@@ -253,10 +256,11 @@ var ready = function () {
     init();
 
     // Send "connection" msg
-    socket.emit('connection', {lang: "french"});
+    socket.emit('connection', {lang: "french", roomid: roomid});
 };
 
 var myFB = null;
+var playerid = null;
 
 var gameInit = function () {
     var myLogin = function () {
@@ -270,7 +274,7 @@ var gameInit = function () {
     }, myLogin, myLogin);
 
     myFB.getUserInfos(function (response) {
-        console.log("player uid=" + response.id);
+        playerid = response.id;
         ready();
     });
 };

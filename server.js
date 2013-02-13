@@ -98,7 +98,7 @@ function createRandomId() {
     return Math.round(now * Math.random());
 }
 
-function findOrCreateAGame(playerId) {
+function findOrCreateAGame(playerId, roomid) {
     for (var game in games) {
         if (games[game]["player2"] === null && games[game]["player1"] !== playerId) {
             games[game]["player2"] = playerId;
@@ -107,11 +107,10 @@ function findOrCreateAGame(playerId) {
             return games[game];
         }
     }
-    var gameid = createRandomId();
-    games[gameid] = {"player1": playerId, "gameid": gameid};
-    games[gameid]["words"] = getRandomWordSet("english", 10);
-    games[gameid]["state"] = "waiting";
-    return games[gameid];
+    games[roomid] = {"player1": playerId, "roomid": roomid};
+    games[roomid]["words"] = getRandomWordSet("english", 10);
+    games[roomid]["state"] = "waiting";
+    return games[roomid];
 }
 
 function findOpponentFromGameId(gameid, playerid) {
@@ -131,7 +130,7 @@ io.sockets.on('connection', function (socket) {
     console.log('Client Connected: ' + socket.id);
     socket.on('connection', function (data) {
         data["id"] = socket.id;
-        var game = findOrCreateAGame(socket.id);
+        var game = findOrCreateAGame(socket.id, data.roomid);
         clients[socket.id] = {"socket": socket, "data": data, 'gameid': game.gameid};
         socket.emit('connection_ok', data);
         if (game["state"] == "ready") {
@@ -154,26 +153,43 @@ io.sockets.on('connection', function (socket) {
     });
 });
 
+function searchRecentRoom(invited_player) {
+
+}
+
 ///////////////////////////////////////////
 //              Routes                   //
 ///////////////////////////////////////////
 
 /////// ADD ALL YOUR ROUTES HERE  /////////
 app.all('/', function (req, res) {
-    console.log("get = " + JSON.stringify(req.body));
-    console.log("param = " + JSON.stringify(req.params));
-    console.log("query = " + JSON.stringify(req.query));
+//    console.log("get = " + JSON.stringify(req.body));
+//    console.log("param = " + JSON.stringify(req.params));
+//    console.log("query = " + JSON.stringify(req.query));s
 
-    // Check args
+    // Check if request_id args
     var request_ids = req.param('request_ids');
     if (request_ids) {
+        var selected_request_id = request_ids.split(',')[0];
+        console.log('selected request=' + selected_request_id);
         var signed_request = req.param('signed_request');
         var sr = new SignedRequest(signed_request);
-        sr.parse(function(errors, srequest) {
+        sr.parse(function (errors, srequest) {
             if (srequest.isValid()) {
                 console.log("data=" + JSON.stringify(srequest.data));
+
+                // Check user
+                var suser = srequest.data.user_id;
+                db.hgetall('requestid:' + selected_request_id, function (err, room) {
+                    console.log("room=" + JSON.stringify(room) + "suser=" + suser);
+                    if (room && room.to && suser === room.to) {
+                        console.log('redirect to: ' + JSON.stringify(room));
+                        res.redirect('/game/' + room.roomid);
+                    }
+                });
             }
         });
+        return ;
     }
 
     res.render('index.jade', {
@@ -187,6 +203,7 @@ app.all('/', function (req, res) {
 app.post('/newgame/:playerid/:oppid', function (req, res) {
     var newRoomId = createRandomId();
     console.log("new room id=" + newRoomId);
+    db.hmset('roomid:' + newRoomId, {player1: req.body.playerid, player2: req.body.oppid});
     res.json({roomid: newRoomId});
 });
 
@@ -198,14 +215,26 @@ app.get('/newgame/:oppid', function (req, res) {
 */
 
 app.get('/game/:roomid', function (req, res) {
+    db.hgetall('roomid:' + req.params.roomid, function (err, obj) {
+        console.log('err=' + err);
+        console.log('obj=' + obj);
+    });
     res.render('game.jade', {
         title: 'New Game',
         description: 'FIXME: Your Page Description',
         author: 'Maxime Biais',
-        oppId: req.params.oppid,
-        roomId: req.params.roomid,
+        roomid: req.params.roomid,
         analyticssiteid: 'FIXME: XXXXXXX'
     });
+});
+
+app.post('/associate', function(req, res) {
+    if (req.body.request_id && req.body.roomid) {
+        console.log('associate requestid=' + req.body.request_id + ' with roomid=' + req.body.roomid);
+        // FIXME: set a zset with a date
+        db.hmset('requestid:' + req.body.request_id, req.body);
+    }
+    res.send(200);
 });
 
 app.post('/stats', function (req, res) {

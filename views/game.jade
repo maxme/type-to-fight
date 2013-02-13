@@ -3,15 +3,22 @@ extends layout
 block pagescript
     script(defer, src='/js/script.js')
     script
-        var roomId = "!{roomId}"
-        var oppId = "!{oppId}"
+        var roomid = "!{roomid}"
 
 block content
     div
         div(id='words')
         div(id='playingword', class='playingword')
         canvas(id='canvas', width='740', height='400')
-    div(id='timer', class="timer")=''
+    div(id='timer', class='timer')=''
+    div(id='instructions',class='modal fade in backdrop',tabindex="-1",role="dialog",aria-labelledby="modalLabel")
+        div(class='modal-header')
+            h1(id='modalLabel')='Please Wait...'
+        div(class='modal-body')
+            h3(id='modalmessage')='Connecting...'
+            p='If your opponent can\'t connect, send him this url: FIXME'
+        div(class='modal-footer')
+            p='FIXME'
     div(id='gametimer')='0'
     div(id='scorepane')
         span='Score: '
