@@ -32,7 +32,6 @@ var expressConfigure = function () {
 var app = express();
 app.configure(expressConfigure);
 
-
 //setup the errors
 app.use(function (err, req, res, next) {
     if (err instanceof NotFound) {
@@ -74,6 +73,19 @@ function createRandomId() {
     return Math.round(now * Math.random());
 }
 
+function checkTimeMessage(roomid) {
+    var GAME_TIME = 30 * 1000;
+    rooms.getRoomStartTime(roomid, function (startTime) {
+        if (startTime) {
+            var curTime = (new Date()).getTime();
+            console.log('diff: ' + (curTime - startTime));
+            if (curTime - startTime > GAME_TIME) {
+                rooms.endGame(roomid);
+            }
+        }
+    });
+}
+
 io.sockets.on('connection', function (socket) {
     console.log('Client Connected: ' + socket.id);
     socket.on('connection', function (data) {
@@ -87,7 +99,12 @@ io.sockets.on('connection', function (socket) {
         // ok game started...
     });
 
+    socket.on('ping', function (data) {
+        checkTimeMessage(data.roomid);
+    });
+
     socket.on('win_word', function (data) {
+        checkTimeMessage(data.roomid);
         var playerid = data.playerid;
         var roomid = data.roomid;
         rooms.getOpponentId(roomid, playerid, function (oppid) {
@@ -99,10 +116,6 @@ io.sockets.on('connection', function (socket) {
         console.log('Client Disconnected.');
     });
 });
-
-function searchRecentRoom(invited_player) {
-
-}
 
 ///////////////////////////////////////////
 //              Routes                   //
@@ -124,7 +137,6 @@ app.all('/', function (req, res) {
         sr.parse(function (errors, srequest) {
             if (srequest.isValid()) {
                 console.log("data=" + JSON.stringify(srequest.data));
-
                 // Check user
                 var suser = srequest.data.user_id;
                 db.hgetall('requestid:' + selected_request_id, function (err, room) {
@@ -136,7 +148,7 @@ app.all('/', function (req, res) {
                 });
             }
         });
-        return ;
+        return;
     }
 
     res.render('index.jade', {
@@ -147,19 +159,18 @@ app.all('/', function (req, res) {
     });
 });
 
+/* FIXME
+ app.get('/newgame/random', function (req, res) {
+ var newRoomId = createRandomId();
+ res.redirect('/game/' + newRoomId + '/' + req.params.oppid);
+ });
+ */
+
 app.post('/newgame/:playerid/:oppid', function (req, res) {
     var newRoomId = createRandomId();
     console.log("new room id=" + newRoomId);
-    db.hmset('roomid:' + newRoomId, {player1: req.body.playerid, player2: req.body.oppid});
     res.json({roomid: newRoomId});
 });
-
-/* FIXME
-app.get('/newgame/:oppid', function (req, res) {
-    var newRoomId = createRandomId();
-    res.redirect('/game/' + newRoomId + '/' + req.params.oppid);
-});
-*/
 
 app.get('/game/:roomid', function (req, res) {
     res.render('game.jade', {
@@ -171,7 +182,7 @@ app.get('/game/:roomid', function (req, res) {
     });
 });
 
-app.post('/associate', function(req, res) {
+app.post('/associate', function (req, res) {
     if (req.body.request_id && req.body.roomid) {
         console.log('associate requestid=' + req.body.request_id + ' with roomid=' + req.body.roomid);
         // FIXME: set a zset with a date
@@ -197,9 +208,6 @@ app.post('/stats', function (req, res) {
     if (req.body.id) {
         req.body.last_seen = JSON.stringify(new Date()).replace(/"/g, '');
         db.hmset('user:' + req.body.id, req.body);
-//        db.hgetall('user:' + req.body.id, function (err, obj) {
-//            console.dir(obj);
-//        });
     }
     res.send(200);
 });

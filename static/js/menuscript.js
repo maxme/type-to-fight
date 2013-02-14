@@ -35,16 +35,6 @@ var secondStepInit = function () {
         $('#online-friends').toggle(400);
     });
 
-    myFB.getUserInfos(function (response) {
-        // Send stats
-        $.ajax({
-            type: "POST",
-            url: "/stats",
-            data: response,
-            dataType: 'text'
-        });
-    });
-
     // Send a play request to user: uid
     function sendPlayRequestTo(uid) {
         myFB.getUserInfos(function (response) {
@@ -52,12 +42,13 @@ var secondStepInit = function () {
                 type: "POST",
                 url: '/newgame/' + response.id + '/' + uid,
                 success: function (data) {
+                    console.log('new game response=' + JSON.stringify(data));
                     myFB.request('started a game with you! Join him', uid,
                         {roomid: data.roomid},
                         function (reqres) {
                             if (reqres) { // request has been send
-                                myFB.getUserInfos(function (response) {
-                                    var senderid = reponse.id;
+                                myFB.getUserInfos(function (user_infos) {
+                                    var senderid = user_infos.id;
                                     $.ajax({
                                         type: "POST",
                                         url: '/associate',
@@ -67,7 +58,7 @@ var secondStepInit = function () {
                                             to: reqres.to[0],
                                             senderid: senderid
                                         },
-                                        success: function (data) {
+                                        success: function () {
                                             window.location = '/game/' + data.roomid;
                                         }
                                     });

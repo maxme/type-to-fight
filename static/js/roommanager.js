@@ -34,7 +34,7 @@ var RoomManager = (function () {
     };
 
     RoomManager.prototype.getOpponentId = function (roomid, playerid, cb) {
-        this.db.hgetall('roomid:'+roomid, function (err, obj) {
+        this.db.hgetall('roomid:' + roomid, function (err, obj) {
             if (obj === null) {
                 cb(null);
             }
@@ -46,16 +46,39 @@ var RoomManager = (function () {
         });
     };
 
+    RoomManager.prototype.getRoomStartTime = function (roomid, cb) {
+        this.db.hmget('roomid:' + roomid, 'start_time', 'state', function (err, obj) {
+            if (obj[1] === 'playing') {
+                cb(obj[0]);
+            } else {
+                cb(null);
+            }
+        });
+    };
+
+    RoomManager.prototype.endGame = function (roomid) {
+        var that = this;
+        this.db.hgetall('roomid:' + roomid, function (err, obj) {
+            // update state
+            that.db.hmset('roomid:' + roomid, {state: 'end'});
+            console.log('p1=' + obj.player1);
+            console.log('p2=' + obj.player2);
+            // send message to clients
+            that.clients[obj.player1].emit('game_end', {});
+            that.clients[obj.player2].emit('game_end', {});
+        });
+    };
+
     RoomManager.prototype.emitGameStart = function (player1, player2, obj) {
         if (!this.clients[player1]) {
             // FIXME: emit game_start error to player2
             console.log('player1 ' + player1 + ' disconnected');
-            return ;
+            return;
         }
         if (!this.clients[player2]) {
             // FIXME: emit game_start error to player1
             console.log('player2 ' + player2 + ' disconnected');
-            return ;
+            return;
         }
         obj.words = JSON.parse(obj.words);
         this.clients[player1].emit('game_start', obj);
@@ -66,25 +89,25 @@ var RoomManager = (function () {
         var me = this;
         me.db.hgetall('roomid:' + roomid, function (err, obj) {
             if (obj === null) { // create new
-                console.log('create new room');
                 // FIXME: create zadd to remove old rooms
                 obj = {
                     state: 'new',
                     words: JSON.stringify(me.getRandomWordSet("english", 10)),
                     player1: playerid
                 };
-                console.log("hmset=" + JSON.stringify(obj));
                 me.db.hmset('roomid:' + roomid, obj);
             } else {
                 console.log('room already created');
                 // check if user is alone
                 if (obj.player2) {
                     console.log('error 2: both player already in...');
-                    // room is full, resend game_start message
-                    me.emitGameStart(obj.player1, obj.player2, obj);
+                    // FIXME: do something
+                    // me.emitGameStart(obj.player1, obj.player2, obj);
                 } else {
                     console.log('adding new player and emit game_start');
                     obj.player2 = playerid;
+                    obj.state = 'playing';
+                    obj.start_time = '' + (new Date()).getTime();
                     me.db.hmset('roomid:' + roomid, obj); // update
                     me.emitGameStart(obj.player1, obj.player2, obj);
                 }

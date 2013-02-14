@@ -1,8 +1,7 @@
 FEATURES
 --------
 * Main Menu
-  * Play with random player
-  * Play with a friend
+  * Fetch last invited games
   * Leaderboards
   * Statistics
 
@@ -11,15 +10,27 @@ FEATURES
   * Menu
 
 * InGame
+  * Delete FB request
   * Finish game
   * Show GameStats
   * Graphics
+
+* Server
+  * Delete old games
+  * Delete old requests
+
+BUGS
+----
+
+DONE
+----
+
+* Main Menu
+  * Play with random player
+  * Play with a friend
 
 * Facebook
   * Integration
   * GetFriends
   * Invite
-
-BUGS
-----
 

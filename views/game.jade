@@ -6,19 +6,35 @@ block pagescript
         var roomid = "!{roomid}"
 
 block content
+    // Modal main menu
+    div(id='instructions',class='modal fade in',tabindex="-1",role="dialog",aria-labelledby="modalLabel")
+        div(class='modal-header')
+            h1(id='modalLabel')='Please Wait...'
+        div(class='modal-body')
+            h3(id='modalmessage')='Connecting...'
+            p='If your opponent can\'t connect, send him this url: '
+            input(id='inputurl', class='span6')=''
+        div(class='modal-footer')
+            p='FIXME'
+
+    // Modal end menu
+    div(id='endmenu',class='modal fade hide',tabindex="-1",role="dialog",aria-labelledby="modalLabel2")
+        div(class='modal-header')
+            h1(id='modalLabel2')='Game Over!'
+        div(class='modal-body')
+            h3(id='modalmessage2')='You WIN/LOSE'
+            p='Stats: '
+        div(class='modal-footer')
+            a='Replay'
+            a='Back to The Menu'
+            p='FIXME'
+
+    // Game view
     div
         div(id='words')
         div(id='playingword', class='playingword')
         canvas(id='canvas', width='740', height='400')
     div(id='timer', class='timer')=''
-    div(id='instructions',class='modal fade in backdrop',tabindex="-1",role="dialog",aria-labelledby="modalLabel")
-        div(class='modal-header')
-            h1(id='modalLabel')='Please Wait...'
-        div(class='modal-body')
-            h3(id='modalmessage')='Connecting...'
-            p='If your opponent can\'t connect, send him this url: FIXME'
-        div(class='modal-footer')
-            p='FIXME'
     div(id='gametimer')='0'
     div(id='scorepane')
         span='Score: '

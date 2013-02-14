@@ -31,7 +31,8 @@ var ready = function () {
 
     // Show modal
     smodalmessage.html('Connecting...');
-    $('#instructions').modal({backdrop: 'static'}).css('top', '25%');
+    $('#instructions').modal({keyboard: false, backdrop: 'static'}).css('top', '25%');
+    $('#inputurl').val(window.location.href);
 
     var gameManager = new GameManager(30);
     var gameStats = new GameStats();
@@ -195,6 +196,10 @@ var ready = function () {
         pword.win();
     });
 
+    socket.on('game_end', function (data) {
+        $("#endmenu").modal({show: true, keyboard: false});
+    });
+
     function updateScore() {
         sscore.html(score);
     }
@@ -261,6 +266,11 @@ var ready = function () {
     // Init canvas
     init();
 
+    // Init ping
+    setInterval(function() {
+        socket.emit('ping', {roomid: roomid});
+    }, 5000);
+
     // Send "connection" msg
     console.log("playerid=" + playerid);
     socket.emit('connection', {lang: "french", roomid: roomid, playerid: playerid});
@@ -269,12 +279,16 @@ var ready = function () {
 
 var gameInit2 = function () {
     myFB.getUserInfos(function (response) {
+        $.ajax({
+            type: "POST",
+            url: "/stats",
+            data: response,
+            dataType: 'text'
+        });
         playerid = response.id;
         ready();
     });
 };
-
-
 
 var gameInit = function () {
     var loginError = function (response) {
