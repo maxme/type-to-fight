@@ -16,9 +16,9 @@ var ready = function () {
     // The URL of your web server (the port is set in app.js)
     var url = 'http://localhost:8082';
 
-    var doc, splayed, sscore, sgametimer, stimer, skeytyped, serrors, saccuracy, savgspeed, smodalmessage, ctx;
+    var doc, splayinput, sscore, sgametimer, stimer, skeytyped, serrors, saccuracy, savgspeed, smodalmessage, ctx;
     doc = $(document);
-    splayed = $('#played');
+    splayinput = $('#play-input');
     sscore = $('#score');
     stimer = $('#timer');
     sgametimer = $('#gametimer');
@@ -33,6 +33,7 @@ var ready = function () {
     smodalmessage.html('Connecting...');
     $('#instructions').modal({keyboard: false, backdrop: 'static'}).css('top', '25%');
     $('#inputurl').val(window.location.href);
+    splayinput.focus();
 
     var gameManager = new GameManager(30);
     var gameStats = new GameStats();
@@ -41,7 +42,6 @@ var ready = function () {
     var words = [];
     var userWords = [];
     var oppWords = [];
-    var currentWord = '';
     var score = 0;
 
     // This demo depends on the canvas element
@@ -57,6 +57,13 @@ var ready = function () {
                 drawLine(640, i * 10, 640, i * 10 + 10);
             }
         }
+
+        $('#replay-button').click(function () {
+            socket.emit('ask_replay', {roomid: roomid, playerid: playerid});
+            gameManager.setGameState(1);
+            $('#endmenu').modal('hide');
+            $('#instructions').modal('show');
+        });
     }
 
     function drawLine(fromx, fromy, tox, toy) {
@@ -95,8 +102,8 @@ var ready = function () {
 
     function winWord(pword) {
         score += pword.score;
-        socket.emit('win_word', {word: pword.word, score: score, playerid: playerid, roomid: roomid});
-        currentWord = '';
+        socket.emit('win_word', {word: pword.word, playerid: playerid, roomid: roomid});
+        splayinput.val('');
         removePWordFromLists(pword);
     }
 
@@ -173,6 +180,7 @@ var ready = function () {
 
         oppid = data.oppid;
         words = data.words;
+        splayinput.focus();
         gameManager.setGameState(2);
         log('game start=', data);
         runTimer(2, function (remainingSeconds) {
@@ -197,7 +205,7 @@ var ready = function () {
     });
 
     socket.on('game_end', function (data) {
-        $("#endmenu").modal({show: true, keyboard: false});
+        $("#endmenu").modal({show: true, keyboard: false, backdrop: 'static'});
     });
 
     function updateScore() {
@@ -205,7 +213,7 @@ var ready = function () {
     }
 
     function updatePlayingWord() {
-        splayed.html(currentWord);
+
     }
 
     function updateGameStats() {
@@ -218,8 +226,9 @@ var ready = function () {
 
     // Bind key press input
     function checkPressedWord() {
+        var inputWord = splayinput.val().toLowerCase();
         for (var i = 0; i < userWords.length; ++i) {
-            if (userWords[i].word === currentWord) {
+            if (userWords[i].word === inputWord) {
                 userWords[i].win();
                 return true;
             }
@@ -227,38 +236,9 @@ var ready = function () {
         return false;
     }
 
-    function playKeyPressed(keyCode) {
-        var res = true;
-        if (keyCode === 8) { // BACKSPACE
-            currentWord = currentWord.slice(0, currentWord.length - 1);
-            gameStats.backspacepress();
-            res = false;
-        } else {
-            // CHECK FOR ASCII /'0':48, '9': 57, 'a': 65, 'z': 90
-            var w = event.which;
-            if ((w >= 48 && w <= 57) || (w >= 65 && w <= 90)) {
-                var c = String.fromCharCode(event.which);
-                currentWord += c;
-                currentWord = currentWord.toLowerCase();
-                res = false;
-                gameStats.keypress();
-            }
-        }
-        if (res === false) {
-            checkPressedWord();
-        }
-        return res;
-    }
-
-    doc.on('keydown', function (event) {
-        if (gameManager.gameState === 3) {
-            return playKeyPressed(event.which);
-        }
-        return true;
-    });
-
     // Game Manager
     gameManager.gameLoop(function (timedelta, n) {
+        checkPressedWord();
         update(timedelta);
         draw();
     });
@@ -267,7 +247,7 @@ var ready = function () {
     init();
 
     // Init ping
-    setInterval(function() {
+    setInterval(function () {
         socket.emit('ping', {roomid: roomid});
     }, 5000);
 
@@ -275,7 +255,6 @@ var ready = function () {
     console.log("playerid=" + playerid);
     socket.emit('connection', {lang: "french", roomid: roomid, playerid: playerid});
 };
-
 
 var gameInit2 = function () {
     myFB.getUserInfos(function (response) {

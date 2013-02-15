@@ -11,7 +11,7 @@ block content
             hr
             div(class='narrow-container')
                 div(class='button-menu')
-                    a(href="/game/random", class='btn btn-large btn-primary btn-menu')="New Game with Random Opponent"
+                    a(href="#", id='game-with-random', class='btn btn-large btn-primary btn-menu')="New Game with Random Opponent"
                 div(class='button-menu')
                     a(href="#", id='game-with-friend', class='btn btn-large btn-primary btn-menu')="New Game with Friend"
                 div(id='online-friends')
@@ -21,6 +21,8 @@ block content
                     a(href="/leaderboards", class='btn btn-large btn-primary btn-menu')="Leaderboards"
                 div(class='button-menu')
                     a(href="#", id="invite-friends", class='btn btn-large btn-primary btn-menu')="Invite Friends"
+                div(class='button-menu')
+                    a(href="#", id="invited-games", class='btn btn-large btn-primary btn-menu')="List Invited Games"
             div(id='offline-friends')
                 h2='Offline friends'
                 ul(id='offlne-friends-ul')

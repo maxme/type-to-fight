@@ -31,8 +31,33 @@ var secondStepInit = function () {
     });
 
     $('#game-with-friend').click(function () {
-        console.log("show online friends");
         $('#online-friends').toggle(400);
+    });
+
+    $('#game-with-random').click(function () {
+        myFB.getUserInfos(function (response) {
+            $.ajax({
+                type: "POST",
+                url: '/newgame/random/' + response.id,
+                success: function (data) {
+                    window.location = '/game/' + data.roomid;
+                }
+            });
+        });
+    });
+
+    $('#invited-games').click(function () {
+        myFB.getUserInfos(function (response) {
+            console.log('POST on /invited-games/');
+            $.ajax({
+                type: "POST",
+                data: {playerid: response.id},
+                url: '/invited-games/',
+                success: function (data) {
+                    console.log(JSON.stringify(data));
+                }
+            });
+        });
     });
 
     // Send a play request to user: uid

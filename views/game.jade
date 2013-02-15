@@ -14,8 +14,6 @@ block content
             h3(id='modalmessage')='Connecting...'
             p='If your opponent can\'t connect, send him this url: '
             input(id='inputurl', class='span6')=''
-        div(class='modal-footer')
-            p='FIXME'
 
     // Modal end menu
     div(id='endmenu',class='modal fade hide',tabindex="-1",role="dialog",aria-labelledby="modalLabel2")
@@ -25,9 +23,8 @@ block content
             h3(id='modalmessage2')='You WIN/LOSE'
             p='Stats: '
         div(class='modal-footer')
-            a='Replay'
-            a='Back to The Menu'
-            p='FIXME'
+            a(href='/',class='btn')='Back to Menu'
+            a(href='#',id='replay-button',class='btn btn-primary')='Replay !'
 
     // Game view
     div
@@ -40,8 +37,7 @@ block content
         span='Score: '
         span(id='score')
     div(class='playingpane')
-        span='Playing: '
-        span(id='played')
+        input(id='play-input', type='text')
     div(id='stats')
         span='Key typed: '
         span(id='keytyped')='0'

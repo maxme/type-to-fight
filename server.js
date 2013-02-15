@@ -68,17 +68,11 @@ var io = io.listen(serverHttps);
 var clients = {};
 var rooms = new RoomManager(clients, db);
 
-function createRandomId() {
-    var now = new Date().getTime();
-    return Math.round(now * Math.random());
-}
-
 function checkTimeMessage(roomid) {
     var GAME_TIME = 30 * 1000;
     rooms.getRoomStartTime(roomid, function (startTime) {
         if (startTime) {
             var curTime = (new Date()).getTime();
-            console.log('diff: ' + (curTime - startTime));
             if (curTime - startTime > GAME_TIME) {
                 rooms.endGame(roomid);
             }
@@ -112,6 +106,10 @@ io.sockets.on('connection', function (socket) {
         });
     });
 
+    socket.on('ask_replay', function (data) {
+        rooms.askReplay(data.roomid, data.playerid);
+    });
+
     socket.on('disconnect', function () {
         console.log('Client Disconnected.');
     });
@@ -123,10 +121,6 @@ io.sockets.on('connection', function (socket) {
 
 /////// ADD ALL YOUR ROUTES HERE  /////////
 app.all('/', function (req, res) {
-//    console.log("get = " + JSON.stringify(req.body));
-//    console.log("param = " + JSON.stringify(req.params));
-//    console.log("query = " + JSON.stringify(req.query));s
-
     // Check if request_id args
     var request_ids = req.param('request_ids');
     if (request_ids) {
@@ -159,17 +153,24 @@ app.all('/', function (req, res) {
     });
 });
 
-/* FIXME
- app.get('/newgame/random', function (req, res) {
- var newRoomId = createRandomId();
- res.redirect('/game/' + newRoomId + '/' + req.params.oppid);
- });
- */
+app.post('/newgame/random/:playerid', function (req, res) {
+    rooms.newRandomGameOrConnect(function (roomid) {
+        console.log('new roomid: ' + roomid);
+        res.json({roomid: roomid});
+    });
+});
 
 app.post('/newgame/:playerid/:oppid', function (req, res) {
-    var newRoomId = createRandomId();
-    console.log("new room id=" + newRoomId);
+    var newRoomId = rooms.newRandomRoomId();
+    rooms.associateRoomToInviterAndInvitee(newRoomId, req.params.playerid, req.params.oppid);
     res.json({roomid: newRoomId});
+});
+
+app.post('/invited-games/', function (req, res) {
+    rooms.getInvitedGamesFor(req.body.playerid, function (games) {
+        console.log('games: ' + JSON.stringify(games));
+        res.json(games);
+    });
 });
 
 app.get('/game/:roomid', function (req, res) {

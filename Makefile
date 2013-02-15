@@ -7,4 +7,12 @@ test:
 			--slow 20 \
 			--growl \
 			$(TESTS)
+
+
+app-cov:
+	jscoverage server.js
+
+test-cov: app-cov
+	@EXPRESS_COV=1 $(MAKE) test
+
 .PHONY: test
