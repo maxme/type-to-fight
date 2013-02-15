@@ -54,7 +54,9 @@ var RoomManager = (function () {
                         i += 1;
                         that.db.hgetall('roomid:' + roomid, function (err2, room) {
                             if (room) {
-                                res.push({roomid: roomid, inviter: room.player1});
+                                res.push({roomid: roomid,
+                                    inviter: room.player1,
+                                    time_delta: (new Date()).getTime() - room.start_time});
                             }
                             nextRoom();
                         });
@@ -185,6 +187,7 @@ var RoomManager = (function () {
         var obj = {
             state: 'new',
             words: JSON.stringify(this.getRandomWordSet("english", 10)),
+            start_time: '' + (new Date()).getTime(),
             player1: '' + playerid
         };
         this.db.hmset('roomid:' + roomid, obj);

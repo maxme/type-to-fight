@@ -46,7 +46,7 @@ var secondStepInit = function () {
         });
     });
 
-    $('#invited-games').click(function () {
+    function checkRecentInvitation() {
         myFB.getUserInfos(function (response) {
             console.log('POST on /invited-games/');
             $.ajax({
@@ -54,11 +54,29 @@ var secondStepInit = function () {
                 data: {playerid: response.id},
                 url: '/invited-games/',
                 success: function (data) {
-                    console.log(JSON.stringify(data));
+                    if (data.length !== 0) {
+                        var uidSet = {};
+                        for (var i = 0; i < data.length; ++i) {
+                            uidSet[data[i].inviter] = 1;
+                            $('<tr><td><span class="uid' + data[i].inviter + '"></span> invited you '
+                                + Math.floor(data[i].time_delta / 1000)
+                                + ' seconds ago</td><td><a href="/game/' + data[i].roomid
+                                + '" class="btn">Join</a></td></tr>').appendTo('#modalmessage');
+                        }
+                        // Fetch name for uids
+                        for (var uid in uidSet) {
+                            myFB.getOtherUserInfos(uid, function (userdata) {
+                                $('.uid' + userdata.id).text(userdata.name);
+                            });
+                        }
+                        $('#invitations').modal({show: true});
+                    }
                 }
             });
         });
-    });
+    }
+
+    checkRecentInvitation();
 
     // Send a play request to user: uid
     function sendPlayRequestTo(uid) {

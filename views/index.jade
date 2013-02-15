@@ -4,6 +4,16 @@ block pagescript
     script(defer, src='/js/menuscript.js')
 
 block content
+    // Modal end menu
+    div(id='invitations',class='modal fade hide',tabindex="-1",role="dialog",aria-labelledby="modalLabel")
+        div(class='modal-header')
+            button(type='button', class='close', data-dismiss='modal', aria-hidden='true')='&times;'
+            h3(id='modalLabel')='Hey, someone invited you to play !'
+        div(class='modal-body')
+            table(id='modalmessage', class='table table-hover')=''
+        div(class='modal-footer')
+            a(href='#',  data-dismiss='modal', class='btn btn-primary')='Close'
+
     div(class='maincontent')
         div(class='hero-unit')
             h1='Key Fight'
@@ -21,8 +31,6 @@ block content
                     a(href="/leaderboards", class='btn btn-large btn-primary btn-menu')="Leaderboards"
                 div(class='button-menu')
                     a(href="#", id="invite-friends", class='btn btn-large btn-primary btn-menu')="Invite Friends"
-                div(class='button-menu')
-                    a(href="#", id="invited-games", class='btn btn-large btn-primary btn-menu')="List Invited Games"
             div(id='offline-friends')
                 h2='Offline friends'
                 ul(id='offlne-friends-ul')

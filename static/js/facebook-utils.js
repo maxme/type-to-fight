@@ -50,6 +50,12 @@ var FBUtils = (function () {
         }, cb);
     };
 
+    FBUtils.prototype.getOtherUserInfos = function (userid, ok) {
+        FB.api('/' + userid, function (response) {
+            (ok !== undefined) && ok(response);
+        });
+    };
+
     FBUtils.prototype.getUserInfos = function (ok) {
         if (this.userInfos === null) {
             FB.api('/me', function (response) {
