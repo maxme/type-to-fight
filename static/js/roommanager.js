@@ -4,7 +4,7 @@ var fs = require('fs');
 var _ = require('underscore')._;
 
 var RoomManager = (function () {
-    var EXPIRATION_TIME = 60 * 60 * 24;
+    var EXPIRATION_TIME = 60 * 60 * 4;
 
     function RoomManager(clients, db) {
         this.clients = clients;
@@ -41,6 +41,11 @@ var RoomManager = (function () {
         });
     };
 
+    RoomManager.prototype.deleteInvitation = function(roomid, inviter, playerid) {
+        this.db.srem('invitedrooms:' + playerid, roomid);
+        this.db.srem('createdrooms:' + inviter, roomid);
+    };
+
     RoomManager.prototype.getInvitedGamesFor = function (playerid, cb) {
         var that = this;
         this.db.smembers('invitedrooms:' + playerid, function (err, roomlist) {
@@ -54,9 +59,14 @@ var RoomManager = (function () {
                         i += 1;
                         that.db.hgetall('roomid:' + roomid, function (err2, room) {
                             if (room) {
-                                res.push({roomid: roomid,
-                                    inviter: room.player1,
-                                    time_delta: (new Date()).getTime() - room.start_time});
+                                var time_delta = Math.floor(((new Date()).getTime() - room.start_time) / 1000);
+                                if (time_delta <= 600) {
+                                    res.push({roomid: roomid,
+                                        inviter: room.player1,
+                                        time_delta: time_delta});
+                                }
+                            } else {
+                                that.db.srem('invitedrooms:' + playerid, roomid);
                             }
                             nextRoom();
                         });
@@ -68,7 +78,6 @@ var RoomManager = (function () {
                 }
             }
             nextRoom();
-
         });
     };
 
@@ -125,6 +134,7 @@ var RoomManager = (function () {
             if (obj.state === 'playing') {
                 that.db.hmset('roomid:' + roomid, {state: 'end'});
                 // send message to clients
+                // FIXME: BUG: CHECK IF CLIENTS EXISTS
                 that.clients[obj.player1].emit('game_end', {});
                 that.clients[obj.player2].emit('game_end', {});
             } else {

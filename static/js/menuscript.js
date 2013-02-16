@@ -46,6 +46,21 @@ var secondStepInit = function () {
         });
     });
 
+    function deleteInvitation(roomid, inviterid, playerid) {
+        function endCB () {
+            window.location = '/game/' + roomid;
+        }
+        $('#btn' + roomid).click(function () {
+            $.ajax({
+                type: "POST",
+                data: {roomid: roomid, inviterid: inviterid, playerid: playerid},
+                url: '/delete-invitation/',
+                success: endCB,
+                error: endCB
+            });
+        });
+    }
+
     function checkRecentInvitation() {
         myFB.getUserInfos(function (response) {
             console.log('POST on /invited-games/');
@@ -59,9 +74,10 @@ var secondStepInit = function () {
                         for (var i = 0; i < data.length; ++i) {
                             uidSet[data[i].inviter] = 1;
                             $('<tr><td><span class="uid' + data[i].inviter + '"></span> invited you '
-                                + Math.floor(data[i].time_delta / 1000)
-                                + ' seconds ago</td><td><a href="/game/' + data[i].roomid
-                                + '" class="btn">Join</a></td></tr>').appendTo('#modalmessage');
+                                + data[i].time_delta
+                                + ' seconds ago</td><td><a href="#" class="btn" id="btn' + data[i].roomid
+                                + '">Join</a></td></tr>').appendTo('#modalmessage');
+                            deleteInvitation(data[i].roomid, data[i].inviter, response.id);
                         }
                         // Fetch name for uids
                         for (var uid in uidSet) {

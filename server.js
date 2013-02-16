@@ -153,6 +153,12 @@ app.all('/', function (req, res) {
     });
 });
 
+app.post('/delete-invitation/', function (req, res) {
+    console.log('del= '+JSON.stringify(req.body));
+    rooms.deleteInvitation(req.body.roomid, req.body.inviter, req.body.playerid);
+    res.send(200);
+});
+
 app.post('/newgame/random/:playerid', function (req, res) {
     rooms.newRandomGameOrConnect(function (roomid) {
         console.log('new roomid: ' + roomid);
