@@ -86,7 +86,11 @@ io.sockets.on('connection', function (socket) {
         data.socket_id = socket.id;
         clients[data.playerid] = socket;
         socket.emit('connection_ok', data);
-        rooms.connectUserToGame(data.roomid, data.playerid);
+        if (data.roomid === 'practice') {
+            rooms.emitPracticeStart(data.playerid);
+        } else {
+            rooms.connectUserToGame(data.roomid, data.playerid);
+        }
     });
 
     socket.on('start', function (data) {
@@ -154,7 +158,7 @@ app.all('/', function (req, res) {
 });
 
 app.post('/delete-invitation/', function (req, res) {
-    console.log('del= '+JSON.stringify(req.body));
+    console.log('del= ' + JSON.stringify(req.body));
     rooms.deleteInvitation(req.body.roomid, req.body.inviter, req.body.playerid);
     res.send(200);
 });
@@ -230,4 +234,4 @@ function NotFound(msg) {
     Error.captureStackTrace(this, arguments.callee);
 }
 
-console.log('Listening on http://0.0.0.0:' + port);
+console.log('Listening on https://localhost:' + (port + 1));

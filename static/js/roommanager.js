@@ -91,6 +91,15 @@ var RoomManager = (function () {
         });
     };
 
+
+    RoomManager.prototype.getAttackType = function () {
+        if (Math.random() > 0.3) {
+            return 0;
+        } else {
+            return 1;
+        }
+    };
+
     RoomManager.prototype.getRandomWordSet = function (lang, size) {
         this.words[lang].sort(function () {
             return 0.5 - Math.random();
@@ -98,7 +107,12 @@ var RoomManager = (function () {
         var res = [];
         var tmpArray = this.words[lang].slice(0, size);
         for (var i = 0; i < size; ++i) {
-            res.push({word: tmpArray[i % tmpArray.length], delay: _.random(i * 1000, i * 3000)});
+            var word = tmpArray[i % tmpArray.length];
+            res.push({
+                word: word,
+                type: this.getAttackType(),
+                power: word.length
+            });
         }
         // res = [ {word: "word1", delay: 0}, {word:"word2", delay:5000} ];
         return res;
@@ -145,6 +159,10 @@ var RoomManager = (function () {
 
     RoomManager.prototype.askReplay = function (roomid, playerid) {
         var that = this;
+        if (roomid === 'practice') {
+            this.emitPracticeStart(playerid);
+            return ;
+        }
         this.db.hgetall('roomid:' + roomid, function (err, obj) {
             if (obj && obj.state === 'end') {
                 // delete roomid
@@ -154,6 +172,13 @@ var RoomManager = (function () {
             } else {
                 that.connectUserToGame(roomid, playerid);
             }
+        });
+    };
+
+    RoomManager.prototype.emitPracticeStart = function (playerid) {
+        this.clients[playerid].emit('game_start', {
+            words: this.getRandomWordSet("english", 50),
+            start_time: '' + (new Date()).getTime()
         });
     };
 

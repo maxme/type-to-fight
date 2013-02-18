@@ -9,67 +9,37 @@ function log(message, obj) {
     if (obj) {
         tmp = JSON.stringify(obj);
     }
-    $("#logs").after(message + ' ' + tmp + '<br/>');
+    $("#logs").append(message + ' ' + tmp + '<br/>');
 }
 
 var ready = function () {
-    // The URL of your web server (the port is set in app.js)
     var url = 'http://localhost:8082';
 
-    var doc, splayinput, sscore, sgametimer, stimer, skeytyped, serrors, saccuracy, savgspeed, smodalmessage, ctx;
+    var doc, splayinput, sgametimer, scountdown, smodalmessage;
     doc = $(document);
     splayinput = $('#play-input');
-    sscore = $('#score');
-    stimer = $('#timer');
+    scountdown = $('.countdown');
     sgametimer = $('#gametimer');
-    skeytyped = $('#keytyped');
-    serrors = $('#errors');
-    saccuracy = $('#accuracy');
-    savgspeed = $('#avgspeed');
     smodalmessage = $('#modalmessage');
-    ctx = $('canvas')[0].getContext('2d');
 
     // Show modal
     smodalmessage.html('Connecting...');
-    $('#instructions').modal({keyboard: false, backdrop: 'static'}).css('top', '25%');
+    $('#modal').html($('#modal-start')[0].children);
+    $('#modal').modal({keyboard: false, backdrop: 'static'}).css('top', '25%');
     $('#inputurl').val(window.location.href);
     splayinput.focus();
 
+    var GAME_TIME = 15;
     var gameManager = new GameManager(30);
     var gameStats = new GameStats();
+    var gamePlay = new GamePlay(gameStats, gameManager);
     var socket = io.connect(url, {secure: true});
     var oppid = 0;
-    var words = [];
-    var userWords = [];
     var oppWords = [];
-    var score = 0;
 
-    // This demo depends on the canvas element
     if (!('getContext' in document.createElement('canvas'))) {
         alert('Sorry, it looks like your browser does not support canvas!');
         return false;
-    }
-
-    function init() {
-        drawLine(0, 200, 800, 200);
-        for (var i = 0; i < 50; i++) {
-            if (i % 2 === 0) {
-                drawLine(640, i * 10, 640, i * 10 + 10);
-            }
-        }
-
-        $('#replay-button').click(function () {
-            socket.emit('ask_replay', {roomid: roomid, playerid: playerid});
-            gameManager.setGameState(1);
-            $('#endmenu').modal('hide');
-            $('#instructions').modal('show');
-        });
-    }
-
-    function drawLine(fromx, fromy, tox, toy) {
-        ctx.moveTo(fromx, fromy);
-        ctx.lineTo(tox, toy);
-        ctx.stroke();
     }
 
     function runTimer(seconds, update, endcb) {
@@ -88,86 +58,42 @@ var ready = function () {
         setTimeout(timerTick, 1000);
     }
 
-    function removePWordFromLists(pword) {
-        var index = -1;
-        if (pword.your) {
-            index = userWords.indexOf(pword);
-            userWords.splice(index, 1);
-        } else {
-            index = oppWords.indexOf(pword);
-            oppWords.splice(index, 1);
-        }
-        console.log("remove word=" + pword.word + ' - userWords.len=' + userWords.length + ' - oppWords.len=' + oppWords.length);
-    }
-
-    function winWord(pword) {
-        score += pword.score;
-        socket.emit('win_word', {word: pword.word, playerid: playerid, roomid: roomid});
-        splayinput.val('');
-        removePWordFromLists(pword);
-    }
-
-    function displayNewWord(pword) {
-        // Remove word from game list
-        var word = pword.word;
-        var index = words.indexOf(pword);
-        words.splice(index, 1);
-
-        // User
-        var wordObj = new PlayedWord(word, true, winWord, removePWordFromLists);
-        wordObj.elt.appendTo('#words');
-        userWords.push(wordObj);
-
-        // Opp
-        var wordObj = new PlayedWord(word, false, removePWordFromLists, removePWordFromLists);
-        wordObj.elt.appendTo('#words');
-        oppWords.push(wordObj);
+    function startGame() {
+        $('#play-input').removeAttr('disabled');
+        $('.countdown-container').fadeOut(300);
+        socket.emit("start", {"gameid": roomid});
+        gameManager.setGameState(3);
+        gamePlay.startGame();
+        splayinput.focus();
+        runTimer(GAME_TIME, function (remainingSeconds) {
+            sgametimer.html(remainingSeconds);
+        }, function () {
+            if (roomid === 'practice') {
+                realEndGame();
+            } else {
+                endGame();
+            }
+        });
     }
 
     function endGame() {
-        socket.emit("eng_game", {"gameid": roomid});
+        console.log('endgame');
+        socket.emit("ping", {roomid: roomid});
     }
 
-    function startGame() {
-        stimer.hide(300);
-        socket.emit("start", {"gameid": roomid});
-        gameManager.setGameState(3);
-        runTimer(30, function (remainingSeconds) {
-            sgametimer.html(remainingSeconds);
-        }, endGame);
+    function realEndGame() {
+        $('#play-input').attr('disabled', true);
+        $('#modal-start').html($('#modal').html());
+        $('#modal').html($('#modal-end').html());
+        $('#modal').modal({show: true, keyboard: false, backdrop: 'static'});
     }
 
-    function addNewWords() {
-        // FIXME: Delay it
-        if (gameManager.gameState !== 3) {
-            return;
-        }
-        for (var i = 0; i < words.length; ++i) {
-            if (gameManager.time() > words[i].delay) {
-                displayNewWord(words[i]);
-            }
-        }
-    }
+    /*
+     *
+     * BIND SOCKET MESSAGES
+     *
+     */
 
-    function update(timedelta) {
-        // Move words
-        for (var i = 0; i < userWords.length; ++i) {
-            userWords[i].update(timedelta);
-        }
-        for (var i = 0; i < oppWords.length; ++i) {
-            oppWords[i].update(timedelta);
-        }
-        updatePlayingWord();
-        updateScore();
-        updateGameStats();
-        addNewWords();
-    }
-
-    function draw() {
-        // Do Nothing atm
-    }
-
-    // Bind Messages
     socket.on('connection_ok', function (data) {
         gameManager.setGameState(1);
         smodalmessage.html('Waiting for your opponent to connect.');
@@ -175,11 +101,10 @@ var ready = function () {
     });
 
     socket.on('game_start', function (data) {
-        // hide instructions
-        $('#instructions').modal('hide');
-
+        $('#modal').modal('hide');
+        $('.countdown-container').fadeIn(300);
         oppid = data.oppid;
-        words = data.words;
+        gamePlay.setAllWords(data.words);
         splayinput.focus();
         gameManager.setGameState(2);
         log('game start=', data);
@@ -188,7 +113,7 @@ var ready = function () {
             if (remainingSeconds === 0) {
                 text = 'GO !';
             }
-            stimer.html(text);
+            scountdown.html(text);
         }, startGame);
     });
 
@@ -205,54 +130,43 @@ var ready = function () {
     });
 
     socket.on('game_end', function (data) {
-        $("#endmenu").modal({show: true, keyboard: false, backdrop: 'static'});
+        realEndGame();
     });
 
-    function updateScore() {
-        sscore.html(score);
-    }
+    /*
+     *
+     * BIND BUTTON CLICKS
+     *
+     */
 
-    function updatePlayingWord() {
-
-    }
-
-    function updateGameStats() {
-        gameStats.update();
-        skeytyped.html(gameStats.nkeypressed);
-        serrors.html(gameStats.nbackspacepressed);
-        saccuracy.html(Math.floor(gameStats.accuracy * 10000) / 100);
-        savgspeed.html(Math.floor(gameStats.averageSpeed * 100) / 100);
-    }
-
-    // Bind key press input
-    function checkPressedWord() {
-        var inputWord = splayinput.val().toLowerCase();
-        for (var i = 0; i < userWords.length; ++i) {
-            if (userWords[i].word === inputWord) {
-                userWords[i].win();
-                return true;
-            }
-        }
-        return false;
-    }
-
-    // Game Manager
-    gameManager.gameLoop(function (timedelta, n) {
-        checkPressedWord();
-        update(timedelta);
-        draw();
+    $(document).on("click", "#replay-button", function () {
+        $('#wordlist').hide(300, function(){
+            $(this).html('').show();
+        });
+        socket.emit('ask_replay', {roomid: roomid, playerid: playerid});
+        gameManager.setGameState(1);
+        $('#play-input').val('');
+        gamePlay.reset();
+        $('#modal-end').html($('#modal').html());
+        $('#modal').html($('#modal-start').html());
     });
-
-    // Init canvas
-    init();
 
     // Init ping
-    setInterval(function () {
-        socket.emit('ping', {roomid: roomid});
-    }, 5000);
+    if (roomid !== 'practice') {
+        setTimeout(function() {
+            var counter = 0;
+            var ping = function() {
+                counter += 1;
+                socket.emit('ping', {roomid: roomid});
+                if (counter <= 6) {
+                    setTimeout(ping, 2000);
+                }
+            };
+            ping();
+        }, (GAME_TIME - 3) * 1000);
+    }
 
     // Send "connection" msg
-    console.log("playerid=" + playerid);
     socket.emit('connection', {lang: "french", roomid: roomid, playerid: playerid});
 };
 

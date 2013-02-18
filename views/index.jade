@@ -1,5 +1,8 @@
 extends layout
 
+block pagestyle
+    link(rel='stylesheet', href='/css/menu.css')
+
 block pagescript
     script(defer, src='/js/menuscript.js')
 
@@ -20,6 +23,8 @@ block content
             p='Test your typing skills and compete against your friends'
             hr
             div(class='narrow-container')
+                div(class='button-menu')
+                    a(href="/game/practice", id='game-practice', class='btn btn-large btn-primary btn-menu')="Practice"
                 div(class='button-menu')
                     a(href="#", id='game-with-random', class='btn btn-large btn-primary btn-menu')="New Game with Random Opponent"
                 div(class='button-menu')
