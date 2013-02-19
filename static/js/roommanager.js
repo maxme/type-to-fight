@@ -122,6 +122,7 @@ var RoomManager = (function () {
         this.db.hgetall('roomid:' + roomid, function (err, obj) {
             if (obj === null) {
                 cb(null);
+                return ;
             }
             if (obj.player1 === playerid) {
                 cb(obj.player2);

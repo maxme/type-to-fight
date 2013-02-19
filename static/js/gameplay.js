@@ -7,6 +7,7 @@ var GamePlay = (function () {
         this.MIN_HEALTH = 0;
         this.MAX_HEALTH = 100;
         this.reset();
+        this.winword_cb = null;
     }
 
     GamePlay.prototype.reset = function () {
@@ -90,6 +91,9 @@ var GamePlay = (function () {
     };
 
     GamePlay.prototype.winWord = function (word) {
+        if (this.winword_cb) {
+            this.winword_cb(word);
+        }
         this.displayedWords.splice(this.displayedWords.indexOf(word), 1);
         this.showNextWord(word);
         var wordobj = this.allWordsHash[word];

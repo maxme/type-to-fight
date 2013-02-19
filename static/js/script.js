@@ -29,11 +29,12 @@ var ready = function () {
     $('#inputurl').val(window.location.href);
     splayinput.focus();
 
-    var GAME_TIME = 15;
+    var common = new Common();
     var gameManager = new GameManager(30);
     var gameStats = new GameStats();
     var gamePlay = new GamePlay(gameStats, gameManager);
-    var socket = io.connect(url, {secure: true});
+    gamePlay.winword_cb = winword_cb;
+    var socket = io.connect(url, {secure: true, heartbeats: false});
     var oppid = 0;
     var oppWords = [];
 
@@ -65,7 +66,7 @@ var ready = function () {
         gameManager.setGameState(3);
         gamePlay.startGame();
         splayinput.focus();
-        runTimer(GAME_TIME, function (remainingSeconds) {
+        runTimer(common.GAME_TIME_S, function (remainingSeconds) {
             sgametimer.html(remainingSeconds);
         }, function () {
             if (roomid === 'practice') {
@@ -88,6 +89,10 @@ var ready = function () {
         $('#modal').modal({show: true, keyboard: false, backdrop: 'static'});
     }
 
+    function winword_cb(word) {
+        socket.emit('win_word', {word: word, playerid: playerid, roomid: roomid});
+    }
+
     /*
      *
      * BIND SOCKET MESSAGES
@@ -97,7 +102,7 @@ var ready = function () {
     socket.on('connection_ok', function (data) {
         gameManager.setGameState(1);
         smodalmessage.html('Waiting for your opponent to connect.');
-        log('connection ok=', data);
+        log('connection_ok=', data);
     });
 
     socket.on('game_start', function (data) {
@@ -118,15 +123,8 @@ var ready = function () {
     });
 
     socket.on('opp_win_word', function (data) {
-        var pword = null;
-        // FIXME: do something with data.score
-        for (var i = 0; i < oppWords.length; ++i) {
-            if (oppWords[i].word === data.word) {
-                pword = oppWords[i];
-                break;
-            }
-        }
-        pword.win();
+        log('opp_win_word=', data);
+        gamePlay.oppWinWord(data.word);
     });
 
     socket.on('game_end', function (data) {
@@ -163,7 +161,7 @@ var ready = function () {
                 }
             };
             ping();
-        }, (GAME_TIME - 3) * 1000);
+        }, (common.GAME_TIME_S - 3) * 1000);
     }
 
     // Send "connection" msg

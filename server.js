@@ -2,6 +2,7 @@
 
 var fs = require('fs');
 var RoomManager = require('./static/js/roommanager.js');
+var Common = require('./static/js/common.js');
 
 var SignedRequest = require('facebook-signed-request');
 SignedRequest.secret = 'b4ba1375a1643fb2669792479836af82';
@@ -67,13 +68,13 @@ serverHttps.listen(8082);
 var io = io.listen(serverHttps);
 var clients = {};
 var rooms = new RoomManager(clients, db);
+var common = new Common();
 
 function checkTimeMessage(roomid) {
-    var GAME_TIME = 30 * 1000;
     rooms.getRoomStartTime(roomid, function (startTime) {
         if (startTime) {
             var curTime = (new Date()).getTime();
-            if (curTime - startTime > GAME_TIME) {
+            if (curTime - startTime > common.GAME_TIME_S) {
                 rooms.endGame(roomid);
             }
         }
@@ -103,10 +104,10 @@ io.sockets.on('connection', function (socket) {
 
     socket.on('win_word', function (data) {
         checkTimeMessage(data.roomid);
-        var playerid = data.playerid;
-        var roomid = data.roomid;
-        rooms.getOpponentId(roomid, playerid, function (oppid) {
-            clients[oppid].emit('opp_win_word', {word: data.word, score: data.score});
+        rooms.getOpponentId(data.roomid, data.playerid, function (oppid) {
+            if (oppid && clients[oppid]) {
+                clients[oppid].emit('opp_win_word', {word: data.word, score: data.score});
+            }
         });
     });
 
