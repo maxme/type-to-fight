@@ -16,7 +16,6 @@ var ready = function () {
     var url = 'http://localhost:8082';
 
     var doc, splayinput, sgametimer, scountdown, smodalmessage;
-    doc = $(document);
     splayinput = $('#play-input');
     scountdown = $('.countdown');
     sgametimer = $('#gametimer');
@@ -34,9 +33,8 @@ var ready = function () {
     var gameStats = new GameStats();
     var gamePlay = new GamePlay(gameStats, gameManager);
     gamePlay.winword_cb = winword_cb;
-    var socket = io.connect(url, {secure: true, heartbeats: false});
+    var socket = io.connect(url, {secure: true});
     var oppid = 0;
-    var oppWords = [];
 
     if (!('getContext' in document.createElement('canvas'))) {
         alert('Sorry, it looks like your browser does not support canvas!');

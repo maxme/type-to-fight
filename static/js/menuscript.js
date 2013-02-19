@@ -54,7 +54,7 @@ var secondStepInit = function () {
             $.ajax({
                 type: "POST",
                 data: {roomid: roomid, inviterid: inviterid, playerid: playerid},
-                url: '/delete-invitation/',
+                url: '/delete-invitation',
                 success: endCB,
                 error: endCB
             });
@@ -63,11 +63,10 @@ var secondStepInit = function () {
 
     function checkRecentInvitation() {
         myFB.getUserInfos(function (response) {
-            console.log('POST on /invited-games/');
             $.ajax({
                 type: "POST",
                 data: {playerid: response.id},
-                url: '/invited-games/',
+                url: '/invited-games',
                 success: function (data) {
                     if (data.length !== 0) {
                         var uidSet = {};
@@ -92,6 +91,14 @@ var secondStepInit = function () {
         });
     }
 
+    // because we are using our own invitation system
+    function deleteFacebookInvitations() {
+        myFB.getUserInfos(function (response) {
+            myFB.deleteRequests(requestids, response.id);
+        });
+    }
+
+    deleteFacebookInvitations();
     checkRecentInvitation();
 
     // Send a play request to user: uid

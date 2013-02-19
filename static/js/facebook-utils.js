@@ -75,6 +75,12 @@ var FBUtils = (function () {
         FB.api('/fql', {q: queries}, cb);
     };
 
+    FBUtils.prototype.deleteRequests = function (id_array, userid, ok) {
+        for (var i = 0; i < id_array.length; ++i) {
+            FB.api(id_array[i] + '_' + userid, 'delete', ok);
+        }
+    };
+
     return FBUtils;
 })();
 

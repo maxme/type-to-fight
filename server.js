@@ -126,15 +126,24 @@ io.sockets.on('connection', function (socket) {
 
 /////// ADD ALL YOUR ROUTES HERE  /////////
 app.all('/', function (req, res) {
+    var requestids = [];
+    console.log('rid=' + req.param('request_ids'));
+    if (req.param('request_ids')) {
+        requestids = req.param('request_ids');
+        requestids = requestids.split(',');
+    }
+    console.log('rid=' + JSON.stringify(requestids));
+    console.log('rid=' + requestids);
     res.render('index.jade', {
         title: 'Play FIXME',
         description: 'FIXME: Your Page Description',
         author: 'Maxime Biais',
+        requestids: JSON.stringify(requestids),
         analyticssiteid: 'FIXME: XXXXXXX'
     });
 });
 
-app.post('/delete-invitation/', function (req, res) {
+app.post('/delete-invitation', function (req, res) {
     console.log('del= ' + JSON.stringify(req.body));
     rooms.deleteInvitation(req.body.roomid, req.body.inviter, req.body.playerid);
     res.send(200);
@@ -153,7 +162,7 @@ app.post('/newgame/:playerid/:oppid', function (req, res) {
     res.json({roomid: newRoomId});
 });
 
-app.post('/invited-games/', function (req, res) {
+app.post('/invited-games', function (req, res) {
     rooms.getInvitedGamesFor(req.body.playerid, function (games) {
         console.log('games: ' + JSON.stringify(games));
         res.json(games);
