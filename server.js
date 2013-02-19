@@ -126,30 +126,6 @@ io.sockets.on('connection', function (socket) {
 
 /////// ADD ALL YOUR ROUTES HERE  /////////
 app.all('/', function (req, res) {
-    // Check if request_id args
-    var request_ids = req.param('request_ids');
-    if (request_ids) {
-        var selected_request_id = request_ids.split(',')[0];
-        console.log('selected request=' + selected_request_id);
-        var signed_request = req.param('signed_request');
-        var sr = new SignedRequest(signed_request);
-        sr.parse(function (errors, srequest) {
-            if (srequest.isValid()) {
-                console.log("data=" + JSON.stringify(srequest.data));
-                // Check user
-                var suser = srequest.data.user_id;
-                db.hgetall('requestid:' + selected_request_id, function (err, room) {
-                    console.log("room=" + JSON.stringify(room) + "suser=" + suser);
-                    if (room && room.to && suser === room.to) {
-                        console.log('redirect to: ' + JSON.stringify(room));
-                        res.redirect('/game/' + room.roomid);
-                    }
-                });
-            }
-        });
-        return;
-    }
-
     res.render('index.jade', {
         title: 'Play FIXME',
         description: 'FIXME: Your Page Description',
