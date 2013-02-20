@@ -16,6 +16,13 @@ var connect = require('connect'),
     redis = require('redis'),
     port = (process.env.PORT || 8081);
 
+// setup log and trace
+process.on('uncaughtException', function (err) {
+    console.error('uncaughtException:', err.message);
+    console.error(err.stack);
+    process.exit(1);
+});
+
 //setup redis
 var db = redis.createClient();
 
@@ -127,13 +134,10 @@ io.sockets.on('connection', function (socket) {
 /////// ADD ALL YOUR ROUTES HERE  /////////
 app.all('/', function (req, res) {
     var requestids = [];
-    console.log('rid=' + req.param('request_ids'));
     if (req.param('request_ids')) {
         requestids = req.param('request_ids');
         requestids = requestids.split(',');
     }
-    console.log('rid=' + JSON.stringify(requestids));
-    console.log('rid=' + requestids);
     res.render('index.jade', {
         title: 'Play FIXME',
         description: 'FIXME: Your Page Description',
@@ -143,8 +147,12 @@ app.all('/', function (req, res) {
     });
 });
 
+app.post('/delete-all-invitations', function (req, res) {
+    rooms.deleteInvitation(req.body.roomid, req.body.inviter, req.body.playerid);
+    res.send(200);
+});
+
 app.post('/delete-invitation', function (req, res) {
-    console.log('del= ' + JSON.stringify(req.body));
     rooms.deleteInvitation(req.body.roomid, req.body.inviter, req.body.playerid);
     res.send(200);
 });

@@ -40,10 +40,12 @@ block content
             div(class='span12')
                 canvas
             div(class='span5 lifebar-container')
+                div(class='lifebar-bg span5')
                 div(class='lifebar lifebar-left')
             div(class='timer span2', id='gametimer')
                 | 60
             div(class='span5 lifebar-container')
+                div(class='lifebar-bg span5')
                 div(class='lifebar lifebar-right')
             div(class='span12')
                 table(class='table table-striped')
@@ -54,7 +56,7 @@ block content
                             th(class='th-power')='Power'
                     tbody(id='wordlist')
             div(class='span12')
-                input(id='play-input', class='span12', type='text', value='')
+                input(id='play-input', class='span12', type='text', value='', disabled='true')
             div(class='span12')
                 div(id='logs')
 

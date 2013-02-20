@@ -60,6 +60,14 @@ tbody td span {
     padding: 0;
 }
 
+.lifebar-bg {
+    height: 40px;
+    position: absolute;
+    z-index: -1;
+    margin: 0;
+    background-color: #eee;
+}
+
 .lifebar {
     height: 40px;
     background-color: red;
