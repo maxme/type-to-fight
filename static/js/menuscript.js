@@ -18,8 +18,9 @@ menuInit = function () {
     }, myLogin, myLogin);
 };
 
-var loginError = function () {
-    // FIXME: show something
+var loginError = function (response) {
+    console.log('login error: ' + response.status);
+    window.location = '/facebook-login';
 };
 
 var secondStepInit = function () {

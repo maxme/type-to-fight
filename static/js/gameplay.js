@@ -163,9 +163,7 @@ var GamePlay = (function () {
     };
 
     GamePlay.prototype.attackOpp = function (power) {
-        console.log('attack opp before= ' + this.oppHealth);
         this.oppHealth = this.clamp(this.oppHealth - power, this.MIN_HEALTH, this.MAX_HEALTH);
-        console.log('attack opp after = ' + this.oppHealth);
         $('.lifebar-right').animate({width: this.oppHealth + '%'}, 200);
     };
 

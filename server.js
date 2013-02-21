@@ -204,6 +204,15 @@ app.post('/associate', function (req, res) {
     res.send(200);
 });
 
+app.get('/facebook-login', function (req, res) {
+    res.render('facebook-login.jade', {
+        title: 'New Game',
+        description: 'FIXME: Your Page Description',
+        author: 'Maxime Biais',
+        analyticssiteid: 'FIXME: XXXXXXX'
+    });
+});
+
 app.post('/stats', function (req, res) {
 //    Sample data: {
 //        "updated_time": "2012-11-27T16:57:33+0000",

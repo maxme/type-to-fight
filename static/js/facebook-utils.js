@@ -1,9 +1,10 @@
 "use strict";
 
 var FBUtils = (function () {
-    function FBUtils(params) {
+    function FBUtils(params, loginCB) {
         this.userInfos = null;
         this.appId = params.appid;
+        FB.Event.subscribe('auth.login', loginCB);
         FB.init({
             appId: params.appid, // App ID from the App Dashboard
             channelUrl: '/channel.html', // Channel File for x-domain communication
@@ -12,14 +13,14 @@ var FBUtils = (function () {
             frictionlessRequests: true,
             xfbml: true  // parse XFBML tags on this page?
         });
-    };
+    }
 
     FBUtils.prototype.login = function (scope, ok, failed) {
         FB.login(function (response) {
             if (response.authResponse) {
-                (ok !== undefined) && ok(response);
+                typeof ok === 'function' && ok(response);
             } else {
-                (failed !== undefined) && failed(response);
+                typeof failed === 'function' && failed(response);
             }
         }, scope);
     };
@@ -27,11 +28,11 @@ var FBUtils = (function () {
     FBUtils.prototype.getLoginStatus = function (connected, notauth, notlogged) {
         FB.getLoginStatus(function (response) {
             if (response.status === 'connected') {
-                (connected !== undefined) && connected(response);
+                typeof connected === 'function' && connected(response);
             } else if (response.status === 'not_authorized') {
-                (notauth !== undefined) && notauth(response);
+                typeof notauth === 'function' && notauth(response);
             } else {
-                (notlogged !== undefined) && notlogged(response);
+                typeof notlogged === 'function' && notlogged(response);
             }
         });
     }
@@ -52,7 +53,7 @@ var FBUtils = (function () {
 
     FBUtils.prototype.getOtherUserInfos = function (userid, ok) {
         FB.api('/' + userid, function (response) {
-            (ok !== undefined) && ok(response);
+            typeof ok === 'function' && ok(response);
         });
     };
 
@@ -60,10 +61,10 @@ var FBUtils = (function () {
         if (this.userInfos === null) {
             FB.api('/me', function (response) {
                 this.userInfos = response;
-                (ok !== undefined) && ok(response);
+                typeof ok === 'function' && ok(response);
             });
         } else {
-            (ok !== undefined) && ok(this.userInfos);
+            typeof ok === 'function' && ok(this.userInfos);
         }
     };
 

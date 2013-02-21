@@ -181,15 +181,21 @@ var gameInit2 = function () {
 
 var gameInit = function () {
     var loginError = function (response) {
-        console.log('login error: ' + response);
+        console.log('login error: ' + response.status);
+        window.location = '/facebook-login';
     };
 
     var myLogin = function () {
         var scope = {scope: 'email,publish_actions,friends_online_presence'};
         myFB.login(scope, gameInit2, loginError);
+
     };
 
-    myFB = new FBUtils({appid: 217004898437675});
+    var loginCB = function (res) {
+        console.log('user login status: ' + res.status);
+    };
+
+    myFB = new FBUtils({appid: 217004898437675}, loginCB);
     myFB.getLoginStatus(function () {
         console.log('user is logged in facebook');
         gameInit2();
