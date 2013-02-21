@@ -1,4 +1,6 @@
 TESTS = test/*.js
+SOURCES = $(shell find static/js -name '*.js' -depth 1)
+SOURCES_COV = $(SOURCES:.js=-cov.js)
 
 test:
 	@NODE_ENV=test ./node_modules/.bin/mocha \
@@ -8,11 +10,15 @@ test:
 			--growl \
 			$(TESTS)
 
+%-cov.js: %.js
+	jscoverage $< $@
 
-app-cov:
-	jscoverage server.js
+app-cov: $(SOURCES_COV)
 
 test-cov: app-cov
 	@EXPRESS_COV=1 $(MAKE) test
+
+test-cov-html: gen-cov
+	@EXPRESS_COV=1 $(MAKE) test REPORTER=html-cov > docs/report/coverage.html
 
 .PHONY: test

@@ -13,7 +13,7 @@ function log(message, obj) {
 }
 
 var ready = function () {
-    var url = 'https://ssh.biais.org:8082';
+    var url = 'https://' + window.location.host;
 
     var doc, splayinput, sgametimer, scountdown, smodalmessage;
     splayinput = $('#play-input');
@@ -53,7 +53,6 @@ var ready = function () {
                 setTimeout(timerTick, 1000);
             }
         }
-
         setTimeout(timerTick, 1000);
     }
 
@@ -80,7 +79,14 @@ var ready = function () {
         socket.emit("ping", {roomid: roomid});
     }
 
-    function realEndGame() {
+    function realEndGame(data) {
+        gamePlay.setPlayerLife(data.scores[data.you]);
+        gamePlay.setOppLife(data.scores[data.opp]);
+        if (data.scores[data.you] > data.scores[data.opp]) {
+            $('#modalmessage2').html('You win :)');
+        } else {
+            $('#modalmessage2').html('You lose :(');
+        }
         $('#play-input').attr('disabled', true);
         $('#modal-start').html($('#modal').html());
         $('#modal').html($('#modal-end').html());
@@ -126,7 +132,8 @@ var ready = function () {
     });
 
     socket.on('game_end', function (data) {
-        realEndGame();
+        log('game_end=', data);
+        realEndGame(data);
     });
 
     /*

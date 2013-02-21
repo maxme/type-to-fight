@@ -157,6 +157,16 @@ var GamePlay = (function () {
         return Math.floor(Math.min(Math.max(a, min), max));
     };
 
+    GamePlay.prototype.setPlayerLife = function (newlife) {
+        this.playerHealth = this.clamp(newlife, this.MIN_HEALTH, this.MAX_HEALTH);
+        $('.lifebar-left').animate({width: this.playerHealth + '%'}, 200);
+    };
+
+    GamePlay.prototype.setOppLife = function (newlife) {
+        this.oppHealth = this.clamp(newlife, this.MIN_HEALTH, this.MAX_HEALTH);
+        $('.lifebar-right').animate({width: this.oppHealth + '%'}, 200);
+    };
+
     GamePlay.prototype.attackPlayer = function (power) {
         this.playerHealth = this.clamp(this.playerHealth - power, this.MIN_HEALTH, this.MAX_HEALTH);
         $('.lifebar-left').animate({width: this.playerHealth + '%'}, 200);

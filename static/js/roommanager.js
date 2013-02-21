@@ -61,13 +61,11 @@ var RoomManager = (function () {
                     }
                     var kscore = 'scoreof' + player;
                     var score = parseFloat(room[kscore]);
-                    var oldscore = score;
                     if (wordobj.type === 0) { // attack
                         score = Math.max(0, score - parseFloat(wordobj.power));
                     } else { // heal
                         score = Math.min(100, score + parseFloat(wordobj.power));
                     }
-                    console.log('oldscore: ' + oldscore + ' score: ' + score);
                     that.db.hset('roomid:' + roomid, kscore, score);
                     typeof callback === 'function' && callback(null, 0);
                 } else {
@@ -210,12 +208,17 @@ var RoomManager = (function () {
             if (obj.state === 'playing') {
                 that.db.hmset('roomid:' + roomid, {state: 'end'});
                 // send message to clients
+                var scores = {
+                    player1: obj['scoreofplayer1'],
+                    player2: obj['scoreofplayer2']
+                };
                 // FIXME: BUG: CHECK IF CLIENTS EXISTS
-                var res = {};
-                res[obj['player1']] = obj['scoreofplayer1'];
-                res[obj['player2']] = obj['scoreofplayer2'];
-                that.clients[obj.player1].emit('game_end', res);
-                that.clients[obj.player2].emit('game_end', res);
+                that.clients[obj.player1].emit('game_end', {
+                    you: 'player1', opp: 'player2', scores: scores
+                });
+                that.clients[obj.player2].emit('game_end', {
+                    you: 'player2', opp: 'player1', scores: scores
+                });
             } else {
                 console.log('error 4: want to end a non-playing room');
             }
