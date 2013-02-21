@@ -8,13 +8,13 @@ var SignedRequest = require('facebook-signed-request');
 SignedRequest.secret = 'b4ba1375a1643fb2669792479836af82';
 
 //setup Dependencies
-var connect = require('connect'),
-    express = require('express'),
-    io = require('socket.io'),
-    http = require('http'),
-    https = require('https'),
-    redis = require('redis'),
-    port = (process.env.PORT || 8081);
+var connect = require('connect');
+var express = require('express');
+var sio = require('socket.io');
+var http = require('http');
+var https = require('https');
+var redis = require('redis');
+var port = (process.env.PORT || 8081);
 
 // setup log and trace
 process.on('uncaughtException', function (err) {
@@ -72,18 +72,20 @@ var serverHttps = https.createServer({
 serverHttps.listen(8082);
 
 //Setup Socket.IO
-var io = io.listen(serverHttps);
+var io = sio.listen(serverHttps);
 var clients = {};
 var rooms = new RoomManager(clients, db);
 var common = new Common();
 
-function checkTimeMessage(roomid) {
+function checkTimeMessage(roomid, callback) {
     rooms.getRoomStartTime(roomid, function (startTime) {
         if (startTime) {
             var curTime = (new Date()).getTime();
-            if (curTime - startTime > common.GAME_TIME_S) {
+            if (curTime - startTime > (common.GAME_TIME_S + common.GAME_COUNTDOWN) * 1000) {
+                typeof callback === 'function' && callback(true);
                 rooms.endGame(roomid);
             }
+            typeof callback === 'function' && callback(false);
         }
     });
 }
@@ -110,10 +112,16 @@ io.sockets.on('connection', function (socket) {
     });
 
     socket.on('win_word', function (data) {
-        checkTimeMessage(data.roomid);
-        rooms.getOpponentId(data.roomid, data.playerid, function (oppid) {
-            if (oppid && clients[oppid]) {
-                clients[oppid].emit('opp_win_word', {word: data.word, score: data.score});
+        checkTimeMessage(data.roomid, function (gameEnded) {
+            if (!gameEnded) {
+                // count score
+                rooms.playerWinWord(data.roomid, data.playerid, data.word);
+                // send a message to opponent
+                rooms.getOpponentId(data.roomid, data.playerid, function (oppid) {
+                    if (oppid && clients[oppid]) {
+                        clients[oppid].emit('opp_win_word', {word: data.word, score: data.score});
+                    }
+                });
             }
         });
     });

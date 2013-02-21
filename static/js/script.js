@@ -13,7 +13,7 @@ function log(message, obj) {
 }
 
 var ready = function () {
-    var url = 'http://localhost:8082';
+    var url = 'https://ssh.biais.org:8082';
 
     var doc, splayinput, sgametimer, scountdown, smodalmessage;
     splayinput = $('#play-input');
@@ -111,7 +111,7 @@ var ready = function () {
         splayinput.focus();
         gameManager.setGameState(2);
         log('game start=', data);
-        runTimer(2, function (remainingSeconds) {
+        runTimer(common.GAME_COUNTDOWN - 1, function (remainingSeconds) {
             var text = remainingSeconds;
             if (remainingSeconds === 0) {
                 text = 'GO !';

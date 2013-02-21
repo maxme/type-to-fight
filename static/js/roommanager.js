@@ -2,14 +2,16 @@
 
 var fs = require('fs');
 var _ = require('underscore')._;
+var Common = require('./common.js');
 
 var RoomManager = (function () {
+    var common = new Common();
     var EXPIRATION_TIME = 60 * 60 * 4;
 
-    function RoomManager(clients, db) {
+    function RoomManager(clients, db, callback) {
         this.clients = clients;
         this.db = db;
-        this.initWordList();
+        this.initWordList(callback);
     }
 
     RoomManager.prototype.newRandomRoomId = function () {
@@ -21,7 +23,64 @@ var RoomManager = (function () {
         return roomid;
     };
 
-    RoomManager.prototype.newRandomGameOrConnect = function (cb) {
+    RoomManager.prototype.getUserKeyFor = function (room, playerid) {
+        var player = 'ERROR PLAYER NAME';
+        if (room.player1 === playerid) {
+            player = 'player1';
+        } else {
+            if (room.player2 === playerid) {
+                player = 'player2';
+            }
+        }
+        return player;
+    };
+
+    RoomManager.prototype.getOtherPlayerId = function (room, playerid) {
+        if (room.player1 === playerid) {
+            return room.player2;
+        } else {
+            return room.player1;
+        }
+    };
+
+    RoomManager.prototype.playerWinWord = function (roomid, playerid, word, callback) {
+        var that = this;
+        that.db.hgetall('roomid:' + roomid, function (err, room) {
+            if (room) {
+                var words = JSON.parse(room.words);
+                var wordlist = words.map(function (e) { return e.word; });
+                if (wordlist.indexOf(word) !== -1) {
+                    var wordobj = words.filter(function (e) { return e.word === word; })[0];
+                    var player;
+                    if (wordobj.type === 0) { // attack
+                        // other player
+                        player = that.getUserKeyFor(room, that.getOtherPlayerId(room, playerid));
+                    } else {
+                        // this player
+                        player = that.getUserKeyFor(room, playerid);
+                    }
+                    var kscore = 'scoreof' + player;
+                    var score = parseFloat(room[kscore]);
+                    var oldscore = score;
+                    if (wordobj.type === 0) { // attack
+                        score = Math.max(0, score - parseFloat(wordobj.power));
+                    } else { // heal
+                        score = Math.min(100, score + parseFloat(wordobj.power));
+                    }
+                    console.log('oldscore: ' + oldscore + ' score: ' + score);
+                    that.db.hset('roomid:' + roomid, kscore, score);
+                    typeof callback === 'function' && callback(null, 0);
+                } else {
+                    // cheater ?
+                    typeof callback === 'function' && callback('word: ' + word + ' is not in the current game', 2);
+                }
+            } else {
+                typeof callback === 'function' && callback('roomid:'+ roomid + ' does not exist', 1);
+            }
+        });
+    };
+
+    RoomManager.prototype.newRandomGameOrConnect = function (callback) {
         var that = this;
         var timeWindow = 5 * 60 * 1000; // 5 minutes
         var roomid = null;
@@ -31,12 +90,12 @@ var RoomManager = (function () {
                 // return a recent room
                 roomid = obj[0];
                 that.db.zrem('randomrooms:date', roomid);
-                cb(roomid);
+                typeof callback === 'function' && callback(roomid);
             } else {
                 // create new room
                 roomid = that.newRandomRoomId();
                 that.db.zadd('randomrooms:date', time, roomid);
-                cb(roomid);
+                typeof callback === 'function' && callback(roomid);
             }
         });
     };
@@ -46,7 +105,7 @@ var RoomManager = (function () {
         this.db.srem('createdrooms:' + inviter, roomid);
     };
 
-    RoomManager.prototype.getInvitedGamesFor = function (playerid, cb) {
+    RoomManager.prototype.getInvitedGamesFor = function (playerid, callback) {
         var that = this;
         this.db.smembers('invitedrooms:' + playerid, function (err, roomlist) {
             var res = [];
@@ -71,23 +130,25 @@ var RoomManager = (function () {
                             nextRoom();
                         });
                     } else {
-                        cb(res);
+                        typeof callback === 'function' && callback(res);
                     }
                 } else {
-                    cb([]);
+                    typeof callback === 'function' && callback([]);
                 }
             }
             nextRoom();
         });
     };
 
-    RoomManager.prototype.initWordList = function () {
+    RoomManager.prototype.initWordList = function (callback) {
         var o = this;
         fs.readFile('english-common-words.json', 'ascii', function (err, data) {
             if (err) {
+                typeof callback === 'function' && callback(1);
                 return console.log(err);
             }
             o.words = JSON.parse(data);
+            typeof callback === 'function' && callback(0);
         });
     };
 
@@ -132,12 +193,12 @@ var RoomManager = (function () {
         });
     };
 
-    RoomManager.prototype.getRoomStartTime = function (roomid, cb) {
+    RoomManager.prototype.getRoomStartTime = function (roomid, callback) {
         this.db.hmget('roomid:' + roomid, 'start_time', 'state', function (err, obj) {
             if (obj[1] === 'playing') {
-                cb(obj[0]);
+                typeof callback === 'function' && callback(obj[0]);
             } else {
-                cb(null);
+                typeof callback === 'function' && callback(null);
             }
         });
     };
@@ -150,8 +211,11 @@ var RoomManager = (function () {
                 that.db.hmset('roomid:' + roomid, {state: 'end'});
                 // send message to clients
                 // FIXME: BUG: CHECK IF CLIENTS EXISTS
-                that.clients[obj.player1].emit('game_end', {});
-                that.clients[obj.player2].emit('game_end', {});
+                var res = {};
+                res[obj['player1']] = obj['scoreofplayer1'];
+                res[obj['player2']] = obj['scoreofplayer2'];
+                that.clients[obj.player1].emit('game_end', res);
+                that.clients[obj.player2].emit('game_end', res);
             } else {
                 console.log('error 4: want to end a non-playing room');
             }
@@ -178,7 +242,7 @@ var RoomManager = (function () {
 
     RoomManager.prototype.emitPracticeStart = function (playerid) {
         this.clients[playerid].emit('game_start', {
-            words: this.getRandomWordSet("english", 50),
+            words: this.getRandomWordSet("english", common.MAX_WORD_LIST),
             start_time: '' + (new Date()).getTime()
         });
     };
@@ -222,7 +286,9 @@ var RoomManager = (function () {
         // create the new room
         var obj = {
             state: 'new',
-            words: JSON.stringify(this.getRandomWordSet("english", 10)),
+            scoreofplayer1: '100',
+            scoreofplayer2: '100',
+            words: JSON.stringify(this.getRandomWordSet("english", common.MAX_WORD_LIST)),
             start_time: '' + (new Date()).getTime(),
             player1: '' + playerid
         };
@@ -230,11 +296,12 @@ var RoomManager = (function () {
         this.db.expire('roomid:' + roomid, EXPIRATION_TIME); // expire rooms
     };
 
-    RoomManager.prototype.connectUserToGame = function (roomid, playerid) {
+    RoomManager.prototype.connectUserToGame = function (roomid, playerid, callback) {
         var that = this;
         that.db.hgetall('roomid:' + roomid, function (err, obj) {
             if (obj === null) { // create new
                 that.createNewRoom(roomid, playerid);
+                typeof callback === 'function' && callback(null, 2);
             } else {
                 console.log('room already created');
                 // check if user is alone
@@ -242,13 +309,19 @@ var RoomManager = (function () {
                     console.log('error 2: both player already in...');
                     // FIXME: do something
                     // me.emitGameStart(obj.player1, obj.player2, obj);
+                    typeof callback === 'function' && callback(1, 1);
                 } else {
                     console.log('adding new player and emit game_start');
                     obj.player2 = '' + playerid;
                     obj.state = 'playing';
                     obj.start_time = '' + (new Date()).getTime();
-                    that.db.hmset('roomid:' + roomid, obj); // update
-                    that.emitGameStart(obj.player1, obj.player2, obj);
+                    that.db.hmset('roomid:' + roomid, obj, function (err, res){
+                        that.db.hmget('roomid:' + roomid, 'start_time', function (err, obj2) {
+                            console.log('new start_time= ' + obj2[0]);
+                        });
+                        that.emitGameStart(obj.player1, obj.player2, obj);
+                        typeof callback === 'function' && callback(null, 0);
+                    });
                 }
             }
         });
