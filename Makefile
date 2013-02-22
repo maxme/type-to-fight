@@ -10,15 +10,12 @@ test:
 			--growl \
 			$(TESTS)
 
-%-cov.js: %.js
-	jscoverage $< $@
+coverage/%-cov.js: %.js
+	jscoverage $< coverage/$@
 
 app-cov: $(SOURCES_COV)
 
 test-cov: app-cov
 	@EXPRESS_COV=1 $(MAKE) test
-
-test-cov-html: gen-cov
-	@EXPRESS_COV=1 $(MAKE) test REPORTER=html-cov > docs/report/coverage.html
 
 .PHONY: test
