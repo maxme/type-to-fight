@@ -2,7 +2,7 @@
 
 var Common = (function () {
     function Common() {
-        this.GAME_TIME_S = 15;
+        this.GAME_TIME_S = 60;
         this.GAME_COUNTDOWN = 3;
         this.MAX_WORD_LIST = 20;
     }

@@ -8,32 +8,36 @@ var GameStats = (function () {
     GameStats.prototype.reset = function () {
         this.nkeypressed = 0;
         this.nbackspacepressed = 0;
+        this.totalkeypressed = 0;
         this.accuracy = 1;
         this.startTime = 0;
         this.averageSpeed = 0;
+        this.words = 0;
+    };
+
+    GameStats.prototype.winword = function (word) {
+        this.words += 1;
     };
 
     GameStats.prototype.updateStats = function () {
-        var total = this.nkeypressed + this.nbackspacepressed;
-        this.accuracy = this.nkeypressed / total;
+        var curTime = (new Date()).getTime();
+        this.accuracy = this.nkeypressed / this.totalkeypressed;
+        this.averageSpeed = (this.nkeypressed / ((curTime - this.startTime) / 1000) * 60);
     };
 
     GameStats.prototype.keypress = function () {
         if (this.nkeypressed === 0) {
             this.startTime = (new Date()).getTime();
         }
+        this.totalkeypressed += 1;
         this.nkeypressed += 1;
         this.updateStats();
     };
 
     GameStats.prototype.backspacepress = function () {
+        this.totalkeypressed += 1;
         this.nbackspacepressed += 1;
         this.updateStats();
-    };
-
-    GameStats.prototype.update = function () {
-        var curTime = (new Date()).getTime();
-        this.averageSpeed = (this.nkeypressed / ((curTime - this.startTime) / 1000) * 60);
     };
 
     return GameStats;

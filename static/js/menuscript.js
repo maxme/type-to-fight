@@ -69,9 +69,10 @@ var secondStepInit = function () {
                 data: {playerid: response.id},
                 url: '/invited-games',
                 success: function (data) {
+                    data = data.sort(function(a, b) { return parseFloat(a.time_delta) - parseFloat(b.time_delta);});
                     if (data.length !== 0) {
                         var uidSet = {};
-                        for (var i = 0; i < data.length; ++i) {
+                        for (var i = 0; i < data.length && i < 5; ++i) {
                             uidSet[data[i].inviter] = 1;
                             $('<tr><td><span class="uid' + data[i].inviter + '"></span> invited you '
                                 + data[i].time_delta

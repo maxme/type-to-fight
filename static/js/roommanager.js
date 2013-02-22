@@ -67,7 +67,7 @@ var RoomManager = (function () {
                         score = Math.min(100, score + parseFloat(wordobj.power));
                     }
                     that.db.hset('roomid:' + roomid, kscore, score);
-                    typeof callback === 'function' && callback(null, 0);
+                    typeof callback === 'function' && callback(null, {score: score});
                 } else {
                     // cheater ?
                     typeof callback === 'function' && callback('word: ' + word + ' is not in the current game', 2);
@@ -167,11 +167,12 @@ var RoomManager = (function () {
         var tmpArray = this.words[lang].slice(0, size);
         for (var i = 0; i < size; ++i) {
             var word = tmpArray[i % tmpArray.length];
-            res.push({
-                word: word,
-                type: this.getAttackType(),
-                power: word.length
-            });
+            var type = this.getAttackType();
+            var power = word.length * 3;
+            if (type === 1) {
+                power = Math.floor(word.length * 1.5);
+            }
+            res.push({word: word, type: type, power: power});
         }
         // res = [ {word: "word1", delay: 0}, {word:"word2", delay:5000} ];
         return res;
@@ -209,8 +210,8 @@ var RoomManager = (function () {
                 that.db.hmset('roomid:' + roomid, {state: 'end'});
                 // send message to clients
                 var scores = {
-                    player1: obj['scoreofplayer1'],
-                    player2: obj['scoreofplayer2']
+                    player1: parseFloat(obj['scoreofplayer1']),
+                    player2: parseFloat(obj['scoreofplayer2'])
                 };
                 // FIXME: BUG: CHECK IF CLIENTS EXISTS
                 that.clients[obj.player1].emit('game_end', {

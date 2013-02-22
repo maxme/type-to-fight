@@ -8,6 +8,16 @@ var GamePlay = (function () {
         this.MAX_HEALTH = 100;
         this.reset();
         this.winword_cb = null;
+        var that = this;
+        String.prototype.startsWith = function (str) {
+            return this.slice(0, str.length) === str;
+        };
+        $('#play-input').bind('input', function () {
+            that.checkPlayedWord($(this).val());
+        });
+        $('#play-input').keydown(function (event) {
+            that.keypressStats(event.which);
+        });
     }
 
     GamePlay.prototype.reset = function () {
@@ -18,6 +28,7 @@ var GamePlay = (function () {
         this.oppHealth = this.MAX_HEALTH;
         this.attackPlayer(0);
         this.attackOpp(0);
+        this.gamestats.reset();
     };
 
     GamePlay.prototype.setAllWords = function (wordlist) {
@@ -94,6 +105,7 @@ var GamePlay = (function () {
         if (this.winword_cb) {
             this.winword_cb(word);
         }
+        this.gamestats.winword(word);
         this.displayedWords.splice(this.displayedWords.indexOf(word), 1);
         this.showNextWord(word);
         var wordobj = this.allWordsHash[word];
@@ -139,15 +151,6 @@ var GamePlay = (function () {
 
     GamePlay.prototype.startGame = function () {
         var that = this;
-        String.prototype.startsWith = function (str) {
-            return this.slice(0, str.length) === str;
-        };
-        $('#play-input').bind('input', function () {
-            that.checkPlayedWord($(this).val());
-        });
-        $('#play-input').keypress(function (event) {
-            that.keypressStats(event.which);
-        });
         $('#play-input').focus();
         console.log('startGame');
         that.insertFirstWords(5);

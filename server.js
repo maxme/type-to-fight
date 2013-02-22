@@ -115,7 +115,13 @@ io.sockets.on('connection', function (socket) {
         checkTimeMessage(data.roomid, function (gameEnded) {
             if (!gameEnded) {
                 // count score
-                rooms.playerWinWord(data.roomid, data.playerid, data.word);
+                rooms.playerWinWord(data.roomid, data.playerid, data.word, function (err, obj) {
+                    if (err === null) {
+                        if (obj.score === 0) {
+                            rooms.endGame(data.roomid);
+                        }
+                    }
+                });
                 // send a message to opponent
                 rooms.getOpponentId(data.roomid, data.playerid, function (oppid) {
                     if (oppid && clients[oppid]) {

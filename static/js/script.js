@@ -53,6 +53,7 @@ var ready = function () {
                 setTimeout(timerTick, 1000);
             }
         }
+
         setTimeout(timerTick, 1000);
     }
 
@@ -79,14 +80,43 @@ var ready = function () {
         socket.emit("ping", {roomid: roomid});
     }
 
+    function createStatsTable() {
+        var table = $('<table class="table table-bordered">');
+        table.append('<thead>').children('thead')
+             .append('<tr />').children('tr').append('<th>Words</th><th>Keys Pressed</th><th>Errors</th><th>Accuracy</th><th>Average Speed</th>');
+        var tbody = table.append('<tbody />').children('tbody');
+        tbody.append('<tr />').children('tr:last')
+             .append('<td>' + gameStats.words + '</td>')
+             .append('<td>' + gameStats.totalkeypressed + '</td>')
+             .append('<td>' + gameStats.nbackspacepressed + '</td>')
+             .append('<td>' + Math.floor(10000 * gameStats.accuracy) / 100 + '%</td>')
+             .append('<td>' + Math.floor(100 * gameStats.averageSpeed) / 100 + ' keypress/s</td>');
+        return table;
+    }
+
     function realEndGame(data) {
-        gamePlay.setPlayerLife(data.scores[data.you]);
-        gamePlay.setOppLife(data.scores[data.opp]);
-        if (data.scores[data.you] > data.scores[data.opp]) {
-            $('#modalmessage2').html('You win :)');
-        } else {
-            $('#modalmessage2').html('You lose :(');
+        // Win and lose message
+        if (data) {
+            $('#modalmessage2').html('');
+            gamePlay.setPlayerLife(data.scores[data.you]);
+            gamePlay.setOppLife(data.scores[data.opp]);
+            if (data.scores[data.you] === data.scores[data.opp]) {
+                $('#modalLabel2').html('Draw !');
+            } else {
+                if (data.scores[data.you] > data.scores[data.opp]) {
+                    $('#modalLabel2').html('You win :)');
+                } else {
+                    $('#modalLabel2').html('You lose :(');
+                }
+            }
+        } else { // practice
+            $('#modalmessage2').html('');
         }
+        // Statistics
+        var table = createStatsTable();
+        $('#modalstats').html(table);
+
+        // Show modal
         $('#play-input').attr('disabled', true);
         $('#modal-start').html($('#modal').html());
         $('#modal').html($('#modal-end').html());
@@ -143,7 +173,7 @@ var ready = function () {
      */
 
     $(document).on("click", "#replay-button", function () {
-        $('#wordlist').hide(300, function(){
+        $('#wordlist').hide(300, function () {
             $(this).html('').show();
         });
         socket.emit('ask_replay', {roomid: roomid, playerid: playerid});
@@ -156,9 +186,9 @@ var ready = function () {
 
     // Init ping
     if (roomid !== 'practice') {
-        setTimeout(function() {
+        setTimeout(function () {
             var counter = 0;
-            var ping = function() {
+            var ping = function () {
                 counter += 1;
                 socket.emit('ping', {roomid: roomid});
                 if (counter <= 6) {
