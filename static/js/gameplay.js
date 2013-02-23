@@ -8,6 +8,7 @@ var GamePlay = (function () {
         this.MAX_HEALTH = 100;
         this.reset();
         this.winword_cb = null;
+        this.endgame_cb = undefined;
         var that = this;
         String.prototype.startsWith = function (str) {
             return this.slice(0, str.length) === str;
@@ -69,6 +70,7 @@ var GamePlay = (function () {
                 });
             }
         }
+
         nextWord();
     };
 
@@ -92,12 +94,44 @@ var GamePlay = (function () {
         }
     };
 
+    GamePlay.prototype.practiceBotTick = function (dt) {
+        if (dt > 5000) {
+            var randword = this.allWords[randomRange(0, this.allWords.length - 1)].word;
+            this.oppWinWord(randword);
+            return true;
+        }
+        return false;
+    };
+
+    GamePlay.prototype.getPractiseEndScores = function () {
+        var res = {
+            you: 'player1',
+            opp: 'player2',
+            scores: {
+                player1: this.playerHealth,
+                player2: this.oppHealth
+            }
+        };
+        return res;
+    };
+
+    GamePlay.prototype.checkEndGame = function () {
+        if (this.playerHealth === 0 || this.oppHealth === 0) {
+            this.endgame_cb(this.getPractiseEndScores());
+        }
+    };
+
     GamePlay.prototype.oppWinWord = function (word) {
         var wordobj = this.allWordsHash[word];
-        if (wordobj.type == 0) { // attack from opp
-            this.attackPlayer(wordobj.power);
-        } else { // opp healed
-            this.healOpp(wordobj.power);
+        if (wordobj) {
+            if (wordobj.type == 0) { // attack from opp
+                this.attackPlayer(wordobj.power);
+            } else { // opp healed
+                this.healOpp(wordobj.power);
+            }
+            this.checkEndGame();
+        } else {
+            console.log('word: ' + word + ' is not in the list');
         }
     };
 
@@ -114,6 +148,7 @@ var GamePlay = (function () {
         } else { // player healed
             this.healPlayer(wordobj.power);
         }
+        this.checkEndGame();
     };
 
     GamePlay.prototype.uncolorizeWord = function (word) {

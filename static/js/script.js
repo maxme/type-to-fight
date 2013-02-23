@@ -33,6 +33,7 @@ var ready = function () {
     var gameStats = new GameStats();
     var gamePlay = new GamePlay(gameStats, gameManager);
     gamePlay.winword_cb = winword_cb;
+    gamePlay.endgame_cb = endgame_cb;
     var socket = io.connect(url, {secure: true});
     var oppid = 0;
 
@@ -68,7 +69,7 @@ var ready = function () {
             sgametimer.html(remainingSeconds);
         }, function () {
             if (roomid === 'practice') {
-                realEndGame();
+                realEndGame(gamePlay.getPractiseEndScores());
             } else {
                 endGame();
             }
@@ -83,18 +84,19 @@ var ready = function () {
     function createStatsTable() {
         var table = $('<table class="table table-bordered">');
         table.append('<thead>').children('thead')
-             .append('<tr />').children('tr').append('<th>Words</th><th>Keys Pressed</th><th>Errors</th><th>Accuracy</th><th>Average Speed</th>');
+            .append('<tr />').children('tr').append('<th>Words</th><th>Keys Pressed</th><th>Errors</th><th>Accuracy</th><th>Average Speed</th>');
         var tbody = table.append('<tbody />').children('tbody');
         tbody.append('<tr />').children('tr:last')
-             .append('<td>' + gameStats.words + '</td>')
-             .append('<td>' + gameStats.totalkeypressed + '</td>')
-             .append('<td>' + gameStats.nbackspacepressed + '</td>')
-             .append('<td>' + Math.floor(10000 * gameStats.accuracy) / 100 + '%</td>')
-             .append('<td>' + Math.floor(100 * gameStats.averageSpeed) / 100 + ' keypress/s</td>');
+            .append('<td>' + gameStats.words + '</td>')
+            .append('<td>' + gameStats.totalkeypressed + '</td>')
+            .append('<td>' + gameStats.nbackspacepressed + '</td>')
+            .append('<td>' + Math.floor(10000 * gameStats.accuracy) / 100 + '%</td>')
+            .append('<td>' + Math.floor(100 * gameStats.averageSpeed) / 100 + ' keypress/s</td>');
         return table;
     }
 
     function realEndGame(data) {
+        gameManager.setGameState(4);
         // Win and lose message
         if (data) {
             $('#modalmessage2').html('');
@@ -125,6 +127,12 @@ var ready = function () {
 
     function winword_cb(word) {
         socket.emit('win_word', {word: word, playerid: playerid, roomid: roomid});
+    }
+
+    function endgame_cb(data) {
+        if (roomid !== 'practice')
+            return;
+        realEndGame(data);
     }
 
     /*
@@ -184,8 +192,8 @@ var ready = function () {
         $('#modal').html($('#modal-start').html());
     });
 
-    // Init ping
     if (roomid !== 'practice') {
+        // Init ping
         setTimeout(function () {
             var counter = 0;
             var ping = function () {
@@ -197,6 +205,24 @@ var ready = function () {
             };
             ping();
         }, (common.GAME_TIME_S - 3) * 1000);
+    } else {
+        // Init bot
+        var res = true;
+        var dt = 0;
+        var lastTime = (new Date()).getTime();
+        var botTick = function () {
+            if (res) {
+                dt = (new Date()).getTime() - lastTime;
+            } else {
+                dt += (new Date()).getTime() - lastTime;
+            }
+            if (gameManager.gameState === 3) {
+                lastTime = (new Date()).getTime();
+                res = gamePlay.practiceBotTick(dt);
+            }
+            setTimeout(botTick, 1000);
+        };
+        botTick();
     }
 
     // Send "connection" msg
