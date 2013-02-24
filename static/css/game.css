@@ -2,8 +2,12 @@
 
 canvas {
     width:100%;
-    height: 200px;
-    background-color: #ccc;
+    /*height: 200px;*/
+    /*background-color: #ccc;*/
+}
+
+#divcanvas {
+    margin-bottom: 10px;
 }
 
 .word {

@@ -22,7 +22,12 @@ var GameStats = (function () {
     GameStats.prototype.updateStats = function () {
         var curTime = (new Date()).getTime();
         this.accuracy = this.nkeypressed / this.totalkeypressed;
-        this.averageSpeed = (this.nkeypressed / ((curTime - this.startTime) / 1000) * 60);
+        if (this.nkeypressed > 15) {
+            var tmp = (this.nkeypressed / ((curTime - this.startTime) / 1000) * 60);
+            this.averageSpeed = Math.floor(100 * tmp) / 100;
+        } else {
+            this.averageSpeed = 'na';
+        }
     };
 
     GameStats.prototype.keypress = function () {

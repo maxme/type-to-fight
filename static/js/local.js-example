@@ -1,0 +1,14 @@
+"use strict";
+
+var Local = (function () {
+    function Local() {
+        this.FB_APP_ID = '411686932258644';
+        this.FB_APP_SECRET = '';
+    }
+
+    return Local;
+})();
+
+if (typeof(module) !== 'undefined') {
+    module.exports = Local;
+}

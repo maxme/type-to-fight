@@ -1,0 +1,92 @@
+{"frames": {
+
+"char1/char1a.png":
+{
+	"frame": {"x":2,"y":206,"w":148,"h":202},
+	"rotated": false,
+	"trimmed": false,
+	"spriteSourceSize": {"x":0,"y":0,"w":148,"h":202},
+	"sourceSize": {"w":148,"h":202}
+},
+"char1/char1b.png":
+{
+	"frame": {"x":2,"y":2,"w":148,"h":202},
+	"rotated": false,
+	"trimmed": false,
+	"spriteSourceSize": {"x":0,"y":0,"w":148,"h":202},
+	"sourceSize": {"w":148,"h":202}
+},
+"shout/shout-1.png":
+{
+	"frame": {"x":190,"y":194,"w":36,"h":62},
+	"rotated": false,
+	"trimmed": false,
+	"spriteSourceSize": {"x":0,"y":0,"w":36,"h":62},
+	"sourceSize": {"w":36,"h":62}
+},
+"shout/shout-2.png":
+{
+	"frame": {"x":152,"y":194,"w":36,"h":62},
+	"rotated": false,
+	"trimmed": false,
+	"spriteSourceSize": {"x":0,"y":0,"w":36,"h":62},
+	"sourceSize": {"w":36,"h":62}
+},
+"shout/shout-3.png":
+{
+	"frame": {"x":190,"y":130,"w":36,"h":62},
+	"rotated": false,
+	"trimmed": false,
+	"spriteSourceSize": {"x":0,"y":0,"w":36,"h":62},
+	"sourceSize": {"w":36,"h":62}
+},
+"shout/shout-4.png":
+{
+	"frame": {"x":152,"y":130,"w":36,"h":62},
+	"rotated": false,
+	"trimmed": false,
+	"spriteSourceSize": {"x":0,"y":0,"w":36,"h":62},
+	"sourceSize": {"w":36,"h":62}
+},
+"shout/shout-5.png":
+{
+	"frame": {"x":190,"y":66,"w":36,"h":62},
+	"rotated": false,
+	"trimmed": false,
+	"spriteSourceSize": {"x":0,"y":0,"w":36,"h":62},
+	"sourceSize": {"w":36,"h":62}
+},
+"shout/shout-6.png":
+{
+	"frame": {"x":152,"y":66,"w":36,"h":62},
+	"rotated": false,
+	"trimmed": false,
+	"spriteSourceSize": {"x":0,"y":0,"w":36,"h":62},
+	"sourceSize": {"w":36,"h":62}
+},
+"shout/shout-7.png":
+{
+	"frame": {"x":190,"y":2,"w":36,"h":62},
+	"rotated": false,
+	"trimmed": false,
+	"spriteSourceSize": {"x":0,"y":0,"w":36,"h":62},
+	"sourceSize": {"w":36,"h":62}
+},
+"shout/shout-8.png":
+{
+	"frame": {"x":152,"y":2,"w":36,"h":62},
+	"rotated": false,
+	"trimmed": false,
+	"spriteSourceSize": {"x":0,"y":0,"w":36,"h":62},
+	"sourceSize": {"w":36,"h":62}
+}},
+"meta": {
+	"app": "http://www.texturepacker.com",
+	"version": "1.0",
+	"image": "spritesheet1.png",
+	"format": "RGBA8888",
+	"size": {"w":228,"h":410},
+	"scale": "1",
+	"smartupdate": "$TexturePacker:SmartUpdate:a867297d545dda0b1e386b64800c2cbe$"
+}
+}

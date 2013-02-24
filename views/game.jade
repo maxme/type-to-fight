@@ -5,6 +5,7 @@ block pagestyle
 
 block pagescript
     script(defer, src='/js/script.js')
+    script(defer, src='/js/gamegraphics.js')
     script
         var roomid = "!{roomid}"
 
@@ -38,7 +39,7 @@ block content
             div(class='countdown-container')
                 div(id='countdown',class='countdown')=3
             div(class='span12')
-                canvas
+                div(id='divcanvas')
             div(class='span5 lifebar-container')
                 div(class='lifebar-bg span5')
                 div(class='lifebar lifebar-left')

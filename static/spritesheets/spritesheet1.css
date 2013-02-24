@@ -1,0 +1,24 @@
+/* ----------------------------------------------------
+   created with http://www.texturepacker.com 
+   ----------------------------------------------------
+   $TexturePacker:SmartUpdate:145f89a6d9823ab7c2010d5ad189e092$
+   ----------------------------------------------------
+
+   usage: <span class="{-spritename-} sprite"></span>
+
+   replace {-spritename-} with the sprite you like to use
+
+*/
+
+.sprite {display:inline-block; overflow:hidden; background-repeat: no-repeat;background-image:url(spritesheet1.png);}
+
+.char1-char1a {width:162px; height:221px; background-position: -2px -225px}
+.char1-char1b {width:162px; height:221px; background-position: -2px -2px}
+.shout-shout-1 {width:25px; height:43px; background-position: -195px -53px}
+.shout-shout-2 {width:26px; height:49px; background-position: -195px -2px}
+.shout-shout-3 {width:27px; height:53px; background-position: -166px -2px}
+.shout-shout-4 {width:25px; height:56px; background-position: -223px -2px}
+.shout-shout-5 {width:22px; height:57px; background-position: -166px -57px}
+.shout-shout-6 {width:17px; height:59px; background-position: -190px -98px}
+.shout-shout-7 {width:17px; height:59px; background-position: -222px -60px}
+.shout-shout-8 {width:17px; height:58px; background-position: -166px -116px}

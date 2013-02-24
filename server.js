@@ -4,9 +4,6 @@ var fs = require('fs');
 var RoomManager = require('./static/js/roommanager.js');
 var Common = require('./static/js/common.js');
 
-var SignedRequest = require('facebook-signed-request');
-SignedRequest.secret = 'b4ba1375a1643fb2669792479836af82';
-
 //setup Dependencies
 var connect = require('connect');
 var express = require('express');

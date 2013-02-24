@@ -36,12 +36,21 @@ var ready = function () {
     gamePlay.endgame_cb = endgame_cb;
     var socket = io.connect(url, {secure: true});
     var oppid = 0;
+    var mainTimer;
 
+    // Graphics
     if (!('getContext' in document.createElement('canvas'))) {
         alert('Sorry, it looks like your browser does not support canvas!');
         return false;
     }
+    var gg = new GameGraphics(document.getElementById('divcanvas'), $('#divcanvas').width(), 200);
+    $('#play-input').on('keydown', function () {
+        gg.keydown();
+    }).on('keyup', function () {
+        gg.keyup();
+    });
 
+    // Timer define
     function runTimer(seconds, update, endcb) {
         var remainingSeconds = seconds;
         update(remainingSeconds);
@@ -51,11 +60,10 @@ var ready = function () {
                 endcb();
             } else {
                 update(remainingSeconds);
-                setTimeout(timerTick, 1000);
+                mainTimer = setTimeout(timerTick, 1000);
             }
         }
-
-        setTimeout(timerTick, 1000);
+        mainTimer = setTimeout(timerTick, 1000);
     }
 
     function startGame() {
@@ -91,12 +99,14 @@ var ready = function () {
             .append('<td>' + gameStats.totalkeypressed + '</td>')
             .append('<td>' + gameStats.nbackspacepressed + '</td>')
             .append('<td>' + Math.floor(10000 * gameStats.accuracy) / 100 + '%</td>')
-            .append('<td>' + Math.floor(100 * gameStats.averageSpeed) / 100 + ' keypress/s</td>');
+            .append('<td>' + gameStats.averageSpeed + ' keypress/min</td>');
         return table;
     }
 
     function realEndGame(data) {
         gameManager.setGameState(4);
+        clearTimeout(mainTimer);
+        sgametimer.html('');
         // Win and lose message
         if (data) {
             $('#modalmessage2').html('');
@@ -258,7 +268,7 @@ var gameInit = function () {
         console.log('user login status: ' + res.status);
     };
 
-    myFB = new FBUtils({appid: 217004898437675}, loginCB);
+    myFB = new FBUtils({appid: Local.FB_APP_ID}, loginCB);
     myFB.getLoginStatus(function () {
         console.log('user is logged in facebook');
         gameInit2();
