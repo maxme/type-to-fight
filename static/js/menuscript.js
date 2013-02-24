@@ -11,7 +11,7 @@ menuInit = function () {
         myFB.login(scope, secondStepInit, loginError);
     };
 
-    myFB = new FBUtils({appid: Local.FB_APP_ID});
+    myFB = new FBUtils({appid: (new Local()).FB_APP_ID});
     myFB.getLoginStatus(function () {
         console.log('user is logged in facebook');
         secondStepInit();

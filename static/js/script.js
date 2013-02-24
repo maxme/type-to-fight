@@ -268,7 +268,7 @@ var gameInit = function () {
         console.log('user login status: ' + res.status);
     };
 
-    myFB = new FBUtils({appid: Local.FB_APP_ID}, loginCB);
+    myFB = new FBUtils({appid: (new Local()).FB_APP_ID}, loginCB);
     myFB.getLoginStatus(function () {
         console.log('user is logged in facebook');
         gameInit2();
