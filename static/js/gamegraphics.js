@@ -55,19 +55,44 @@ var SpriteSheet =(function () {
 
 
 var Player = (function () {
-    function Player(spritesheet, left, layer) {
+    function Player(spritesheet, left, layer, w) {
+        this.w = w;
         this.spritesheet = spritesheet;
         this.layer = layer;
         this.left = left;
         this.createPlayer();
+        this.createShoutSprite();
         this.mouth_close = this.spritesheet.getFrame('char1/char1a.png');
         this.mouth_open = this.spritesheet.getFrame('char1/char1b.png');
+        this.hitframe = this.spritesheet.getFrame('char1/char1c.png');
     }
 
     Player.prototype.createPlayer = function () {
         this.sprite = this.spritesheet.createSprite('char1/char1a.png', this.layer);
-        this.sprite.setXScale(this.left ? -1 : 1);
-        this.sprite.move(0, 0);
+        if (this.left) {
+            this.sprite.move(0, 0);
+            this.sprite.setXScale(-1);
+        } else {
+            this.sprite.move(this.w - this.sprite.w, 0);
+        }
+    };
+
+    Player.prototype.createShoutSprite = function () {
+        this.shout = this.spritesheet.createSprite('misc/shout.png', this.layer);
+        if (this.left) {
+            this.shout.move(120, 65);
+        } else {
+            this.shout.setXScale(-1);
+            this.shout.move(this.w - this.shout.w - 120, 65);
+        }
+        this.shout.setOpacity(0);
+    };
+
+    Player.prototype.timedAnim = function (time, func, reset_func) {
+        setTimeout(function() {
+            reset_func();
+        }, time);
+        func();
     };
 
     Player.prototype.openMouth = function (time) {
@@ -80,8 +105,27 @@ var Player = (function () {
         this.sprite.setYOffset(this.mouth_close.y);
     };
 
+    Player.prototype.hit = function (time) {
+        var that = this;
+        that.timedAnim(time, function () {
+                that.sprite.setXOffset(that.hitframe.x);
+                that.sprite.setYOffset(that.hitframe.y);
+            },
+            function () {
+                that.sprite.setXOffset(that.mouth_close.x);
+                that.sprite.setYOffset(that.mouth_close.y);
+            });
+    };
+
+    Player.prototype.attack = function (time) {
+        var that = this;
+        this.timedAnim(time, function () {that.shout.setOpacity(1);},
+            function () {that.shout.setOpacity(0);});
+    };
+
     Player.prototype.update = function () {
         this.sprite.update();
+        this.shout.update();
     };
 
     return Player;
@@ -110,9 +154,8 @@ var GameGraphics = (function () {
         this.layer = that.scene.Layer("layer", {useCanvas: true});
 
         // Create players
-        this.lplayer = new Player(this.spritesheet, true, this.layer);
-        this.rplayer = new Player(this.spritesheet, false, this.layer);
-        this.rplayer.sprite.move(this.w - 160, 0);
+        this.lplayer = new Player(this.spritesheet, true, this.layer, this.w);
+        this.rplayer = new Player(this.spritesheet, false, this.layer, this.w);
 
         function paint() {
             // that.cycle.next(ticker.lastTicksElapsed);
@@ -123,6 +166,8 @@ var GameGraphics = (function () {
         ticker.run();
     };
 
+
+    // External API
     GameGraphics.prototype.keydown = function () {
         this.lplayer.openMouth();
     };
@@ -131,7 +176,28 @@ var GameGraphics = (function () {
         this.lplayer.closeMouth();
     };
 
-    GameGraphics.prototype.reset = function () {
+    GameGraphics.prototype.playerHit = function () {
+        this.lplayer.hit();
+    };
+
+    GameGraphics.prototype.playerHeal = function () {
+        this.lplayer.hit();
+    };
+
+    GameGraphics.prototype.oppHit = function () {
+        this.rplayer.hit(400);
+    };
+
+    GameGraphics.prototype.oppHeal = function () {
+        this.rplayer.hit(400);
+    };
+
+    GameGraphics.prototype.playerAttack = function () {
+        this.lplayer.attack(200);
+    };
+
+    GameGraphics.prototype.oppAttack = function () {
+        this.rplayer.attack(200);
     };
 
     return GameGraphics;
