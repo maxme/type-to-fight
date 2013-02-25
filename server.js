@@ -59,14 +59,14 @@ app.use(function (err, req, res, next) {
 });
 
 // http
-var server = http.createServer(app);
-server.listen(port);
+//var server = http.createServer(app);
+//server.listen(port);
 
 // https
 var serverHttps = https.createServer({
     key: fs.readFileSync('ssl/ssl-key.pem'),
     cert: fs.readFileSync('ssl/ssl-cert.pem')}, app);
-serverHttps.listen(8082);
+serverHttps.listen(port);
 
 //Setup Socket.IO
 var io = sio.listen(serverHttps);
