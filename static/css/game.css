@@ -10,25 +10,42 @@ canvas {
     margin-bottom: 10px;
 }
 
-.word {
-    position:absolute;
-    font-size: 120%;
-    top: 100px;
-    left: 0px;
+.myword {
+    font-size: 40px;
+    font-family: monospace;
+    padding-left: 10px;
 }
 
-.myword {
-    font-size: 50px;
-    font-family: monospace;
+.trtype {
+    width: 40px;
 }
 
 tbody tr {
     padding: 30px;
-    height: 50px;
+    height: 40px;
+}
+
+tbody td {
+    padding-left: 2.5%;
 }
 
 tbody td span {
     color: blue;
+}
+
+.swordorshield {
+    background-image: url('../images/swordorshield.png');
+    background-repeat:no-repeat;
+}
+
+.sword {
+    background-image: url('../images/sword.png');
+    background-repeat:no-repeat;
+}
+
+.shield {
+    background-image: url('../images/shield.png');
+    background-repeat:no-repeat;
 }
 
 .endmenu {
@@ -74,7 +91,7 @@ tbody td span {
 
 .lifebar {
     height: 40px;
-    background-color: red;
+    background-color: #ff5a00;
 }
 
 .lifebar-left {
@@ -87,21 +104,29 @@ tbody td span {
 }
 
 .th-word {
-    width: 75%;
+    width: 90%;
 }
 
 .th-type {
-    width: 15%;
+    width: 40px;
 }
 
 .th-power {
     width: 10%;
 }
 
+.play-type {
+    height: 40px;
+    padding: 0px !important;
+    margin-top: 10px;
+    margin-left: 0px;
+    margin-right: 20px;
+}
+
 #play-input {
     height: auto;
     /*width: 100%;*/
-    font-size: 50px;
+    font-size: 40px;
     font-family: monospace;
 }
 

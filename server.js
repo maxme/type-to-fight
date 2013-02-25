@@ -1,16 +1,19 @@
 //"use strict";
 
-var fs = require('fs');
+// my libs
 var RoomManager = require('./static/js/roommanager.js');
 var Common = require('./static/js/common.js');
+var local = new (require('./static/js/local.js'))();
 
-//setup Dependencies
+// libs
+var fs = require('fs');
 var connect = require('connect');
 var express = require('express');
 var sio = require('socket.io');
 var http = require('http');
 var https = require('https');
 var redis = require('redis');
+var Facebook = require('facebook-node-sdk'); // https://github.com/amachang/facebook-node-sdk
 var port = (process.env.PORT || 8082);
 
 // setup log and trace
@@ -29,13 +32,22 @@ var expressConfigure = function () {
     app.set('view options', { layout: false });
     app.use(connect.bodyParser());
     app.use(express.cookieParser());
-    app.use(express.session({ secret: "shhhhecrethhhhh!"}));
+    app.use(express.session({ secret: local.MY_SECRET }));
+    app.use(Facebook.middleware({ appId: local.FB_APP_ID, secret: local.FB_APP_SECRET }));
     app.use(connect.static(__dirname + '/static'));
     app.use(app.router);
 };
 
 var app = express();
 app.configure(expressConfigure);
+
+function stringifyObj(obj) {
+    var mop = {};
+    for (var i in obj) {
+        mop[i] = '' + obj[i];
+    }
+    return mop;
+}
 
 //setup the errors
 app.use(function (err, req, res, next) {
@@ -57,10 +69,6 @@ app.use(function (err, req, res, next) {
         });
     }
 });
-
-// http
-//var server = http.createServer(app);
-//server.listen(port);
 
 // https
 var serverHttps = https.createServer({
@@ -143,19 +151,28 @@ io.sockets.on('connection', function (socket) {
 ///////////////////////////////////////////
 
 /////// ADD ALL YOUR ROUTES HERE  /////////
-app.all('/', function (req, res) {
-    var requestids = [];
-    if (req.param('request_ids')) {
-        requestids = req.param('request_ids');
-        requestids = requestids.split(',');
-    }
-    res.render('index.jade', {
-        title: 'Play FIXME',
-        description: 'FIXME: Your Page Description',
-        author: 'Maxime Biais',
-        requestids: JSON.stringify(requestids),
-        analyticssiteid: 'FIXME: XXXXXXX'
+app.all('/', Facebook.loginRequired(), function (req, res) {
+    req.facebook.api('/me', function (err, user) {
+        if (err) {
+            res.redirect(req.facebook.getLoginUrl());
+        } else {
+            user.last_seen = JSON.stringify(new Date()).replace(/"/g, '');
+            db.hmset('user:' + user.id, stringifyObj(user));
+            var requestids = [];
+            if (req.param('request_ids')) {
+                requestids = req.param('request_ids');
+                requestids = requestids.split(',');
+            }
+            res.render('index.jade', {
+                title: 'Play FIXME',
+                description: 'FIXME: Your Page Description',
+                author: 'Maxime Biais',
+                requestids: JSON.stringify(requestids),
+                analyticssiteid: 'FIXME: XXXXXXX'
+            });
+        }
     });
+
 });
 
 app.post('/delete-all-invitations', function (req, res) {
@@ -214,27 +231,6 @@ app.get('/facebook-login', function (req, res) {
         author: 'Maxime Biais',
         analyticssiteid: 'FIXME: XXXXXXX'
     });
-});
-
-app.post('/stats', function (req, res) {
-//    Sample data: {
-//        "updated_time": "2012-11-27T16:57:33+0000",
-//        "verified": "true",
-//        "locale": "en_US",
-//        "id": "684491308",
-//        "name": "Maxime Biais",
-//        "first_name": "Maxime",
-//        "last_name": "Biais",
-//        "link": "https://www.facebook.com/maxime.biais",
-//        "username": "maxime.biais",
-//        "gender": "male",
-//        "timezone": "1"
-    // Store in redis DB
-    if (req.body.id) {
-        req.body.last_seen = JSON.stringify(new Date()).replace(/"/g, '');
-        db.hmset('user:' + req.body.id, req.body);
-    }
-    res.send(200);
 });
 
 //The 404 Route (ALWAYS Keep this as the last route)

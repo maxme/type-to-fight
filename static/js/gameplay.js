@@ -40,6 +40,7 @@ var GamePlay = (function () {
     };
 
     GamePlay.prototype.attackTypeToHtml = function (attackType) {
+        return '';
         if (attackType === 0) {
             return 'Attack';
         } else {
@@ -47,12 +48,19 @@ var GamePlay = (function () {
         }
     };
 
+    GamePlay.prototype.attackTypeToClass = function (attackType) {
+        if (attackType === 0) {
+            return 'sword'
+        } else {
+            return 'shield';
+        }
+    };
+
     GamePlay.prototype.insertFirstWord = function (wordobj, done) {
-        var html = "<tr class='trword' id='tr-word-" +
-            wordobj.word + "'><td class='myword'>" +
-            wordobj.word + "</td><td>" +
-            this.attackTypeToHtml(wordobj.type) + "</td><td>" +
-            wordobj.power + "</td></tr>";
+        var html = "<tr class='trword' id='tr-word-" + wordobj.word + "'>" +
+            "<td class='" + this.attackTypeToClass(wordobj.type) + "'>" + this.attackTypeToHtml(wordobj.type) + "</td>" + // type
+            "<td class='myword'>" + wordobj.word + "</td>" + // word
+            "<td>" + wordobj.power + "</td></tr>"; // power
         $(html).appendTo('#wordlist').hide().fadeIn(70, done);
         this.displayedWords.push(wordobj.word);
     };
@@ -75,10 +83,9 @@ var GamePlay = (function () {
     };
 
     GamePlay.prototype.insertRowInTable = function (wordobj, oldword) {
-        var html = "<td class='myword'>" +
-            wordobj.word + "</td><td>" +
-            this.attackTypeToHtml(wordobj.type) + "</td><td>" +
-            wordobj.power + "</td>";
+        var html = "<td class='" + this.attackTypeToClass(wordobj.type) + "'>" + this.attackTypeToHtml(wordobj.type) + "</td>" + // type
+            "<td class='myword'>" + wordobj.word + "</td>" + // word
+            "<td>" + wordobj.power + "</td>"; // power
         $('#tr-word-' + oldword).fadeOut(200, function () {
             $(this).attr('id', 'tr-word-' + wordobj.word).html(html).fadeIn(200);
         });
@@ -158,28 +165,66 @@ var GamePlay = (function () {
     };
 
     GamePlay.prototype.uncolorizeWord = function (word) {
-        var wordElt = $('#tr-word-' + word + ' td')[0];
+        var wordElt = $('#tr-word-' + word + ' td')[1];
         $(wordElt).html(word);
     };
 
     GamePlay.prototype.colorizeWord = function (word, wordpart) {
-        var wordElt = $('#tr-word-' + word + ' td')[0];
+        var wordElt = $('#tr-word-' + word + ' td')[1];
         var wordrest = word.slice(wordpart.length);
         $(wordElt).html('<span>' + wordpart + '</span>' + wordrest);
     };
 
+    GamePlay.prototype.setPlayedIcon = function (possibilities) {
+        var splay = $('.play-type');
+        splay.removeClass('sword');
+        splay.removeClass('shield');
+        splay.removeClass('swordorshield');
+        console.log('pos= '+JSON.stringify(possibilities));
+        if (possibilities.length === 0) {
+            splay.addClass('swordorshield');
+        } else {
+            var attack = false;
+            var defend = false;
+            for (var i = 0; i < possibilities.length; ++i) {
+                var wordobj = this.allWordsHash[possibilities[i]];
+                if (wordobj.type === 0) {
+                    attack = true;
+                }
+                if (wordobj.type === 1) {
+                    defend = true;
+                }
+            }
+            if (attack && defend) {
+                splay.addClass('swordorshield');
+            } else {
+                if (attack) {
+                    splay.addClass('sword');
+                }
+                if (defend) {
+                    splay.addClass('shield');
+                }
+            }
+        }
+    };
+
     GamePlay.prototype.checkPlayedWord = function (word) {
+        var possibilities = [];
         for (var i = 0; i < this.displayedWords.length; ++i) {
             if (this.displayedWords[i].startsWith(word)) {
+                possibilities.push(this.displayedWords[i]);
                 this.colorizeWord(this.displayedWords[i], word);
                 if (this.displayedWords[i] === word) {
                     this.winWord(word);
                     $('#play-input').val('');
+                    this.setPlayedIcon([]);
+                    return ;
                 }
             } else {
                 this.uncolorizeWord(this.displayedWords[i]);
             }
         }
+        this.setPlayedIcon(possibilities);
     };
 
     GamePlay.prototype.keypressStats = function (keycode) {

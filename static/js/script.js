@@ -240,16 +240,7 @@ var ready = function () {
 };
 
 var gameInit2 = function () {
-    myFB.getUserInfos(function (response) {
-        $.ajax({
-            type: "POST",
-            url: "/stats",
-            data: response,
-            dataType: 'text'
-        });
-        playerid = response.id;
-        ready();
-    });
+    ready();
 };
 
 var gameInit = function () {

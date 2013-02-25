@@ -52,12 +52,13 @@ block content
                 table(class='table table-striped')
                     thead
                         tr
-                            th(class='th-word')='Word'
-                            th(class='th-type')='Type'
-                            th(class='th-power')='Power'
+                            th(class='th-type span1')='Type'
+                            th(class='th-word span9')='Word'
+                            th(class='th-power span2')='Power'
                     tbody(id='wordlist')
             div(class='span12')
-                input(id='play-input', class='span12', type='text', value='', disabled='true')
+                span(class='play-type span1 swordorshield')=''
+                input(id='play-input', class='span11', type='text', value='', disabled='true')
             div(class='span12')
                 div(id='logs')
 
