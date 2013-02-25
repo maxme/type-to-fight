@@ -240,7 +240,10 @@ var ready = function () {
 };
 
 var gameInit2 = function () {
-    ready();
+    myFB.getUserInfos(function (response) {
+        playerid = response.id;
+        ready();
+    });
 };
 
 var gameInit = function () {
@@ -252,7 +255,6 @@ var gameInit = function () {
     var myLogin = function () {
         var scope = {scope: 'email,publish_actions,friends_online_presence'};
         myFB.login(scope, gameInit2, loginError);
-
     };
 
     var loginCB = function (res) {
