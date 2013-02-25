@@ -43,11 +43,11 @@ var ready = function () {
         alert('Sorry, it looks like your browser does not support canvas!');
         return false;
     }
-    var gg = new GameGraphics(document.getElementById('divcanvas'), $('#divcanvas').width(), 200);
+    var gameGraphics = new GameGraphics(document.getElementById('divcanvas'), $('#divcanvas').width(), 200);
     $('#play-input').on('keydown', function () {
-        gg.keydown();
+        gameGraphics.keydown();
     }).on('keyup', function () {
-        gg.keyup();
+        gameGraphics.keyup();
     });
 
     // Timer define
@@ -137,6 +137,8 @@ var ready = function () {
 
     function winword_cb(word) {
         socket.emit('win_word', {word: word, playerid: playerid, roomid: roomid});
+        gameGraphics.playerAttack();
+        gameGraphics.oppHit();
     }
 
     function endgame_cb(data) {
