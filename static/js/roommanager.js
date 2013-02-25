@@ -107,7 +107,6 @@ var RoomManager = (function () {
         var that = this;
         this.db.smembers('invitedrooms:' + playerid, function (err, roomlist) {
             var res = [];
-            console.log('obj: ' + JSON.stringify(roomlist));
             var i = 0;
             function nextRoom() {
                 if (roomlist) {

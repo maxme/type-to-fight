@@ -182,7 +182,7 @@ app.post('/endgame', Facebook.loginRequired(), function (req, res) {
     req.facebook.api('/me', function (err, user) {
         if (err) {
             console.log('error user not logged: ' + err);
-            res.redirect(req.facebook.getLoginUrl());
+            // FIXME: what to do ???
         } else {
             console.log('stat words=' + req.param('words'));
             user.last_seen = JSON.stringify(new Date()).replace(/"/g, '');
@@ -218,7 +218,6 @@ app.post('/newgame/:playerid/:oppid', function (req, res) {
 
 app.post('/invited-games', function (req, res) {
     rooms.getInvitedGamesFor(req.body.playerid, function (games) {
-        console.log('games: ' + JSON.stringify(games));
         res.json(games);
     });
 });

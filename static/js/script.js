@@ -73,7 +73,6 @@ var ready = function () {
             });
         } else {
             myFB.getOtherUserInfos(opp_id, function (userdata) {
-                console.log('oppid= ' + opp_id + ' - ' + JSON.stringify(userdata));
                 $('.lifebar-name-right').text(userdata.name);
             });
             myFB.getOtherUserInfos(playerid, function (userdata) {
