@@ -11,7 +11,7 @@ var sio = require('socket.io');
 var http = require('http');
 var https = require('https');
 var redis = require('redis');
-var port = (process.env.PORT || 8081);
+var port = (process.env.PORT || 8082);
 
 // setup log and trace
 process.on('uncaughtException', function (err) {
@@ -248,4 +248,4 @@ function NotFound(msg) {
     Error.captureStackTrace(this, arguments.callee);
 }
 
-console.log('Listening on https://localhost:' + (port + 1));
+console.log('Listening on https://localhost:' + port);

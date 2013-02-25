@@ -6,3 +6,5 @@ tmp/
 
 static/js/local.js
 
+ssl/ssl-cert.pem
+ssl/ssl-key.pem
