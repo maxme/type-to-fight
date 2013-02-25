@@ -45,6 +45,13 @@ var GameStats = (function () {
         this.updateStats();
     };
 
+    GameStats.prototype.endGame = function () {
+        // send stats to server
+        $.post('/endgame', {words: this.words}, function (data, textStatus, jqXHR) {
+            // do nothing
+        });
+    };
+
     return GameStats;
 })();
 

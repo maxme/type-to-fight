@@ -93,6 +93,23 @@ tbody td span {
     height: 40px;
     background-color: #ff5a00;
 }
+.lifebar-name-right {
+    margin-top: -20px;
+    font-size: 20px;
+    font-family: Helvetica;
+    z-index: 1;
+    color: #444;
+    text-align: left;
+}
+
+.lifebar-name-left {
+    text-align: right;
+    margin-top: -20px;
+    font-size: 20px;
+    font-family: Helvetica;
+    z-index: 1;
+    color: #444;
+}
 
 .lifebar-left {
     width: 100%;

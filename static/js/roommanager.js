@@ -220,10 +220,16 @@ var RoomManager = (function () {
                 that.clients[obj.player2].emit('game_end', {
                     you: 'player2', opp: 'player1', scores: scores
                 });
+                that.deleteRoom(roomid);
             } else {
                 console.log('error 4: want to end a non-playing room');
             }
         });
+    };
+
+    RoomManager.prototype.deleteRoom = function (roomid, playerid) {
+        // delete roomid
+        this.db.del('roomid:' + roomid);
     };
 
     RoomManager.prototype.askReplay = function (roomid, playerid) {

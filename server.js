@@ -152,24 +152,42 @@ io.sockets.on('connection', function (socket) {
 
 /////// ADD ALL YOUR ROUTES HERE  /////////
 app.all('/', Facebook.loginRequired(), function (req, res) {
+    if (req.session && req.session.user_id && req.session.access_token) {
+        var requestids = [];
+        if (req.param('request_ids')) {
+            requestids = req.param('request_ids');
+            requestids = requestids.split(',');
+        }
+        res.render('index.jade', {
+            title: 'Play FIXME',
+            description: 'FIXME: Your Page Description',
+            author: 'Maxime Biais',
+            requestids: JSON.stringify(requestids),
+            analyticssiteid: 'FIXME: XXXXXXX'
+        });
+    } else {
+        req.facebook.api('/me', function (err, user) {
+            if (err) {
+                res.redirect(req.facebook.getLoginUrl());
+            } else {
+                user.last_seen = JSON.stringify(new Date()).replace(/"/g, '');
+                db.hmset('user:' + user.id, stringifyObj(user));
+            }
+        });
+    }
+});
+
+app.post('/endgame', Facebook.loginRequired(), function (req, res) {
+    console.log('session: ' + JSON.stringify(req.session));
     req.facebook.api('/me', function (err, user) {
         if (err) {
+            console.log('error user not logged: ' + err);
             res.redirect(req.facebook.getLoginUrl());
         } else {
+            console.log('stat words=' + req.param('words'));
             user.last_seen = JSON.stringify(new Date()).replace(/"/g, '');
             db.hmset('user:' + user.id, stringifyObj(user));
-            var requestids = [];
-            if (req.param('request_ids')) {
-                requestids = req.param('request_ids');
-                requestids = requestids.split(',');
-            }
-            res.render('index.jade', {
-                title: 'Play FIXME',
-                description: 'FIXME: Your Page Description',
-                author: 'Maxime Biais',
-                requestids: JSON.stringify(requestids),
-                analyticssiteid: 'FIXME: XXXXXXX'
-            });
+            res.send(200);
         }
     });
 

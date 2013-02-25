@@ -47,7 +47,6 @@ var ready = function () {
     gamePlay.winword_cb = winword_cb;
     gamePlay.endgame_cb = endgame_cb;
     var socket = io.connect(url, {secure: true});
-    var oppid = 0;
     var mainTimer;
 
     // Timer define
@@ -64,6 +63,23 @@ var ready = function () {
             }
         }
         mainTimer = setTimeout(timerTick, 1000);
+    }
+
+    function updatePlayerNames(opp_id) {
+        if (roomid == 'practice') {
+            $('#lifebar-name-right').text('John Bot');
+            myFB.getOtherUserInfos(playerid, function (userdata) {
+                $('.lifebar-name-left').text(userdata.name);
+            });
+        } else {
+            myFB.getOtherUserInfos(opp_id, function (userdata) {
+                console.log('oppid= ' + opp_id + ' - ' + JSON.stringify(userdata));
+                $('.lifebar-name-right').text(userdata.name);
+            });
+            myFB.getOtherUserInfos(playerid, function (userdata) {
+                $('.lifebar-name-left').text(userdata.name);
+            });
+        }
     }
 
     function startGame() {
@@ -158,13 +174,17 @@ var ready = function () {
     });
 
     socket.on('game_start', function (data) {
+        log('game_start', data);
         $('#modal').modal('hide');
         $('.countdown-container').fadeIn(300);
-        oppid = data.oppid;
         gamePlay.setAllWords(data.words);
         splayinput.focus();
         gameManager.setGameState(2);
-        log('game start=', data);
+        var oppid = data.player1;
+        if (oppid === playerid) {
+            oppid = data.player2;
+        }
+        updatePlayerNames(oppid);
         runTimer(common.GAME_COUNTDOWN - 1, function (remainingSeconds) {
             var text = remainingSeconds;
             if (remainingSeconds === 0) {
@@ -181,6 +201,7 @@ var ready = function () {
 
     socket.on('game_end', function (data) {
         log('game_end=', data);
+        gameStats.endGame();
         realEndGame(data);
     });
 
