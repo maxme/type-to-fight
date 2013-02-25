@@ -177,11 +177,11 @@ var GameGraphics = (function () {
     };
 
     GameGraphics.prototype.playerHit = function () {
-        this.lplayer.hit();
+        this.lplayer.hit(400);
     };
 
     GameGraphics.prototype.playerHeal = function () {
-        this.lplayer.hit();
+        // this.lplayer.hit(); // FIXME
     };
 
     GameGraphics.prototype.oppHit = function () {
@@ -189,7 +189,7 @@ var GameGraphics = (function () {
     };
 
     GameGraphics.prototype.oppHeal = function () {
-        this.rplayer.hit(400);
+        // this.rplayer.hit(); // FIXME
     };
 
     GameGraphics.prototype.playerAttack = function () {

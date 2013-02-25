@@ -1,9 +1,9 @@
 "use strict";
 
 var GamePlay = (function () {
-    function GamePlay(gamestats, gamemanager) {
+    function GamePlay(gamestats, gamegraphics) {
         this.gamestats = gamestats;
-        this.gamemanager = gamemanager;
+        this.gamegraphics = gamegraphics;
         this.MIN_HEALTH = 0;
         this.MAX_HEALTH = 100;
         this.reset();
@@ -124,9 +124,12 @@ var GamePlay = (function () {
     GamePlay.prototype.oppWinWord = function (word) {
         var wordobj = this.allWordsHash[word];
         if (wordobj) {
+            this.gamegraphics.oppAttack();
             if (wordobj.type == 0) { // attack from opp
+                this.gamegraphics.playerHit();
                 this.attackPlayer(wordobj.power);
             } else { // opp healed
+                this.gamegraphics.oppHeal();
                 this.healOpp(wordobj.power);
             }
             this.checkEndGame();
@@ -143,9 +146,12 @@ var GamePlay = (function () {
         this.displayedWords.splice(this.displayedWords.indexOf(word), 1);
         this.showNextWord(word);
         var wordobj = this.allWordsHash[word];
+        this.gamegraphics.playerAttack();
         if (wordobj.type == 0) { // attack from player
+            this.gamegraphics.oppHit();
             this.attackOpp(wordobj.power);
         } else { // player healed
+            this.gamegraphics.playerHeal();
             this.healPlayer(wordobj.power);
         }
         this.checkEndGame();

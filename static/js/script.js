@@ -28,16 +28,6 @@ var ready = function () {
     $('#inputurl').val(window.location.href);
     splayinput.focus();
 
-    var common = new Common();
-    var gameManager = new GameManager(30);
-    var gameStats = new GameStats();
-    var gamePlay = new GamePlay(gameStats, gameManager);
-    gamePlay.winword_cb = winword_cb;
-    gamePlay.endgame_cb = endgame_cb;
-    var socket = io.connect(url, {secure: true});
-    var oppid = 0;
-    var mainTimer;
-
     // Graphics
     if (!('getContext' in document.createElement('canvas'))) {
         alert('Sorry, it looks like your browser does not support canvas!');
@@ -49,6 +39,16 @@ var ready = function () {
     }).on('keyup', function () {
         gameGraphics.keyup();
     });
+
+    var common = new Common();
+    var gameManager = new GameManager(30);
+    var gameStats = new GameStats();
+    var gamePlay = new GamePlay(gameStats, gameGraphics);
+    gamePlay.winword_cb = winword_cb;
+    gamePlay.endgame_cb = endgame_cb;
+    var socket = io.connect(url, {secure: true});
+    var oppid = 0;
+    var mainTimer;
 
     // Timer define
     function runTimer(seconds, update, endcb) {
@@ -137,8 +137,6 @@ var ready = function () {
 
     function winword_cb(word) {
         socket.emit('win_word', {word: word, playerid: playerid, roomid: roomid});
-        gameGraphics.playerAttack();
-        gameGraphics.oppHit();
     }
 
     function endgame_cb(data) {
