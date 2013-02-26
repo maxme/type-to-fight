@@ -13,7 +13,6 @@ var sio = require('socket.io');
 var http = require('http');
 var https = require('https');
 var redis = require('redis');
-var Facebook = require('facebook-node-sdk'); // https://github.com/amachang/facebook-node-sdk
 var port = (process.env.PORT || 8082);
 
 // setup log and trace
@@ -26,15 +25,42 @@ process.on('uncaughtException', function (err) {
 //setup redis
 var db = redis.createClient();
 
+// Passport OAUTH
+var passport = require('passport'),
+    FacebookStrategy = require('passport-facebook').Strategy;
+
+passport.use(new FacebookStrategy({
+        clientID: local.FB_APP_ID,
+        clientSecret: local.FB_APP_SECRET,
+        callbackURL: "https://localhost:8082/facebook/callback"
+    },
+    function (accessToken, refreshToken, profile, done) {
+        console.log('access token=' + accessToken);
+        process.nextTick(function () {
+            return done(null, profile);
+        });
+    }
+));
+
+passport.serializeUser(function (user, done) {
+    done(null, user.id);
+});
+
+passport.deserializeUser(function (obj, done) {
+    done(null, obj);
+});
+
 //Setup Express
 var expressConfigure = function () {
     app.set('views', __dirname + '/views');
     app.set('view options', { layout: false });
+    app.use(connect.static(__dirname + '/static'));
+    // app.use(express.logger());
     app.use(connect.bodyParser());
     app.use(express.cookieParser());
     app.use(express.session({ secret: local.MY_SECRET }));
-    app.use(Facebook.middleware({ appId: local.FB_APP_ID, secret: local.FB_APP_SECRET }));
-    app.use(connect.static(__dirname + '/static'));
+    app.use(passport.initialize());
+    app.use(passport.session());
     app.use(app.router);
 };
 
@@ -150,34 +176,52 @@ io.sockets.on('connection', function (socket) {
 //              Routes                   //
 ///////////////////////////////////////////
 
-/////// ADD ALL YOUR ROUTES HERE  /////////
-app.all('/', Facebook.loginRequired(), function (req, res) {
-    if (req.session && req.session.user_id && req.session.access_token) {
-        var requestids = [];
-        if (req.param('request_ids')) {
-            requestids = req.param('request_ids');
-            requestids = requestids.split(',');
-        }
-        res.render('index.jade', {
-            title: 'Play FIXME',
-            description: 'FIXME: Your Page Description',
-            author: 'Maxime Biais',
-            requestids: JSON.stringify(requestids),
-            analyticssiteid: 'FIXME: XXXXXXX'
-        });
-    } else {
-        req.facebook.api('/me', function (err, user) {
-            if (err) {
-                res.redirect(req.facebook.getLoginUrl());
-            } else {
-                user.last_seen = JSON.stringify(new Date()).replace(/"/g, '');
-                db.hmset('user:' + user.id, stringifyObj(user));
-            }
-        });
+function ensureAuthenticated(req, res, next) {
+    if (req.isAuthenticated()) {
+        return next();
     }
+    res.redirect('/facebook/error');
+}
+
+/////// ADD ALL YOUR ROUTES HERE  /////////
+
+// Facebook routes
+app.get('/facebook/callback', passport.authenticate('facebook', {
+    successRedirect: '/',
+    failureRedirect: '/facebook/error'
+}));
+
+app.get('/facebook/login', passport.authenticate('facebook'), function (req, res) {
 });
 
-app.post('/endgame', Facebook.loginRequired(), function (req, res) {
+app.get('/facebook/error', function (req, res) {
+    res.render('facebook-login.jade', {
+        title: 'New Game',
+        description: 'FIXME: Your Page Description',
+        author: 'Maxime Biais',
+        analyticssiteid: 'FIXME: XXXXXXX'
+    });
+});
+
+app.all('/', ensureAuthenticated, function (req, res) {
+    req.user.last_seen = JSON.stringify(new Date()).replace(/"/g, '');
+    db.hmset('user:' + req.user.id, stringifyObj(req.user));
+
+    var requestids = [];
+    if (req.param('request_ids')) {
+        requestids = req.param('request_ids');
+        requestids = requestids.split(',');
+    }
+    res.render('index.jade', {
+        title: 'Play FIXME',
+        description: 'FIXME: Your Page Description',
+        author: 'Maxime Biais',
+        requestids: JSON.stringify(requestids),
+        analyticssiteid: 'FIXME: XXXXXXX'
+    });
+});
+
+app.post('/endgame', ensureAuthenticated, function (req, res) {
     console.log('session: ' + JSON.stringify(req.session));
     req.facebook.api('/me', function (err, user) {
         if (err) {
@@ -190,7 +234,6 @@ app.post('/endgame', Facebook.loginRequired(), function (req, res) {
             res.send(200);
         }
     });
-
 });
 
 app.post('/delete-all-invitations', function (req, res) {
@@ -222,7 +265,7 @@ app.post('/invited-games', function (req, res) {
     });
 });
 
-app.get('/game/:roomid', function (req, res) {
+app.get('/game/:roomid', ensureAuthenticated, function (req, res) {
     res.render('game.jade', {
         title: 'New Game',
         description: 'FIXME: Your Page Description',
@@ -239,15 +282,6 @@ app.post('/associate', function (req, res) {
         db.hmset('requestid:' + req.body.request_id, req.body);
     }
     res.send(200);
-});
-
-app.get('/facebook-login', function (req, res) {
-    res.render('facebook-login.jade', {
-        title: 'New Game',
-        description: 'FIXME: Your Page Description',
-        author: 'Maxime Biais',
-        analyticssiteid: 'FIXME: XXXXXXX'
-    });
 });
 
 //The 404 Route (ALWAYS Keep this as the last route)
