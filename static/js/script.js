@@ -21,6 +21,10 @@ var ready = function () {
     sgametimer = $('#gametimer');
     smodalmessage = $('#modalmessage');
 
+    // ready to show main and hide loading
+    $('#loading').hide();
+    $('#main').show();
+
     // Show modal
     smodalmessage.html('Connecting...');
     $('#modal').html($('#modal-start')[0].children);
@@ -104,24 +108,11 @@ var ready = function () {
         socket.emit("ping", {roomid: roomid});
     }
 
-    function createStatsTable() {
-        var table = $('<table class="table table-bordered">');
-        table.append('<thead>').children('thead')
-            .append('<tr />').children('tr').append('<th>Words</th><th>Keys Pressed</th><th>Errors</th><th>Accuracy</th><th>Average Speed</th>');
-        var tbody = table.append('<tbody />').children('tbody');
-        tbody.append('<tr />').children('tr:last')
-            .append('<td>' + gameStats.words + '</td>')
-            .append('<td>' + gameStats.totalkeypressed + '</td>')
-            .append('<td>' + gameStats.nbackspacepressed + '</td>')
-            .append('<td>' + Math.floor(10000 * gameStats.accuracy) / 100 + '%</td>')
-            .append('<td>' + gameStats.averageSpeed + ' keypress/min</td>');
-        return table;
-    }
-
     function realEndGame(data) {
         gameManager.setGameState(4);
         clearTimeout(mainTimer);
         sgametimer.html('');
+        var victory = 0;
         // Win and lose message
         if (data) {
             $('#modalmessage2').html('');
@@ -129,9 +120,11 @@ var ready = function () {
             gamePlay.setOppLife(data.scores[data.opp]);
             if (data.scores[data.you] === data.scores[data.opp]) {
                 $('#modalLabel2').html('Draw !');
+                victory = 1;
             } else {
                 if (data.scores[data.you] > data.scores[data.opp]) {
                     $('#modalLabel2').html('You win :)');
+                    victory = 1;
                 } else {
                     $('#modalLabel2').html('You lose :(');
                 }
@@ -139,9 +132,13 @@ var ready = function () {
         } else { // practice
             $('#modalmessage2').html('');
         }
+
         // Statistics
-        var table = createStatsTable();
+        var table = gameStats.createTable();
         $('#modalstats').html(table);
+
+        // gameStats
+        gameStats.endGame(victory, roomid);
 
         // Show modal
         $('#play-input').attr('disabled', true);
@@ -200,7 +197,6 @@ var ready = function () {
 
     socket.on('game_end', function (data) {
         log('game_end=', data);
-        gameStats.endGame();
         realEndGame(data);
     });
 

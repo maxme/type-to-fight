@@ -47,6 +47,10 @@ var secondStepInit = function () {
         });
     });
 
+    // ready to show main and hide loading
+    $('#loading').hide();
+    $('#main').show();
+
     function deleteInvitation(roomid, inviterid, playerid) {
         function endCB () {
             window.location = '/game/' + roomid;

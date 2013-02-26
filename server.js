@@ -2,6 +2,7 @@
 
 // my libs
 var RoomManager = require('./static/js/roommanager.js');
+var ServerStats = require('./static/js/serverstats.js');
 var Common = require('./static/js/common.js');
 var local = new (require('./static/js/local.js'))();
 
@@ -35,7 +36,6 @@ passport.use(new FacebookStrategy({
         callbackURL: local.HOST_NAME + "/facebook/callback"
     },
     function (accessToken, refreshToken, profile, done) {
-        console.log('access token=' + accessToken);
         process.nextTick(function () {
             return done(null, profile);
         });
@@ -43,7 +43,7 @@ passport.use(new FacebookStrategy({
 ));
 
 passport.serializeUser(function (user, done) {
-    done(null, user.id);
+    done(null, user._json);
 });
 
 passport.deserializeUser(function (obj, done) {
@@ -106,6 +106,7 @@ serverHttps.listen(port);
 var io = sio.listen(serverHttps);
 var clients = {};
 var rooms = new RoomManager(clients, db);
+var serverstats = new ServerStats(db);
 var common = new Common();
 
 function checkTimeMessage(roomid, callback) {
@@ -180,16 +181,34 @@ function ensureAuthenticated(req, res, next) {
     if (req.isAuthenticated()) {
         return next();
     }
+    req.session.redirectUrl = req.url;
     res.redirect('/facebook/error');
 }
 
 /////// ADD ALL YOUR ROUTES HERE  /////////
 
 // Facebook routes
-app.get('/facebook/callback', passport.authenticate('facebook', {
-    successRedirect: '/',
-    failureRedirect: '/facebook/error'
-}));
+app.get('/facebook/callback', function (req, res, next) {
+    passport.authenticate('facebook', function (err, user, info) {
+        var redirectUrl = '/';
+        if (err) {
+            return next(err);
+        }
+        if (!user) {
+            return res.redirect('/');
+        }
+        if (req.session.redirectUrl) {
+            redirectUrl = req.session.redirectUrl;
+            req.session.redirectUrl = null;
+        }
+        req.logIn(user, function (err) {
+            if (err) {
+                return next(err);
+            }
+        });
+        res.redirect(redirectUrl);
+    })(req, res, next);
+});
 
 app.get('/facebook/login', passport.authenticate('facebook'), function (req, res) {
 });
@@ -204,6 +223,7 @@ app.get('/facebook/error', function (req, res) {
 });
 
 app.all('/', ensureAuthenticated, function (req, res) {
+    console.log(JSON.stringify(req.user));
     req.user.last_seen = JSON.stringify(new Date()).replace(/"/g, '');
     db.hmset('user:' + req.user.id, stringifyObj(req.user));
 
@@ -222,16 +242,19 @@ app.all('/', ensureAuthenticated, function (req, res) {
 });
 
 app.post('/endgame', ensureAuthenticated, function (req, res) {
-    console.log('session: ' + JSON.stringify(req.session));
-    req.facebook.api('/me', function (err, user) {
-        if (err) {
-            console.log('error user not logged: ' + err);
-            // FIXME: what to do ???
-        } else {
-            console.log('stat words=' + req.param('words'));
-            user.last_seen = JSON.stringify(new Date()).replace(/"/g, '');
-            db.hmset('user:' + user.id, stringifyObj(user));
-            res.send(200);
+    process.nextTick(function () {
+        if (req.session && req.session.passport && req.session.passport.user && req.session.passport.user.id) {
+            var userid = req.session.passport.user.id;
+            serverstats.updateStats(userid, {
+                words: req.param('words', 0),
+                nkeypressed: req.param('nkeypressed', 0),
+                nkeyerror: req.param('nkeyerror', 0),
+                speed: req.param('speed', 100),
+                accuracy: req.param('accuracy', 50),
+                victory: req.param('victory', 0)
+            }, function (err, stats) {
+                res.json(stats);
+            });
         }
     });
 });
@@ -262,6 +285,16 @@ app.post('/newgame/:playerid/:oppid', function (req, res) {
 app.post('/invited-games', function (req, res) {
     rooms.getInvitedGamesFor(req.body.playerid, function (games) {
         res.json(games);
+    });
+});
+
+app.get('/test', function (req, res) {
+    res.render('test.jade', {
+        title: 'New Game',
+        description: 'FIXME: Your Page Description',
+        author: 'Maxime Biais',
+        roomid: req.params.roomid,
+        analyticssiteid: 'FIXME: XXXXXXX'
     });
 });
 

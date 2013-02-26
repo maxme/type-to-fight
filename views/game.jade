@@ -10,57 +10,62 @@ block pagescript
         var roomid = "!{roomid}"
 
 block content
-    // Modal main menu
-    div(id='modal',class='modal hide fade in',tabindex="-1",role="dialog",aria-labelledby="modalLabel")
+    div(id='loading')
+       div(class='hero-unit')
+            h1='Loading...'
+    div(id='main', style='display:none')
+        // Modal main menu
+        div(id='modal',class='modal hide fade in',tabindex="-1",role="dialog",aria-labelledby="modalLabel")
 
-    div(id='modal-start', style='display: none;')
-        div(class='modal-header')
-            h1(id='modalLabel')='Please Wait...'
-        div(class='modal-body')
-            h3(id='modalmessage')='Connecting...'
-            div(id='modalinfos')
-                p='If your opponent can\'t connect, send him this url: '
-                input(id='inputurl', class='span6')=''
+        div(id='modal-start', style='display: none;')
+            div(class='modal-header')
+                h1(id='modalLabel')='Please Wait...'
+            div(class='modal-body')
+                h3(id='modalmessage')='Connecting...'
+                div(id='modalinfos')
+                    p='If your opponent can\'t connect, send him this url: '
+                    input(id='inputurl', class='span6')=''
 
-    // Modal end menu
-    div(id='modal-end', style='display: none;')
-        div(class='modal-header')
-            h1(id='modalLabel2')='Game Over!'
-        div(class='modal-body')
-            h3(id='modalmessage2')='You WIN/LOSE'
-            div(id='modalstats')='Stats: '
-        div(class='modal-footer')
-            a(href='/',class='btn')='Back to Menu'
-            a(href='#',id='replay-button',class='btn btn-primary')='Replay !'
+        // Modal end menu
+        div(id='modal-end', style='display: none;')
+            div(class='modal-header')
+                h1(id='modalLabel2')='Game Over!'
+            div(class='modal-body')
+                h3(id='modalmessage2')='You WIN/LOSE'
+                div(id='modalstats')='Stats: '
+                div(id='modalstats-global')='Global Stats'
+            div(class='modal-footer')
+                a(href='/',class='btn')='Back to Menu'
+                a(href='#',id='replay-button',class='btn btn-primary')='Replay !'
 
-    // Game view
-    div(class='container')
-        div(class='row')
-            div(class='countdown-container')
-                div(id='countdown',class='countdown')=3
-            div(class='span12')
-                div(id='divcanvas')
-            div(class='span5 lifebar-container')
-                div(class='lifebar-bg span5')
-                div(id='left-player-name', class='lifebar-name-left')='John Bot'
-                div(class='lifebar lifebar-left')
-            div(class='timer span2', id='gametimer')
-                | 60
-            div(class='span5 lifebar-container')
-                div(class='lifebar-bg span5')
-                div(id='right-player-name', class='lifebar-name-right')='John Bot'
-                div(class='lifebar lifebar-right')
-            div(class='span12')
-                table(class='table table-striped')
-                    thead
-                        tr
-                            th(class='th-type span1')='Type'
-                            th(class='th-word span9')='Word'
-                            th(class='th-power span2')='Power'
-                    tbody(id='wordlist')
-            div(class='span12')
-                span(class='play-type span1 swordorshield')=''
-                input(id='play-input', class='span11', type='text', value='', disabled='true')
-            div(class='span12')
-                div(id='logs')
+        // Game view
+        div(class='container')
+            div(class='row')
+                div(class='countdown-container')
+                    div(id='countdown',class='countdown')=3
+                div(class='span12')
+                    div(id='divcanvas')
+                div(class='span5 lifebar-container')
+                    div(class='lifebar-bg span5')
+                    div(id='left-player-name', class='lifebar-name-left')='John Bot'
+                    div(class='lifebar lifebar-left')
+                div(class='timer span2', id='gametimer')
+                    | 60
+                div(class='span5 lifebar-container')
+                    div(class='lifebar-bg span5')
+                    div(id='right-player-name', class='lifebar-name-right')='John Bot'
+                    div(class='lifebar lifebar-right')
+                div(class='span12')
+                    table(class='table table-striped')
+                        thead
+                            tr
+                                th(class='th-type span1')='Type'
+                                th(class='th-word span9')='Word'
+                                th(class='th-power span2')='Power'
+                        tbody(id='wordlist')
+                div(class='span12')
+                    span(class='play-type span1 swordorshield')=''
+                    input(id='play-input', class='span11', type='text', value='', disabled='true')
+                div(class='span12')
+                    div(id='logs')
 
