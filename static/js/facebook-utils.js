@@ -90,6 +90,7 @@ var FBUtils = (function () {
 // contain some type checks that are overly strict.
 // Please report such bugs using the bugs tool.
 (function (d, debug) {
+    console.log('fb init');
     var js, id = 'facebook-jssdk', ref = d.getElementsByTagName('script')[0];
     if (d.getElementById(id)) {
         return;
@@ -99,11 +100,18 @@ var FBUtils = (function () {
     js.async = true;
     js.src = "//connect.facebook.net/en_US/all" + (debug ? "/debug" : "") + ".js";
     ref.parentNode.insertBefore(js, ref);
-}(document, /*debug*/ false));
+}(document, /*debug*/ true));
 
 window.fbAsyncInit = function () {
-    if (typeof(menuInit) !== 'undefined')
+    console.log('fbAsyncInit');
+    if (typeof(menuInit) !== 'undefined') {
         menuInit();
-    if (typeof(gameInit) !== 'undefined')
-        gameInit();
+    } else {
+        if (typeof(gameInit) !== 'undefined') {
+            gameInit();
+        } else {
+            console.log('Warning: menuInit and gameInit are undefined');
+        }
+    }
+
 };

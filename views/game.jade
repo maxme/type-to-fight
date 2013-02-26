@@ -6,6 +6,8 @@ block pagestyle
 block pagescript
     script(defer, src='/js/script.js')
     script(defer, src='/js/gamegraphics.js')
+    script(defer, src='/js/facebook-utils.js')
+
     script
         var roomid = "!{roomid}"
 
@@ -33,7 +35,6 @@ block content
             div(class='modal-body')
                 h3(id='modalmessage2')='You WIN/LOSE'
                 div(id='modalstats')='Stats: '
-                div(id='modalstats-global')='Global Stats'
             div(class='modal-footer')
                 a(href='/',class='btn')='Back to Menu'
                 a(href='#',id='replay-button',class='btn btn-primary')='Replay !'

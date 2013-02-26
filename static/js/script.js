@@ -20,7 +20,9 @@ var ready = function () {
     scountdown = $('.countdown');
     sgametimer = $('#gametimer');
     smodalmessage = $('#modalmessage');
-
+    $('#play-input').bind('paste', function () {
+        return false;
+    });
     // ready to show main and hide loading
     $('#loading').hide();
     $('#main').show();

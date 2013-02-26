@@ -245,7 +245,7 @@ app.post('/endgame', ensureAuthenticated, function (req, res) {
     process.nextTick(function () {
         if (req.session && req.session.passport && req.session.passport.user && req.session.passport.user.id) {
             var userid = req.session.passport.user.id;
-            serverstats.updateStats(userid, {
+            serverstats.updateStats(userid, req.param('roomid'), {
                 words: req.param('words', 0),
                 nkeypressed: req.param('nkeypressed', 0),
                 nkeyerror: req.param('nkeyerror', 0),

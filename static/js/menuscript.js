@@ -2,16 +2,22 @@
 
 // GLOBAL
 var myFB = null;
-var menuInit;
 
 // Menu init method called after FB init
-menuInit = function () {
+var menuInit = function () {
+    console.log("menu init1");
     var myLogin = function () {
         var scope = {scope: 'email,publish_actions,friends_online_presence'};
         myFB.login(scope, secondStepInit, loginError);
     };
 
-    myFB = new FBUtils({appid: (new Local()).FB_APP_ID});
+    console.log("menu init2");
+
+    myFB = new FBUtils({appid: (new Local()).FB_APP_ID}, function () {
+        console.log('user seems logged in facebook');
+    });
+    console.log("menu init3");
+
     myFB.getLoginStatus(function () {
         console.log('user is logged in facebook');
         secondStepInit();

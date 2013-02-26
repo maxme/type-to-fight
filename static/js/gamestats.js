@@ -47,6 +47,7 @@ var GameStats = (function () {
 
     GameStats.prototype.endGame = function (victory, roomid) {
         // send stats to server
+        var that = this;
         var speed = this.averageSpeed;
         var accuracy = this.accuracy;
         if (this.nkeypressed < 15) {
@@ -56,33 +57,61 @@ var GameStats = (function () {
 
         $.post('/endgame', {
             words: this.words,
-            nkeypressed: this.nkeypressed,
+            nkeypressed: this.totalkeypressed,
             nkeyerror: this.nbackspacepressed,
             speed: speed,
             accuracy: accuracy,
-            roomdid: roomid,
+            roomid: roomid,
             victory: victory
         }, function (data, textStatus, jqXHR) {
-            this.addAverageRow(data);
+            that.addAverageRow(data);
         });
     };
 
     GameStats.prototype.createTable = function () {
-        var table = $('<table class="table table-bordered" id="stats-table">');
+        var table = $('<table class="table table-bordered">');
         table.append('<thead>').children('thead')
-            .append('<tr />').children('tr').append('<th>Words</th><th>Keys Pressed</th><th>Errors</th><th>Accuracy</th><th>Average Speed</th>');
-        var tbody = table.append('<tbody />').children('tbody');
+            .append('<tr />').children('tr').append('<th></th><th>Words</th><th>Keypresses</th><th>Errors</th><th>Accuracy</th><th>Speed</th>');
+        var tbody = table.append('<tbody id="stats-tbody" />').children('tbody');
         tbody.append('<tr />').children('tr:last')
+            .append('<td>This game</td>')
             .append('<td>' + this.words + '</td>')
             .append('<td>' + this.totalkeypressed + '</td>')
             .append('<td>' + this.nbackspacepressed + '</td>')
             .append('<td>' + Math.floor(10000 * this.accuracy) / 100 + '%</td>')
-            .append('<td>' + this.averageSpeed + ' keypress/min</td>');
+            .append('<td>' + this.averageSpeed + ' k/min</td>');
         return table;
     };
 
+    GameStats.prototype.getArrowImg = function(current, avg, inv) {
+        var green = '<img src="../images/arrow-up.png" />';
+        var red = '<img src="../images/arrow-down.png" />';
+        if (current > avg) {
+            return inv ? red : green;
+        } else {
+            if (current === avg) {
+                return '';
+            } else {
+                return inv ? green : red;
+            }
+        }
+    };
+
     GameStats.prototype.addAverageRow = function(avgstats) {
-        var table = $('#stats-table');
+        console.log('avg stats: ' + JSON.stringify(avgstats));
+        var table = $('#stats-tbody');
+        var avgWords = Math.floor(100 * avgstats.cumulWords / avgstats.gamesPlayed) / 100;
+        var avgKeyPressed = Math.floor(100 * avgstats.cumulKeyPressed / avgstats.gamesPlayed) / 100;
+        var avgKeyError = Math.floor(100 * avgstats.cumulKeyError / avgstats.gamesPlayed) / 100;
+        var avgAccuracy = Math.floor(10000 * avgstats.averageAccuracy) / 100;
+        var avgSpeed = Math.floor(100 * avgstats.averageSpeed) / 100;
+        table.append('<tr />').children('tr:last')
+            .append('<td>Your Average</td>')
+            .append('<td>' + avgWords + this.getArrowImg(this.words, avgWords) + '</td>')
+            .append('<td>' + avgKeyPressed + this.getArrowImg(this.totalkeypressed, avgKeyPressed) + '</td>')
+            .append('<td>' + avgKeyError + this.getArrowImg(this.nbackspacepressed, avgKeyError, true) + '</td>')
+            .append('<td>' + avgAccuracy + '%' + this.getArrowImg(this.accuracy, avgstats.averageAccuracy) + '</td>')
+            .append('<td>' + avgSpeed + ' k/min' + this.getArrowImg(this.averageSpeed, avgSpeed) + '</td>');
     };
 
     return GameStats;
