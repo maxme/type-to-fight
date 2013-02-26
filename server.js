@@ -210,7 +210,7 @@ app.get('/facebook/callback', function (req, res, next) {
     })(req, res, next);
 });
 
-app.get('/facebook/login', passport.authenticate('facebook'), function (req, res) {
+app.all('/facebook/login', passport.authenticate('facebook'), function (req, res) {
 });
 
 app.get('/facebook/error', function (req, res) {
