@@ -83,7 +83,6 @@ var GameStats = (function () {
 
     GameStats.prototype.addAverageRow = function(avgstats) {
         var table = $('#stats-table');
-        table
     };
 
     return GameStats;
