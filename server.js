@@ -32,7 +32,7 @@ var passport = require('passport'),
 passport.use(new FacebookStrategy({
         clientID: local.FB_APP_ID,
         clientSecret: local.FB_APP_SECRET,
-        callbackURL: "https://localhost:8082/facebook/callback"
+        callbackURL: local.HOST_NAME + "/facebook/callback"
     },
     function (accessToken, refreshToken, profile, done) {
         console.log('access token=' + accessToken);
