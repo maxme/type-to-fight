@@ -8,9 +8,10 @@ var RoomManager = (function () {
     var common = new Common();
     var EXPIRATION_TIME = 60 * 60 * 4;
 
-    function RoomManager(clients, db, callback) {
+    function RoomManager(clients, db, serverstats, callback) {
         this.clients = clients;
         this.db = db;
+        this.serverstats = serverstats;
         this.initWordList(callback);
     }
 
@@ -219,6 +220,8 @@ var RoomManager = (function () {
                 that.clients[obj.player2].emit('game_end', {
                     you: 'player2', opp: 'player1', scores: scores
                 });
+                var player1_is_victorious = scores.player1 > scores.player2;
+                that.serverstats.updateRatings(obj.player1, obj.player2, player1_is_victorious);
                 that.deleteRoom(roomid);
             } else {
                 console.log('error 4: want to end a non-playing room');

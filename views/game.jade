@@ -12,9 +12,11 @@ block pagescript
         var roomid = "!{roomid}"
 
 block content
-    div(id='loading')
+    div(id='loading', class='container')
        div(class='hero-unit')
             h1='Loading...'
+            div(class='progress progress-striped active', style='width: 50%')
+                div(class='bar', style='width: 100%')
     div(id='main', style='display:none')
         // Modal main menu
         div(id='modal',class='modal hide fade in',tabindex="-1",role="dialog",aria-labelledby="modalLabel")
@@ -34,13 +36,14 @@ block content
                 h1(id='modalLabel2')='Game Over!'
             div(class='modal-body')
                 h3(id='modalmessage2')='You WIN/LOSE'
+                div(id='rating')
                 div(id='modalstats')='Stats: '
             div(class='modal-footer')
                 a(href='/',class='btn')='Back to Menu'
                 a(href='#',id='replay-button',class='btn btn-primary')='Replay !'
 
         // Game view
-        div(class='container')
+        div(class='container game-container')
             div(class='row')
                 div(class='countdown-container')
                     div(id='countdown',class='countdown')=3

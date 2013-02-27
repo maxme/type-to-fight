@@ -85,20 +85,21 @@ tbody td span {
 .lifebar-bg {
     height: 40px;
     position: absolute;
-    z-index: -1;
+    z-index: 1;
     margin: 0;
-    background-color: #eee;
+    background-color: #ddd;
 }
 
 .lifebar {
     height: 40px;
     background-color: #ff5a00;
+    position: relative;
+    z-index: 2;
 }
 .lifebar-name-right {
     margin-top: -20px;
     font-size: 20px;
     font-family: Helvetica;
-    z-index: 1;
     color: #444;
     text-align: left;
 }
@@ -108,7 +109,6 @@ tbody td span {
     margin-top: -20px;
     font-size: 20px;
     font-family: Helvetica;
-    z-index: 1;
     color: #444;
 }
 
@@ -163,7 +163,24 @@ body .modal th, body .modal td {
     font-size: 16px;
 }
 
+.table-rating {
+    width: 40%;
+}
+
 /* Debug */
 #logs {
     white-space: nowrap;
+}
+
+/* Color test */
+body {
+    background-color: #56627c;
+}
+
+.game-container {
+    padding: 15px;
+    background-color: #eef1f7;
+    -webkit-border-radius: 6px;
+    -moz-border-radius: 6px;
+    border-radius: 6px;
 }

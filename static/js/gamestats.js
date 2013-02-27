@@ -97,6 +97,18 @@ var GameStats = (function () {
         }
     };
 
+    GameStats.prototype.setRating = function(rating) {
+        var toppercent = Math.max(1, Math.round((rating.rank / rating.nscores) * 10)) * 10;
+
+        var table = $('<table class="table table-rating">');
+        var tbody = table.append('<tbody>').children('tbody');
+        tbody.append('<tr />').children('tr:last').append('<td>Rank</td>')
+            .append('<td>' + rating.rank + ' (top ' + toppercent + '%)</td>');
+        tbody.append('<tr />').children('tr:last').append('<td>Rating</td>')
+            .append('<td>' + Math.floor(rating.rating) + '</td>');
+        $('#rating').html(table);
+    };
+
     GameStats.prototype.addAverageRow = function(avgstats) {
         console.log('avg stats: ' + JSON.stringify(avgstats));
         var table = $('#stats-tbody');
@@ -112,6 +124,9 @@ var GameStats = (function () {
             .append('<td>' + avgKeyError + this.getArrowImg(this.nbackspacepressed, avgKeyError, true) + '</td>')
             .append('<td>' + avgAccuracy + '%' + this.getArrowImg(this.accuracy, avgstats.averageAccuracy) + '</td>')
             .append('<td>' + avgSpeed + ' k/min' + this.getArrowImg(this.averageSpeed, avgSpeed) + '</td>');
+        if (avgstats.rating) {
+            this.setRating(avgstats.rating);
+        }
     };
 
     return GameStats;

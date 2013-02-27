@@ -105,8 +105,8 @@ serverHttps.listen(port);
 //Setup Socket.IO
 var io = sio.listen(serverHttps);
 var clients = {};
-var rooms = new RoomManager(clients, db);
 var serverstats = new ServerStats(db);
+var rooms = new RoomManager(clients, db, serverstats);
 var common = new Common();
 
 function checkTimeMessage(roomid, callback) {
@@ -253,7 +253,12 @@ app.post('/endgame', ensureAuthenticated, function (req, res) {
                 accuracy: req.param('accuracy', 50),
                 victory: req.param('victory', 0)
             }, function (err, stats) {
-                res.json(stats);
+                serverstats.getRating(userid, function(err2, rating) {
+                    if (!err2) {
+                        stats.rating = rating;
+                    }
+                    res.json(stats);
+                });
             });
         }
     });
