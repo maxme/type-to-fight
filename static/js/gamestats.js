@@ -102,8 +102,13 @@ var GameStats = (function () {
 
         var table = $('<table class="table table-rating">');
         var tbody = table.append('<tbody>').children('tbody');
-        tbody.append('<tr />').children('tr:last').append('<td>Rank</td>')
-            .append('<td>' + rating.rank + ' (top ' + toppercent + '%)</td>');
+        var rank = tbody.append('<tr />').children('tr:last').append('<td>Rank</td>');
+
+        if (rating.rank === -1) {
+            rank.append('<td>not applicable</td>');
+        } else {
+            rank.append('<td>' + rating.rank + ' (top ' + toppercent + '%)</td>');
+        }
         tbody.append('<tr />').children('tr:last').append('<td>Rating</td>')
             .append('<td>' + Math.floor(rating.rating) + '</td>');
         $('#rating').html(table);
