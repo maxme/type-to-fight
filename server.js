@@ -126,12 +126,19 @@ io.sockets.on('connection', function (socket) {
     console.log('Client Connected: ' + socket.id);
     socket.on('connection', function (data) {
         data.socket_id = socket.id;
+        data.error = 0;
         clients[data.playerid] = socket;
-        socket.emit('connection_ok', data);
         if (data.roomid === 'practice') {
-            rooms.emitPracticeStart(data.playerid);
+            rooms.emitPracticeStart(data.playerid, function () {
+                socket.emit('connection_ok', data);
+            });
         } else {
-            rooms.connectUserToGame(data.roomid, data.playerid);
+            rooms.connectUserToGame(data.roomid, data.playerid, function (err) {
+                if (err) {
+                    data.error = err;
+                }
+                socket.emit('connection_ok', data);
+            });
         }
     });
 

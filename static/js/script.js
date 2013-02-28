@@ -166,9 +166,14 @@ var ready = function () {
      */
 
     socket.on('connection_ok', function (data) {
-        gameManager.setGameState(1);
-        smodalmessage.html('Waiting for your opponent to connect.');
         log('connection_ok=', data);
+        if (data.error === 3) {
+            smodalmessage.html('Something gone wrong, I can\'t connect you to this game session');
+            $('#modalfooter').show(300);
+        } else {
+            smodalmessage.html('Waiting for your opponent to connect.');
+        }
+        gameManager.setGameState(1);
     });
 
     socket.on('game_start', function (data) {
