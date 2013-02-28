@@ -1,7 +1,7 @@
 extends layout
 
 block pagestyle
-    link(rel='stylesheet', href='/css/menu.css')
+    link(rel='stylesheet', href='/css/game.css')
 
 block pagescript
     script(defer, src='/js/menuscript.js')
@@ -33,18 +33,18 @@ block content
                 hr
                 div(class='narrow-container')
                     div(class='button-menu')
-                        a(href="/game/practice", id='game-practice', class='btn btn-large btn-primary btn-menu')="Practice"
+                        a(href="/game/practice", id='game-practice', class='btn btn-large btn-custom btn-blue btn-menu')="Practice"
                     div(class='button-menu')
-                        a(href="#", id='game-with-random', class='btn btn-large btn-primary btn-menu')="New Game with Random Opponent"
+                        a(href="#", id='game-with-random', class='btn btn-large btn-custom btn-blue  btn-menu')="New Game with Random Opponent"
                     div(class='button-menu')
-                        a(href="#", id='game-with-friend', class='btn btn-large btn-primary btn-menu')="New Game with Friend"
+                        a(href="#", id='game-with-friend', class='btn btn-large btn-custom btn-blue  btn-menu')="New Game with Friend"
                     div(id='online-friends')
                         h2='Online friends'
                         ul(id='online-friends-ul', class='unstyled')
                     div(class='button-menu')
-                        a(href="/leaderboards", class='btn btn-large btn-primary btn-menu')="Leaderboards"
+                        a(href="/leaderboards", class='btn btn-large btn-custom btn-blue  btn-menu')="Leaderboards"
                     div(class='button-menu')
-                        a(href="#", id="invite-friends", class='btn btn-large btn-primary btn-menu')="Invite Friends"
+                        a(href="#", id="invite-friends", class='btn btn-large btn-custom btn-blue  btn-menu')="Invite Friends"
                 div(id='offline-friends')
                     h2='Offline friends'
                     ul(id='offlne-friends-ul')

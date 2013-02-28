@@ -31,7 +31,10 @@ block content
                     p='If your opponent can\'t connect, send him this url: '
                     input(id='inputurl', class='span6')=''
             div(id='modalfooter', class='modal-footer', style='display: none;')
-                a(href='/',class='btn')='Back to Menu'
+                a(href='/',class='btn btn-large btn-red btn-custom')
+                    i(class='icon-white icon-arrow-left')=' '
+                    span=' Back To Menu'
+
 
         // Modal end menu
         div(id='modal-end', style='display: none;')
@@ -42,7 +45,9 @@ block content
                 div(id='rating')
                 div(id='modalstats')='Stats: '
             div(class='modal-footer')
-                a(href='/',class='btn btn-large btn-red btn-custom')='Back to Menu'
+                a(href='/',class='btn btn-large btn-red btn-custom')
+                    i(class='icon-white icon-arrow-left')=' '
+                    span=' Back To Menu'
                 a(href='#',id='replay-button',class='btn btn-large btn-green btn-custom')
                     i(class='icon-white icon-repeat')=' '
                     span=' Replay !'
