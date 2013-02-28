@@ -69,7 +69,7 @@ var GameStats = (function () {
     };
 
     GameStats.prototype.createTable = function () {
-        var table = $('<table class="table table-bordered">');
+        var table = $('<table class="table">');
         table.append('<thead>').children('thead')
             .append('<tr />').children('tr').append('<th></th><th>Words</th><th>Keypresses</th><th>Errors</th><th>Accuracy</th><th>Speed</th>');
         var tbody = table.append('<tbody id="stats-tbody" />').children('tbody');
@@ -115,7 +115,6 @@ var GameStats = (function () {
     };
 
     GameStats.prototype.addAverageRow = function(avgstats) {
-        console.log('avg stats: ' + JSON.stringify(avgstats));
         var table = $('#stats-tbody');
         var avgWords = Math.floor(100 * avgstats.cumulWords / avgstats.gamesPlayed) / 100;
         var avgKeyPressed = Math.floor(100 * avgstats.cumulKeyPressed / avgstats.gamesPlayed) / 100;

@@ -153,6 +153,10 @@ tbody td span {
     display: none;
 }
 
+#modalLabel2 {
+    text-align: center;
+}
+
 body .modal {
     width: 80%; /* desired relative width */
     left: 10%; /* (100%-width)/2 */
@@ -165,6 +169,98 @@ body .modal th, body .modal td {
 
 .table-rating {
     width: 40%;
+}
+
+.modal-footer {
+    border-bottom-right-radius: 0px;
+    border-bottom-left-radius: 0px;
+    background-color: #2d8dcd;
+}
+
+.modal-header {
+    background-color: #2d8dcd;
+    color: white;
+    border-top-left-radius: 0px;
+    border-top-right-radius: 0px;
+}
+
+.table th, .table td {
+    border-top: 2px solid white;
+}
+
+.modal-body {
+    background-image: url('../images/stripped-bg.png');
+}
+
+.modal {
+    border: 10px solid #2d8dcd;
+}
+
+/* Buttons */
+.btn-grey {
+    border: 3px solid #121212;
+    -webkit-box-shadow: 0px 6px 0 #121212;
+    -moz-box-shadow: 0px 6px 0 #121212;
+    box-shadow: 0px 6px 0 #121212;
+    background-color: #333;
+}
+
+.btn-grey:hover {
+    background-color: #444;    
+}
+
+.btn-green {
+    border: 3px solid #276627;
+    -webkit-box-shadow: 0px 6px 0 #276627;
+    -moz-box-shadow: 0px 6px 0 #276627;
+    box-shadow: 0px 6px 0 #276627;
+    background-color: #5bb75b;
+}
+
+.btn-green:hover {
+    background-color: #44a444;
+}
+
+.btn-red {
+    border: 3px solid #9f1411;
+    -webkit-box-shadow: 0px 6px 0 #9f1411;
+    -moz-box-shadow: 0px 6px 0 #9f1411;
+    box-shadow: 0px 6px 0 #9f1411;
+    background-color: #da4f49;
+}
+
+.btn-red:hover {
+    background-color: #c53a35;
+}
+
+.btn-blue {
+    border: 3px solid #124a5b;
+    -webkit-box-shadow: 0px 6px 0 #124a5b;
+    -moz-box-shadow: 0px 6px 0 #124a5b;
+    box-shadow: 0px 6px 0 #124a5b;
+    background-color: #3e9fbc;
+}
+
+.btn-blue:hover {
+    background-color: #c53a35;
+}
+
+.btn-custom, .btn-custom:hover, .btn-custom:active  {
+    -webkit-border-radius: 10px;
+    -moz-border-radius: 10px;
+    border-radius: 10px;
+    background-image: none;
+    color: #fff;
+}
+
+.btn-grey:hover {
+    background-color: #444;    
+}
+
+.btn-custom:active  {
+    box-shadow: none;
+    position: relative;
+    top: 6px;
 }
 
 /* Debug */

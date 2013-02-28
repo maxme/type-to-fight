@@ -17,6 +17,7 @@ block content
             h1='Loading...'
             div(class='progress progress-striped active', style='width: 50%')
                 div(class='bar', style='width: 100%')
+
     div(id='main', style='display:none')
         // Modal main menu
         div(id='modal',class='modal hide fade in',tabindex="-1",role="dialog",aria-labelledby="modalLabel")
@@ -29,6 +30,8 @@ block content
                 div(id='modalinfos')
                     p='If your opponent can\'t connect, send him this url: '
                     input(id='inputurl', class='span6')=''
+            div(id='modalfooter', class='modal-footer', style='display: none;')
+                a(href='/',class='btn')='Back to Menu'
 
         // Modal end menu
         div(id='modal-end', style='display: none;')
@@ -39,8 +42,10 @@ block content
                 div(id='rating')
                 div(id='modalstats')='Stats: '
             div(class='modal-footer')
-                a(href='/',class='btn')='Back to Menu'
-                a(href='#',id='replay-button',class='btn btn-primary')='Replay !'
+                a(href='/',class='btn btn-large btn-red btn-custom')='Back to Menu'
+                a(href='#',id='replay-button',class='btn btn-large btn-green btn-custom')
+                    i(class='icon-white icon-repeat')=' '
+                    span=' Replay !'
 
         // Game view
         div(class='container game-container')

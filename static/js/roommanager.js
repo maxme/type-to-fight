@@ -252,11 +252,12 @@ var RoomManager = (function () {
         });
     };
 
-    RoomManager.prototype.emitPracticeStart = function (playerid) {
+    RoomManager.prototype.emitPracticeStart = function (playerid, callback) {
         this.clients[playerid].emit('game_start', {
             words: this.getRandomWordSet("english", common.MAX_WORD_LIST),
             start_time: '' + (new Date()).getTime()
         });
+        typeof callback === 'function' && callback();
     };
 
     RoomManager.prototype.emitGameStart = function (player1, player2, obj) {
@@ -315,7 +316,11 @@ var RoomManager = (function () {
                 that.createNewRoom(roomid, playerid);
                 typeof callback === 'function' && callback(null, 2);
             } else {
-                console.log('room already created');
+                if (obj.player1 == playerid) {
+                    console.log('error 3: player already registered in this room');
+                    typeof callback === 'function' && callback(3, 3);
+                    return ;
+                }
                 // check if user is alone
                 if (obj.player2) {
                     console.log('error 2: both player already in...');
