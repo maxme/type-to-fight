@@ -9,8 +9,7 @@
 }
 
 .btn-menu-small {
-    /*width: 64px;*/
-    margin-right: 10px;
+    width: 100px;
 }
 
 #online-friends {
@@ -278,6 +277,7 @@ body .modal th, body .modal td {
     border-radius: 10px;
     background-image: none;
     color: #fff;
+    font-weight: bold;
 }
 
 .btn-grey:hover {
@@ -288,6 +288,19 @@ body .modal th, body .modal td {
     box-shadow: none;
     position: relative;
     top: 6px;
+}
+
+.menu-small-buttons {
+    margin-left: 350px;
+    position: absolute;
+}
+
+.menu-small-buttons2 {
+    margin-bottom: 10px;
+}
+
+.btn-float-right {
+    width: 100px;
 }
 
 /* Debug */

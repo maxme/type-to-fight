@@ -32,6 +32,16 @@ block content
                 p='Test your typing skills and compete against your friends'
                 hr
                 div(class='narrow-container')
+                    div(class='menu-small-buttons')
+                        div(class='menu-small-buttons2')
+                            a(href="#", id="btn-sound", class='btn btn-large btn-float-right btn-custom btn-green btn-menu-small')
+                                i(class='icon-white icon-volume-down')
+                                span=' Sound'
+                        div(class='menu-small-buttons2')
+                            a(href="#", id="btn-music", class='btn btn-large btn-float-right btn-custom btn-green btn-menu-small')
+                                i(class='icon-white icon-music')
+                                span=' Music'
+
                     div(class='button-menu')
                         a(href="/game/practice", id='game-practice', class='btn btn-large btn-custom btn-blue btn-menu')="Practice"
                     div(class='button-menu')
@@ -44,14 +54,9 @@ block content
                     div(class='button-menu')
                         a(href="/leaderboards", class='btn btn-large btn-custom btn-blue  btn-menu')="Leaderboards"
                     div(class='button-menu')
+                        a(href="/stats", class='btn btn-large btn-custom btn-blue  btn-menu')="Game Stats"
+                    div(class='button-menu')
                         a(href="#", id="invite-friends", class='btn btn-large btn-custom btn-blue  btn-menu')="Invite Friends"
                 div(id='offline-friends')
                     h2='Offline friends'
                     ul(id='offlne-friends-ul')
-                div
-                    a(href="#", id="btn-sound", class='btn btn-large btn-custom btn-green btn-menu-small')
-                        i(class='icon-white icon-volume-down')
-                        span=' Sound'
-                    a(href="#", id="btn-music", class='btn btn-large btn-custom btn-green btn-menu-small')
-                        i(class='icon-white icon-music')
-                        span=' Music'
