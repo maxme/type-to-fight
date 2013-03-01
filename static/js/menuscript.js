@@ -53,6 +53,12 @@ var secondStepInit = function () {
         });
     });
 
+    var soundmanager = new SoundManager();
+    soundmanager.loadSounds(thirdStepInit);
+};
+
+var thirdStepInit = function () {
+
     // ready to show main and hide loading
     $('#loading').hide();
     $('#main').show();

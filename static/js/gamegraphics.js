@@ -1,4 +1,4 @@
-var SpriteSheet =(function () {
+var SpriteSheet = (function () {
     function SpriteSheet(scene, spritesheet_json, spritesheet_img, callback) {
         var that = this;
         this.spritesheet_img = spritesheet_img;
@@ -17,7 +17,7 @@ var SpriteSheet =(function () {
         var request = new XMLHttpRequest();
         request.open("GET", filename);
         request.onreadystatechange = function () {
-            if (request.readyState == 4) {
+            if (request.readyState === 4) {
                 fileLoaded(request.responseText);
             }
         };
@@ -69,21 +69,24 @@ var Player = (function () {
 
     Player.prototype.createPlayer = function () {
         this.sprite = this.spritesheet.createSprite('char1/char1a.png', this.layer);
+        var posX = 50;
         if (this.left) {
-            this.sprite.move(0, 0);
+            this.sprite.move(posX, 35);
             this.sprite.setXScale(-1);
         } else {
-            this.sprite.move(this.w - this.sprite.w, 0);
+            this.sprite.move(this.w - this.sprite.w - posX, 35);
         }
+        this.sprite.setXScale(this.sprite.xscale / 1.5);
+        this.sprite.setYScale(this.sprite.yscale / 1.5);
     };
 
     Player.prototype.createShoutSprite = function () {
         this.shout = this.spritesheet.createSprite('misc/shout.png', this.layer);
         if (this.left) {
-            this.shout.move(120, 65);
+            this.shout.move(120 + 50, 100);
         } else {
             this.shout.setXScale(-1);
-            this.shout.move(this.w - this.shout.w - 120, 65);
+            this.shout.move(this.w - this.shout.w - 120 - 50, 100);
         }
         this.shout.setOpacity(0);
     };
@@ -151,15 +154,19 @@ var GameGraphics = (function () {
 
     GameGraphics.prototype.gameLoaded = function () {
         var that = this;
-        this.layer = that.scene.Layer("layer", {useCanvas: true});
+        this.layer = that.scene.Layer("layer", {useCanvas: true, autoClear: true});
 
         // Create players
         this.lplayer = new Player(this.spritesheet, true, this.layer, this.w);
         this.rplayer = new Player(this.spritesheet, false, this.layer, this.w);
-
+        
+        this.ground = this.spritesheet.createSprite('background/ground.png', this.layer);
+        this.ground.move(0, 193);
+        
         function paint() {
             // that.cycle.next(ticker.lastTicksElapsed);
             that.update();
+            that.ground.update();
         }
 
         var ticker = that.scene.Ticker(30, paint);

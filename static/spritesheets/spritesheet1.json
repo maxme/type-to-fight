@@ -1,8 +1,16 @@
 {"frames": {
 
+"background/ground.png":
+{
+	"frame": {"x":1,"y":1,"w":1022,"h":10},
+	"rotated": false,
+	"trimmed": false,
+	"spriteSourceSize": {"x":0,"y":0,"w":1022,"h":10},
+	"sourceSize": {"w":1022,"h":10}
+},
 "char1/char1a.png":
 {
-	"frame": {"x":2,"y":198,"w":116,"h":194},
+	"frame": {"x":235,"y":12,"w":116,"h":194},
 	"rotated": false,
 	"trimmed": false,
 	"spriteSourceSize": {"x":0,"y":0,"w":116,"h":194},
@@ -10,7 +18,7 @@
 },
 "char1/char1b.png":
 {
-	"frame": {"x":120,"y":2,"w":116,"h":194},
+	"frame": {"x":118,"y":12,"w":116,"h":194},
 	"rotated": false,
 	"trimmed": false,
 	"spriteSourceSize": {"x":0,"y":0,"w":116,"h":194},
@@ -18,7 +26,7 @@
 },
 "char1/char1c.png":
 {
-	"frame": {"x":2,"y":2,"w":116,"h":194},
+	"frame": {"x":1,"y":12,"w":116,"h":194},
 	"rotated": false,
 	"trimmed": false,
 	"spriteSourceSize": {"x":0,"y":0,"w":116,"h":194},
@@ -26,7 +34,7 @@
 },
 "misc/shout.png":
 {
-	"frame": {"x":2,"y":394,"w":57,"h":62},
+	"frame": {"x":352,"y":12,"w":57,"h":62},
 	"rotated": false,
 	"trimmed": false,
 	"spriteSourceSize": {"x":0,"y":0,"w":57,"h":62},
@@ -37,8 +45,8 @@
 	"version": "1.0",
 	"image": "spritesheet1.png",
 	"format": "RGBA8888",
-	"size": {"w":238,"h":458},
+	"size": {"w":1024,"h":207},
 	"scale": "1",
-	"smartupdate": "$TexturePacker:SmartUpdate:dd3828a15a17376ce25225629db58f6b$"
+	"smartupdate": "$TexturePacker:SmartUpdate:c730d59300909ffa1abf4107b1541009$"
 }
 }
