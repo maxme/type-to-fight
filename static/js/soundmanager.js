@@ -47,31 +47,30 @@ var SoundManager = (function () {
         this.saveConf();
     };
 
-    SoundManager.prototype.loadOneSound = function (name, promises) {
-        var sound = new buzz.sound('/sounds/' + name, {
-            formats: ['ogg', 'mp3']
-        });
-        var promise = $.Deferred();
-        promises.push(promise);
-        sound.bind('loadeddata', function (e) {
-            promise.resolve();
-        });
-        return sound;
+    SoundManager.prototype.loadOneSound = function (name) {
+        this.ntoload += 1;
+        createjs.Sound.registerSound('/sounds/' + name + '.mp3|/sounds/' + name + '.ogg', name, 5);
     };
 
     SoundManager.prototype.play = function (name) {
-        if (this.sounds && this.sounds[name] && this.soundstatus) {
-            this.sounds[name].play();
+        if (this.soundstatus) {
+            createjs.Sound.play(name);
         }
     };
 
     SoundManager.prototype.loadSounds = function (callback) {
-        this.sounds = {};
-        this.promises = [];
-        this.sounds.click = this.loadOneSound('click', this.promises);
-        $.when.apply(null, this.promises).done(function () {
-            typeof callback === 'function' && callback();
+        var that = this;
+        this.nloaded = 0;
+        this.ntoload = 0;
+        createjs.Sound.addEventListener('loadComplete', function (a) {
+            that.nloaded += 1;
+            console.log('nl=' + that.nloaded + ' / ' + that.ntoload);
+            if (that.nloaded >= that.ntoload) {
+                typeof callback === 'function' && callback();
+            }
         });
+        createjs.Sound.registerPlugins([createjs.WebAudioPlugin, createjs.FlashPlugin]);
+        this.loadOneSound('click');
     };
 
     return SoundManager;
