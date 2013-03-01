@@ -209,19 +209,24 @@ var RoomManager = (function () {
             if (obj.state === 'playing') {
                 that.db.hmset('roomid:' + roomid, {state: 'end'});
                 // send message to clients
+                // FIXME: add rating
                 var scores = {
                     player1: parseFloat(obj['scoreofplayer1']),
                     player2: parseFloat(obj['scoreofplayer2'])
                 };
-                // FIXME: BUG: CHECK IF CLIENTS EXISTS
-                that.clients[obj.player1].emit('game_end', {
-                    you: 'player1', opp: 'player2', scores: scores
-                });
-                that.clients[obj.player2].emit('game_end', {
-                    you: 'player2', opp: 'player1', scores: scores
-                });
                 var player1_is_victorious = scores.player1 > scores.player2;
-                that.serverstats.updateRatings(obj.player1, obj.player2, player1_is_victorious);
+                that.serverstats.updateRatings(obj.player1, obj.player2, player1_is_victorious, function (err, ratings) {
+                    if (that.clients[obj.player1]) {
+                        that.clients[obj.player1].emit('game_end', {
+                            you: 'player1', opp: 'player2', scores: scores, ratings: ratings
+                        });
+                    }
+                    if (that.clients[obj.player2]) {
+                        that.clients[obj.player2].emit('game_end', {
+                            you: 'player2', opp: 'player1', scores: scores, ratings: ratings
+                        });
+                    }
+                });
                 that.deleteRoom(roomid);
             } else {
                 console.log('error 4: want to end a non-playing room');

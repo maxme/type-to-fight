@@ -40,11 +40,11 @@ var ready = function () {
         return false;
     }
     var gameGraphics = new GameGraphics(document.getElementById('divcanvas'), $('#divcanvas').width(), 207);
-    $('#play-input').on('keydown', function () {
+    $('#play-input').on('keydown',function () {
         gameGraphics.keydown();
     }).on('keyup', function () {
-        gameGraphics.keyup();
-    });
+            gameGraphics.keyup();
+        });
 
     var common = new Common();
     var gameManager = new GameManager(30);
@@ -68,6 +68,7 @@ var ready = function () {
                 mainTimer = setTimeout(timerTick, 1000);
             }
         }
+
         mainTimer = setTimeout(timerTick, 1000);
     }
 
@@ -115,24 +116,26 @@ var ready = function () {
         clearTimeout(mainTimer);
         sgametimer.html('');
         var victory = 0;
+        // FIXME: move this to gamestats.js or endgame.js
         // Win and lose message
-        if (data) {
-            $('#modalmessage2').html('');
-            gamePlay.setPlayerLife(data.scores[data.you]);
-            gamePlay.setOppLife(data.scores[data.opp]);
-            if (data.scores[data.you] === data.scores[data.opp]) {
-                $('#modalLabel2').html('Draw !');
+        if (roomid !== 'practice') {
+            data.ratings.you = data.you;
+            data.ratings.opp = data.opp;
+        }
+
+        $('#modalmessage2').html('');
+        gamePlay.setPlayerLife(data.scores[data.you]);
+        gamePlay.setOppLife(data.scores[data.opp]);
+        if (data.scores[data.you] === data.scores[data.opp]) {
+            $('#modalLabel2').html('Draw !');
+            victory = 1;
+        } else {
+            if (data.scores[data.you] > data.scores[data.opp]) {
+                $('#modalLabel2').html('You win :)');
                 victory = 1;
             } else {
-                if (data.scores[data.you] > data.scores[data.opp]) {
-                    $('#modalLabel2').html('You win :)');
-                    victory = 1;
-                } else {
-                    $('#modalLabel2').html('You lose :(');
-                }
+                $('#modalLabel2').html('You lose :(');
             }
-        } else { // practice
-            $('#modalmessage2').html('');
         }
 
         // Statistics
@@ -140,7 +143,7 @@ var ready = function () {
         $('#modalstats').html(table);
 
         // gameStats
-        gameStats.endGame(victory, roomid);
+        gameStats.endGame(victory, roomid, (data && data.ratings) || null);
 
         // Show modal
         $('#play-input').attr('disabled', true);
@@ -169,7 +172,7 @@ var ready = function () {
         log('connection_ok=', data);
         if (data.error === 3) {
             smodalmessage.html('Something gone wrong, I can\'t connect you to this game session');
-            $('#modalfooter').show(300);
+            $('#modalfooter').show();
         } else {
             smodalmessage.html('Waiting for your opponent to connect.');
         }

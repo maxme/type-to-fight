@@ -45,7 +45,7 @@ var GameStats = (function () {
         this.updateStats();
     };
 
-    GameStats.prototype.endGame = function (victory, roomid) {
+    GameStats.prototype.endGame = function (victory, roomid, infos) {
         // send stats to server
         var that = this;
         var speed = this.averageSpeed;
@@ -62,7 +62,8 @@ var GameStats = (function () {
             speed: speed,
             accuracy: accuracy,
             roomid: roomid,
-            victory: victory
+            victory: victory,
+
         }, function (data, textStatus, jqXHR) {
             that.addAverageRow(data);
         });

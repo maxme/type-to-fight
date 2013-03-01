@@ -62,11 +62,19 @@ var SoundManager = (function () {
         var that = this;
         this.nloaded = 0;
         this.ntoload = 0;
+        this.callbackCalled = false;
+        // If all sounds not loaded after 3 secs, continue (
+        setTimeout(function () {
+            !this.callbackCalled && typeof callback === 'function' && callback();
+            this.callbackCalled = true;
+        }, 3000);
+        // load
         createjs.Sound.addEventListener('loadComplete', function (a) {
             that.nloaded += 1;
             console.log('nl=' + that.nloaded + '/' + that.ntoload);
             if (that.nloaded >= that.ntoload) {
-                typeof callback === 'function' && callback();
+                !that.callbackCalled && typeof callback === 'function' && callback();
+                that.callbackCalled = true;
             }
         });
         createjs.Sound.registerPlugins([createjs.WebAudioPlugin, createjs.HTMLAudioPlugin]);

@@ -23,11 +23,11 @@ var ServerStats = (function (db) {
             }
             that.db.zrevrank('ratings', '' + userid, function (err2, rank) {
                 if (!err2 && rank !== null) {
-                    userRank = rank + 1;
+                    userRank = parseFloat(rank) + 1;
                 }
                 that.db.zcard('ratings', function (err3, card) {
                     if (!err3) {
-                        nscores = card;
+                        nscores = parseFloat(card);
                     }
                     callback(null, {rating: userRating, rank: userRank, nscores: nscores});
                 });
@@ -35,7 +35,7 @@ var ServerStats = (function (db) {
         });
     };
 
-    ServerStats.prototype.updateRatings = function (userid, oppid, user_is_victorious, callback) {
+    ServerStats.prototype.updateRatings = function (player1id, player2id, player1_is_victorious, callback) {
         function calcRating(a, b, a_is_victorious) {
             var MMAX = 5000, MMIN= 1000, MREL = 50000, BMIN = 1000, BMAX = 200000;
             var tmp = MMIN + Math.max(0, ((MREL - Math.abs(a - b)) / MREL) * (MMAX - MMIN) / 2);
@@ -48,24 +48,38 @@ var ServerStats = (function (db) {
         }
 
         var that = this;
-        var userRating = 100000;
-        var oppRating = 100000;
-        that.db.zscore('ratings', '' + userid, function (err, rating) {
-            if (!err && rating) {
-                userRating = parseFloat(rating);
-            }
-            that.db.zscore('ratings', '' + oppid, function (err2, rating2) {
-                if (!err2 && rating2) {
-                    oppRating = parseFloat(rating2);
-                }
-                var oldURating = userRating;
-                var oldORating = oppRating;
-                userRating = calcRating(oldURating, oldORating, user_is_victorious);
-                oppRating = calcRating(oldORating, oldURating, ! user_is_victorious);
-                console.log('user rating: ' + oldURating  + ' -> ' + userRating);
-                console.log('opp rating: ' + oldORating  + ' -> ' + oppRating);
-                that.db.zadd('ratings', userRating, userid, function () {
-                    that.db.zadd('ratings', oppRating, oppid, callback);
+        that.getRating(player1id, function (err, player1Rating) {
+            that.getRating(player2id, function (err2, player2Rating) {
+                var res = {
+                    card: player1Rating.nscores,
+                    player1_old_rating: player1Rating.rating,
+                    player2_old_rating: player2Rating.rating,
+                    player1_old_rank: player1Rating.rank,
+                    player2_old_rank: player2Rating.rank,
+                    // init
+                    player1_new_rank: player1Rating.nscores,
+                    player2_new_rank: player1Rating.nscores
+                };
+                res.player1_new_rating = calcRating(res.player1_old_rating, res.player2_old_rating, player1_is_victorious);
+                res.player2_new_rating = calcRating(res.player2_old_rating, res.player1_old_rating, ! player1_is_victorious);
+                console.log('player1 rating: ' + res.player1_old_rating  + ' -> ' + res.player1_new_rating);
+                console.log('player2 rating: ' + res.player2_old_rating  + ' -> ' + res.player2_new_rating);
+                // set new ratings
+                that.db.zadd('ratings', res.player1_new_rating, player1id, function () {
+                    that.db.zadd('ratings', res.player2_new_rating, player2id, function () {
+                        // get new rank
+                        that.db.zrevrank('ratings', '' + player1id, function (err3, rank1) {
+                            if (!err2 && rank1 !== null) {
+                                res.player1_new_rank = parseFloat(rank1) + 1;
+                            }
+                            that.db.zrevrank('ratings', '' + player2id, function (err4, rank2) {
+                                if (!err2 && rank2 !== null) {
+                                    res.player2_new_rank = parseFloat(rank2) + 1;
+                                }
+                                typeof callback === 'function' && callback(null, res);
+                            });
+                        });
+                    });
                 });
             });
         });

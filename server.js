@@ -260,12 +260,7 @@ app.post('/endgame', ensureAuthenticated, function (req, res) {
                 accuracy: req.param('accuracy', 50),
                 victory: req.param('victory', 0)
             }, function (err, stats) {
-                serverstats.getRating(userid, function(err2, rating) {
-                    if (!err2) {
-                        stats.rating = rating;
-                    }
-                    res.json(stats);
-                });
+                res.json(stats);
             });
         }
     });

@@ -37,11 +37,11 @@ var secondStepInit = function () {
         });
     });
 
-    $('#game-with-friend').click(function () {
+    $('#game-with-friend').bind('mouseup', function () {
         $('#online-friends').toggle(400);
     });
 
-    $('#game-with-random').click(function () {
+    $('#game-with-random').bind('mouseup', function () {
         myFB.getUserInfos(function (response) {
             $.ajax({
                 type: "POST",
@@ -53,9 +53,14 @@ var secondStepInit = function () {
         });
     });
 
+
     var soundmanager = new SoundManager();
     console.log('call soundmanager load');
     soundmanager.loadSounds(thirdStepInit);
+
+    $('a').bind('mouseup', function () {
+        soundmanager.play('click');
+    });
 };
 
 var thirdStepInit = function () {
