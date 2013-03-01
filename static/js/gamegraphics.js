@@ -54,6 +54,23 @@ var SpriteSheet = (function () {
 })();
 
 
+var Background = (function () {
+    function Background(image, scene, layer, left) {
+        this.image = image;
+        this.scene = scene;
+        this.layer = layer;
+        var w = 373, h = 207;
+        var options = {layer: layer, x: 0, y: 0, size: [w, h]};
+        this.sprite = this.scene.Sprite(image, options);
+        if (left) {
+            this.sprite.move(352, 1);
+            this.sprite.rotate(Math.PI);
+        }
+    }
+
+    return Background;
+})();
+
 var Player = (function () {
     function Player(spritesheet, left, layer, w) {
         this.w = w;
@@ -156,15 +173,22 @@ var GameGraphics = (function () {
         var that = this;
         this.layer = that.scene.Layer("layer", {useCanvas: true, autoClear: true});
 
+        // Create backgrounds
+        this.rbg = new Background('/images/backgrounds/bg-light-grey.png', this.scene, this.layer, false);
+        this.lbg = new Background('/images/backgrounds/bg-sand-grey.png', this.scene, this.layer, true);
+
         // Create players
         this.lplayer = new Player(this.spritesheet, true, this.layer, this.w);
         this.rplayer = new Player(this.spritesheet, false, this.layer, this.w);
-        
+
+        // Create ground
         this.ground = this.spritesheet.createSprite('background/ground.png', this.layer);
-        this.ground.move(0, 193);
+        this.ground.move(0, 200);
         
         function paint() {
             // that.cycle.next(ticker.lastTicksElapsed);
+            that.rbg.sprite.update();
+            that.lbg.sprite.update();
             that.update();
             that.ground.update();
         }

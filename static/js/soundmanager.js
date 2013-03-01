@@ -64,11 +64,12 @@ var SoundManager = (function () {
         this.ntoload = 0;
         createjs.Sound.addEventListener('loadComplete', function (a) {
             that.nloaded += 1;
+            console.log('nl=' + that.nloaded + '/' + that.ntoload);
             if (that.nloaded >= that.ntoload) {
                 typeof callback === 'function' && callback();
             }
         });
-        createjs.Sound.registerPlugins([createjs.WebAudioPlugin, createjs.FlashPlugin]);
+        createjs.Sound.registerPlugins([createjs.WebAudioPlugin, createjs.HTMLAudioPlugin]);
         this.loadOneSound('click');
     };
 

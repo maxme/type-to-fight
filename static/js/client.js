@@ -39,7 +39,7 @@ var ready = function () {
         alert('Sorry, it looks like your browser does not support canvas!');
         return false;
     }
-    var gameGraphics = new GameGraphics(document.getElementById('divcanvas'), $('#divcanvas').width(), 200);
+    var gameGraphics = new GameGraphics(document.getElementById('divcanvas'), $('#divcanvas').width(), 207);
     $('#play-input').on('keydown', function () {
         gameGraphics.keydown();
     }).on('keyup', function () {

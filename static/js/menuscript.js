@@ -54,6 +54,7 @@ var secondStepInit = function () {
     });
 
     var soundmanager = new SoundManager();
+    console.log('call soundmanager load');
     soundmanager.loadSounds(thirdStepInit);
 };
 
