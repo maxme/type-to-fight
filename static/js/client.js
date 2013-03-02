@@ -3,6 +3,7 @@
 
 var myFB = null;
 var playerid = null;
+var soundmanager = null;
 
 function log(message, obj) {
     var tmp = '';
@@ -43,8 +44,9 @@ var ready = function () {
     $('#play-input').on('keydown',function () {
         gameGraphics.keydown();
     }).on('keyup', function () {
-            gameGraphics.keyup();
-        });
+        soundmanager.playRandomVoice();
+        gameGraphics.keyup();
+    });
 
     var common = new Common();
     var gameManager = new GameManager(30);
@@ -268,7 +270,10 @@ var ready = function () {
 var gameInit2 = function () {
     myFB.getUserInfos(function (response) {
         playerid = response.id;
-        ready();
+
+        // load sounds
+        soundmanager = new SoundManager();
+        soundmanager.loadSounds(ready);
     });
 };
 

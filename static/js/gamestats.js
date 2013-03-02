@@ -45,7 +45,7 @@ var GameStats = (function () {
         this.updateStats();
     };
 
-    GameStats.prototype.endGame = function (victory, roomid, infos) {
+    GameStats.prototype.endGame = function (victory, roomid, ratings) {
         // send stats to server
         var that = this;
         var speed = this.averageSpeed;
@@ -54,7 +54,9 @@ var GameStats = (function () {
             speed = 0;
             accuracy = 0;
         }
-
+        if (roomid !== 'practice') {
+            this.setRating(ratings);
+        }
         $.post('/endgame', {
             words: this.words,
             nkeypressed: this.totalkeypressed,
@@ -62,8 +64,7 @@ var GameStats = (function () {
             speed: speed,
             accuracy: accuracy,
             roomid: roomid,
-            victory: victory,
-
+            victory: victory
         }, function (data, textStatus, jqXHR) {
             that.addAverageRow(data);
         });
@@ -98,8 +99,13 @@ var GameStats = (function () {
         }
     };
 
-    GameStats.prototype.setRating = function(rating) {
-        var toppercent = Math.max(1, Math.round((rating.rank / rating.nscores) * 10)) * 10;
+    GameStats.prototype.setRating = function(ratings) {
+        var user_rating = ratings[ratings.you + '_new_rating'];
+        var user_old_rating = ratings[ratings.you + '_old_rating'];
+        var user_rank = ratings[ratings.you + '_new_rank'];
+        var user_old_rank = ratings[ratings.you + '_old_rank'];
+
+        var toppercent = Math.max(1, Math.round((user_rank / ratings.card) * 10)) * 10;
 
         var table = $('<table class="table table-rating">');
         var tbody = table.append('<tbody>').children('tbody');
@@ -108,10 +114,10 @@ var GameStats = (function () {
         if (rating.rank === -1) {
             rank.append('<td>not applicable</td>');
         } else {
-            rank.append('<td>' + rating.rank + ' (top ' + toppercent + '%)</td>');
+            rank.append('<td>' + user_rank + this.getArrowImg(user_rank, user_old_rank, true) + ' (top ' + toppercent + '%)</td>');
         }
         tbody.append('<tr />').children('tr:last').append('<td>Rating</td>')
-            .append('<td>' + Math.floor(rating.rating) + '</td>');
+            .append('<td>' + Math.floor(user_rating) + this.getArrowImg(user_rating, user_old_rating) + '</td>');
         $('#rating').html(table);
     };
 
@@ -129,9 +135,6 @@ var GameStats = (function () {
             .append('<td>' + avgKeyError + this.getArrowImg(this.nbackspacepressed, avgKeyError, true) + '</td>')
             .append('<td>' + avgAccuracy + '%' + this.getArrowImg(this.accuracy, avgstats.averageAccuracy) + '</td>')
             .append('<td>' + avgSpeed + ' k/min' + this.getArrowImg(this.averageSpeed, avgSpeed) + '</td>');
-        if (avgstats.rating) {
-            this.setRating(avgstats.rating);
-        }
     };
 
     return GameStats;
