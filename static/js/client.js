@@ -195,8 +195,10 @@ var ready = function () {
         updatePlayerNames(oppid);
         runTimer(common.GAME_COUNTDOWN - 1, function (remainingSeconds) {
             var text = remainingSeconds;
+            soundmanager.play('countdown-beep');
             if (remainingSeconds === 0) {
                 text = 'GO !';
+                soundmanager.play('gamestart');
             }
             scountdown.html(text);
         }, startGame);

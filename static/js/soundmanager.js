@@ -68,6 +68,7 @@ var SoundManager = (function () {
         this.nloaded = 0;
         this.ntoload = 0;
         this.callbackCalled = false;
+
         // load
         createjs.Sound.addEventListener('loadComplete', function (a) {
             that.nloaded += 1;
@@ -80,6 +81,10 @@ var SoundManager = (function () {
             }
         });
         createjs.Sound.registerPlugins([createjs.WebAudioPlugin, createjs.HTMLAudioPlugin]);
+
+        // Register sounds
+        this.loadOneSound('gamestart');
+        this.loadOneSound('countdown-beep');
         this.loadOneSound('click');
         for (var i = 1; i < 10; ++i) {
             this.loadOneSound('v' + i);
