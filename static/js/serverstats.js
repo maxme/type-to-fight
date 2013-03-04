@@ -6,7 +6,7 @@ var ServerStats = (function (db) {
     }
 
     ServerStats.prototype.getStats = function (userid, callback) {
-        db.get('stats:' + userid, function (err, jstats) {
+        this.db.get('stats:' + userid, function (err, jstats) {
             var stats = JSON.parse(jstats);
             callback(null, stats);
         });
@@ -35,7 +35,20 @@ var ServerStats = (function (db) {
         });
     };
 
+    ServerStats.prototype.getRatingHistory = function (userid, callback) {
+        //this.db.zrevrange('ratingHistory:' + userid, 0, 50, 'withscores')
+        this.db.zrevrange('ratingHistory:' + userid, 0, 50, function (err, jsonstr) {
+            var res = [];
+            for (var i = 0; i < jsonstr.length; ++i) {
+                var ratings = JSON.parse(jsonstr[i]);
+                res.push(ratings);
+            }
+            callback(null, res);
+        });
+    };
+
     ServerStats.prototype.updateRatings = function (player1id, player2id, player1_is_victorious, callback) {
+        var that = this;
         function calcRating(a, b, a_is_victorious) {
             var MMAX = 5000, MMIN= 1000, MREL = 50000, BMIN = 1000, BMAX = 200000;
             var tmp = MMIN + Math.max(0, ((MREL - Math.abs(a - b)) / MREL) * (MMAX - MMIN) / 2);
@@ -47,7 +60,12 @@ var ServerStats = (function (db) {
             return a;
         }
 
-        var that = this;
+        function addRatingHistory(playerid, rating, rank) {
+            var date = (new Date()).getTime();
+            var tostore = JSON.stringify({rating: rating, rank: rank});
+            that.db.zadd('ratingHistory:' + playerid, date, tostore);
+        }
+
         that.getRating(player1id, function (err, player1Rating) {
             that.getRating(player2id, function (err2, player2Rating) {
                 var res = {
@@ -74,6 +92,8 @@ var ServerStats = (function (db) {
                                 if (!err2 && rank2 !== null) {
                                     res.player2_new_rank = parseFloat(rank2) + 1;
                                 }
+                                addRatingHistory(player1id, res.player1_new_rating, res.player1_new_rank);
+                                addRatingHistory(player2id, res.player2_new_rating, res.player2_new_rank);
                                 typeof callback === 'function' && callback(null, res);
                             });
                         });
@@ -121,6 +141,12 @@ var ServerStats = (function (db) {
             return stats;
         }
 
+        function addStatsHistory(playerid, stats) {
+            var date = (new Date()).getTime();
+            var tostore = JSON.stringify(stats);
+            that.db.zadd('statsHistory:' + playerid, date, tostore);
+        }
+
         that.db.get('stats:' + userid, function (err, jstats) {
             var stats = {};
             if (!err && jstats) { // update stats
@@ -131,7 +157,6 @@ var ServerStats = (function (db) {
                     }
                 }
             } else { // create stats
-
                 stats = newStats(newstats);
             }
             if (!(newstats.nkeypressed <= 15 || newstats.speed < 10 || newstats.accuracy < 0.1)) {
@@ -140,6 +165,9 @@ var ServerStats = (function (db) {
                         that.db.set('stats:' + userid, JSON.stringify(stats));
                     }
                 }
+            }
+            if (roomid !== 'practice') {
+                addStatsHistory(userid, stats);
             }
             typeof callback === 'function' && callback(null, stats);
         });

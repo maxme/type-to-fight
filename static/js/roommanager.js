@@ -209,7 +209,6 @@ var RoomManager = (function () {
             if (obj.state === 'playing') {
                 that.db.hmset('roomid:' + roomid, {state: 'end'});
                 // send message to clients
-                // FIXME: add rating
                 var scores = {
                     player1: parseFloat(obj['scoreofplayer1']),
                     player2: parseFloat(obj['scoreofplayer2'])

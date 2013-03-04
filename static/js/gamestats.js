@@ -70,6 +70,64 @@ var GameStats = (function () {
         });
     };
 
+
+    GameStats.prototype.endGameSparklines = function () {
+        function drawChart() {
+            $.getJSON('/stats/history/rating', {}, function (data, textStatus, jqXHR) {
+                var res1 = [['N', 'Rating']];
+                var res2 = [['N', 'Rank']];
+                for (var i = 0; i < data.length; ++i) {
+                    res1.push([i,  data[i].rating]);
+                    res2.push([i,  data[i].rank]);
+                }
+
+                var options = {
+                    curveType: "function",
+                    width: 100,
+                    height: 25,
+                    hAxis: {
+                        textPosition: 'none',
+                        gridlines: {
+                            color: 'transparent'
+                        }
+                    },
+                    vAxis: {
+                        textPosition: 'none',
+                        gridlines: {
+                            color: 'transparent'
+                        }
+                    },
+                    backgroundColor: {
+                        fill: 'transparent'
+                    },
+                    baselineColor: 'transparent',
+                    enableInteractivity: false,
+                    legend: 'none',
+                    series: {
+                        0: {
+                            color: 'blue',
+                            visibleInLegend: false,
+                            lineWidth: 2
+                        },
+                        1: {
+                            color: 'red',
+                            visibleInLegend: true,
+                            lineWidth: 0,
+                            pointSize: 3
+                        }
+                    }
+                };
+
+                var chart = new google.visualization.LineChart(document.getElementById('chart-rank'));
+                chart.draw(google.visualization.arrayToDataTable(res2), options);
+
+                chart = new google.visualization.LineChart(document.getElementById('chart-rating'));
+                chart.draw(google.visualization.arrayToDataTable(res1), options);
+            });
+        }
+        drawChart();
+    };
+
     GameStats.prototype.createTable = function () {
         var table = $('<table class="table">');
         table.append('<thead>').children('thead')
@@ -116,9 +174,12 @@ var GameStats = (function () {
         } else {
             rank.append('<td>' + user_rank + this.getArrowImg(user_rank, user_old_rank, true) + ' (top ' + toppercent + '%)</td>');
         }
+        rank.append('<td id="chart-rank"></td>');
         tbody.append('<tr />').children('tr:last').append('<td>Rating</td>')
-            .append('<td>' + Math.floor(user_rating) + this.getArrowImg(user_rating, user_old_rating) + '</td>');
+            .append('<td>' + Math.floor(user_rating) + this.getArrowImg(user_rating, user_old_rating) + '</td>')
+            .append('<td id="chart-rating"></td>');;
         $('#rating').html(table);
+        this.endGameSparklines();
     };
 
     GameStats.prototype.addAverageRow = function(avgstats) {

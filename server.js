@@ -276,6 +276,17 @@ app.post('/delete-invitation', function (req, res) {
     res.send(200);
 });
 
+app.all('/stats/history/rating', ensureAuthenticated, function (req, res) {
+    if (req.session && req.session.passport && req.session.passport.user && req.session.passport.user.id) {
+        var userid = req.session.passport.user.id;
+        serverstats.getRatingHistory(userid, function (err, data) {
+            res.json(data);
+        })
+    } else {
+        res.send(400);
+    }
+});
+
 app.post('/newgame/random/:playerid', function (req, res) {
     rooms.newRandomGameOrConnect(function (roomid) {
         console.log('new roomid: ' + roomid);

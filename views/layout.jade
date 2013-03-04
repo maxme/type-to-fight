@@ -16,6 +16,7 @@ html.no-js(lang='en')
     meta(name="author", content=author)
     meta(name="viewport", content='width=device-width, initial-scale=1')
     link(rel='stylesheet', href='/css/bootstrap.min.css')
+    script(src='https://www.google.com/jsapi')
     //-script(src='/js/libs/modernizr-2.0.6.min.js')
     script(src='/js/ads.js')
     script(src='/js/soundmanager.js')
@@ -42,6 +43,8 @@ html.no-js(lang='en')
         script(src='//ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.min.js')
         script
           window.jQuery || document.write('<script src="js/libs/jquery-1.7.1.min.js"><\\/script>')
+          google.load("visualization", "1", {packages: ["corechart"]});
+
         script(src='/js/libs/jstorage.js')
         script(src='/js/libs/soundjs-0.4.0.min.js')
         //-script(defer, src='/js/plugins.js')

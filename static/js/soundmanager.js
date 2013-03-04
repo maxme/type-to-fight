@@ -72,7 +72,6 @@ var SoundManager = (function () {
         // load
         createjs.Sound.addEventListener('loadComplete', function (a) {
             that.nloaded += 1;
-            console.log('nl=' + that.nloaded + '/' + that.ntoload);
             if (that.nloaded >= that.ntoload) {
                 if (that.callbackCalled)
                     return;
