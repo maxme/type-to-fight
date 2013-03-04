@@ -4,6 +4,12 @@ block pagestyle
     link(rel='stylesheet', href='/css/game.css')
 
 block content
+    script
+        var errorLoc = '/facebook/error';
+        var testLoc = window.location.origin.slice(window.location.origin.length - errorLoc.length);
+        if (testLoc !== errorLoc) {
+            window.location = '/facebook/login';
+        }
     // Modal end menu
     div(class='container')
         div(class='hero-unit')

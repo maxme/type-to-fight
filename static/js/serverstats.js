@@ -62,8 +62,6 @@ var ServerStats = (function (db) {
                 };
                 res.player1_new_rating = calcRating(res.player1_old_rating, res.player2_old_rating, player1_is_victorious);
                 res.player2_new_rating = calcRating(res.player2_old_rating, res.player1_old_rating, ! player1_is_victorious);
-                console.log('player1 rating: ' + res.player1_old_rating  + ' -> ' + res.player1_new_rating);
-                console.log('player2 rating: ' + res.player2_old_rating  + ' -> ' + res.player2_new_rating);
                 // set new ratings
                 that.db.zadd('ratings', res.player1_new_rating, player1id, function () {
                     that.db.zadd('ratings', res.player2_new_rating, player2id, function () {
@@ -86,7 +84,6 @@ var ServerStats = (function (db) {
     };
 
     ServerStats.prototype.updateStats = function (userid, roomid, newstats, callback) {
-        console.log('update: ' + JSON.stringify(newstats));
         var that = this;
 
         function updateStats(stats, newstats) {
@@ -98,10 +95,8 @@ var ServerStats = (function (db) {
             stats.gamesPlayed += 1;
 
             if (parseInt(newstats.victory) === 1) {
-                console.log('victory += 1 - ' + newstats.victory);
                 stats.victory += 1;
             } else {
-                console.log('defeat += 1 - ' + newstats.victory);
                 stats.defeat += 1;
             }
             return stats;
@@ -141,7 +136,6 @@ var ServerStats = (function (db) {
             }
             if (!(newstats.nkeypressed <= 15 || newstats.speed < 10 || newstats.accuracy < 0.1)) {
                 if (stats && Object.keys(stats).length !== 0) {
-                    console.log('stats roomid: ' + roomid);
                     if (roomid !== 'practice') {
                         that.db.set('stats:' + userid, JSON.stringify(stats));
                     }

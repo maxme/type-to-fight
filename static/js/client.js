@@ -56,6 +56,8 @@ var ready = function () {
     gamePlay.endgame_cb = endgame_cb;
     var socket = io.connect(url, {secure: true});
     var mainTimer;
+    var oppid;
+
 
     // Timer define
     function runTimer(seconds, update, endcb) {
@@ -150,8 +152,29 @@ var ready = function () {
         // Show modal
         $('#play-input').attr('disabled', true);
         $('#modal-start').html($('#modal').html());
+        $('#modal-endgame-message').hide();
         $('#modal').html($('#modal-end').html());
         $('#modal').modal({show: true, keyboard: false, backdrop: 'static'});
+    }
+
+    function oppAskReplay(data) {
+        function disableReplay() {
+            $('#replay-button').addClass('disabled');
+            $('#modal-endgame-message').removeClass('alert-success').addClass('alert-error');
+            $('#modal-endgame-message').text('You\'re opponent disconnected, you can\'t replay this game');
+        }
+
+        if (data.error === 1) {
+            disableReplay();
+        } else {
+            if (roomid === data.roomid) {
+                $('#modal-endgame-message').removeClass('alert-error').addClass('alert-success');
+                $('#modal-endgame-message').text('You\'re opponent want to replay !');
+            } else {
+                disableReplay();
+            }
+        }
+        $('#modal-endgame-message').show();
     }
 
     function winword_cb(word) {
@@ -188,7 +211,7 @@ var ready = function () {
         gamePlay.setAllWords(data.words);
         splayinput.focus();
         gameManager.setGameState(2);
-        var oppid = data.player1;
+        oppid = data.player1;
         if (oppid === playerid) {
             oppid = data.player2;
         }
@@ -209,6 +232,10 @@ var ready = function () {
         gamePlay.oppWinWord(data.word);
     });
 
+    socket.on('opp_ask_replay', function (data) {
+        oppAskReplay(data);
+    });
+
     socket.on('game_end', function (data) {
         log('game_end=', data);
         realEndGame(data);
@@ -224,7 +251,7 @@ var ready = function () {
         $('#wordlist').hide(300, function () {
             $(this).html('').show();
         });
-        socket.emit('ask_replay', {roomid: roomid, playerid: playerid});
+        socket.emit('ask_replay', {roomid: roomid, playerid: playerid, oppid: oppid});
         gameManager.setGameState(1);
         $('#play-input').val('');
         gamePlay.reset();

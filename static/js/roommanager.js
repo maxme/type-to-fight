@@ -239,7 +239,7 @@ var RoomManager = (function () {
         this.db.del('roomid:' + roomid);
     };
 
-    RoomManager.prototype.askReplay = function (roomid, playerid) {
+    RoomManager.prototype.askReplay = function (roomid, playerid, oppid) {
         var that = this;
         if (roomid === 'practice') {
             this.emitPracticeStart(playerid);
@@ -253,6 +253,12 @@ var RoomManager = (function () {
                 that.connectUserToGame(roomid, playerid);
             } else {
                 that.connectUserToGame(roomid, playerid);
+            }
+            if (that.clients[oppid]) {
+                that.clients[oppid].emit('opp_ask_replay', {roomid: roomid, oppid: playerid});
+            } else {
+                // opponent disconnected, so tell the asker he can't replay
+                that.clients[playerid].emit('opp_ask_replay', {roomid: roomid, oppid: oppid, error: 1});
             }
         });
     };

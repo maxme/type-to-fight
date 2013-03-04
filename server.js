@@ -172,7 +172,7 @@ io.sockets.on('connection', function (socket) {
     });
 
     socket.on('ask_replay', function (data) {
-        rooms.askReplay(data.roomid, data.playerid);
+        rooms.askReplay(data.roomid, data.playerid, data.oppid);
     });
 
     socket.on('disconnect', function () {

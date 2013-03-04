@@ -44,6 +44,7 @@ block content
                 h3(id='modalmessage2')='You WIN/LOSE'
                 div(id='rating')
                 div(id='modalstats')='Stats: '
+                div(id='modal-endgame-message', class='alert', style='display: none;')=''
             div(class='modal-footer')
                 a(href='/',class='btn btn-large btn-red btn-custom')
                     i(class='icon-white icon-arrow-left')=' '
@@ -82,4 +83,13 @@ block content
                     input(id='play-input', class='span11', type='text', value='', disabled='true')
                 div(class='span12')
                     div(id='logs')
+
+                    div(style='float: right;')
+                        a(href="#", id="btn-sound", class='btn btn-large btn-float-right btn-custom btn-green btn-menu-small', style='margin-right:10px;')
+                            i(class='icon-white icon-volume-down')
+                            span=' Sound'
+                        a(href="#", id="btn-music", class='btn btn-large btn-float-right btn-custom btn-green btn-menu-small')
+                            i(class='icon-white icon-music')
+                            span=' Music'
+
 
