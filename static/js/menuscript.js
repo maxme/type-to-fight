@@ -2,6 +2,7 @@
 
 // GLOBAL
 var myFB = null;
+var leaderboard = new LeaderBoard();
 
 // Menu init method called after FB init
 var menuInit = function () {
@@ -31,10 +32,14 @@ var loginError = function (response) {
 
 var secondStepInit = function () {
     // Bind buttons
-    $('#invite-friends').click(function () {
+    $('#invite-friends').bind('mouseup', function () {
         myFB.requestMultiFriendSelector('invites you to play', function () {
             console.log('friends selected');
         });
+    });
+
+    $('#leaderboard-btn').bind('mouseup', function () {
+        leaderboard.show();
     });
 
     $('#game-with-friend').bind('mouseup', function () {

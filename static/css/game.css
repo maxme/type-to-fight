@@ -178,9 +178,9 @@ tbody td span {
 }
 
 body .modal {
-    width: 80%; /* desired relative width */
-    left: 10%; /* (100%-width)/2 */
-    margin: auto auto auto auto; /* place center */
+    width: 70%;
+    left: 15%;
+    margin: auto;
 }
 
 body .modal th, body .modal td {
@@ -188,7 +188,7 @@ body .modal th, body .modal td {
 }
 
 .table-rating {
-    width: 40%;
+    width: 60%;
 }
 
 .modal-footer {
@@ -220,6 +220,10 @@ body .modal th, body .modal td {
 .btn:focus, .btn:active, .btn.active, .btn.disabled, .btn[disabled] {
     background-color: inherit;
     color: inherit;
+}
+
+.td-chart {
+    padding: 0 !important;
 }
 
 .btn-grey {

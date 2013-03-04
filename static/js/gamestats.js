@@ -83,8 +83,14 @@ var GameStats = (function () {
 
                 var options = {
                     curveType: "function",
-                    width: 100,
-                    height: 25,
+                    width: 120,
+                    height: 40,
+                    chartArea:{
+                        left:0,
+                        top:0,
+                        width:"100%",
+                        height:"100%"
+                    },
                     hAxis: {
                         textPosition: 'none',
                         gridlines: {
@@ -93,6 +99,7 @@ var GameStats = (function () {
                     },
                     vAxis: {
                         textPosition: 'none',
+                        direction: -1,
                         gridlines: {
                             color: 'transparent'
                         }
@@ -116,6 +123,8 @@ var GameStats = (function () {
                 chart.draw(google.visualization.arrayToDataTable(res2), options);
 
                 options.series[0].color = 'red';
+                options.vAxis.direction = 1;
+
                 chart = new google.visualization.LineChart(document.getElementById('chart-rating'));
                 chart.draw(google.visualization.arrayToDataTable(res1), options);
             });
@@ -162,17 +171,17 @@ var GameStats = (function () {
 
         var table = $('<table class="table table-rating">');
         var tbody = table.append('<tbody>').children('tbody');
-        var rank = tbody.append('<tr />').children('tr:last').append('<td>Rank</td>');
+        var rank = tbody.append('<tr />').children('tr:last').append('<th>Rank</th>');
 
         if (rating.rank === -1) {
             rank.append('<td>not applicable</td>');
         } else {
             rank.append('<td>' + user_rank + this.getArrowImg(user_rank, user_old_rank, true) + ' (top ' + toppercent + '%)</td>');
         }
-        rank.append('<td id="chart-rank"></td>');
-        tbody.append('<tr />').children('tr:last').append('<td>Rating</td>')
+        rank.append('<td id="chart-rank" class="td-chart"></td>');
+        tbody.append('<tr />').children('tr:last').append('<th>Rating</th>')
             .append('<td>' + Math.floor(user_rating) + this.getArrowImg(user_rating, user_old_rating) + '</td>')
-            .append('<td id="chart-rating"></td>');;
+            .append('<td id="chart-rating" class="td-chart"></td>');;
         $('#rating').html(table);
         this.endGameSparklines();
     };

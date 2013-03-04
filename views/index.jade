@@ -45,18 +45,21 @@ block content
                     div(class='button-menu')
                         a(href="/game/practice", id='game-practice', class='btn btn-large btn-custom btn-blue btn-menu')="Practice"
                     div(class='button-menu')
-                        a(href="#", id='game-with-random', class='btn btn-large btn-custom btn-blue  btn-menu')="New Game with Random Opponent"
+                        a(href="#", id='game-with-random', class='btn btn-large btn-custom btn-blue  btn-menu')="Play with Random Opponent"
                     div(class='button-menu')
-                        a(href="#", id='game-with-friend', class='btn btn-large btn-custom btn-blue  btn-menu')="New Game with Friend"
+                        a(href="#", id='game-with-friend', class='btn btn-large btn-custom btn-blue  btn-menu')="Play with Friend"
                     div(id='online-friends')
                         h2='Online friends'
                         ul(id='online-friends-ul', class='unstyled')
                     div(class='button-menu')
-                        a(href="/leaderboards", class='btn btn-large btn-custom btn-blue  btn-menu')="Leaderboards"
+                        a(href="#leaderboard", id="leaderboard-btn", class='btn btn-large btn-custom btn-blue btn-menu')="Leaderboards"
                     div(class='button-menu')
-                        a(href="/stats", class='btn btn-large btn-custom btn-blue  btn-menu')="Game Stats"
+                        a(href="#", id="stats", class='btn btn-large btn-custom btn-blue  btn-menu')="Game Stats"
                     div(class='button-menu')
                         a(href="#", id="invite-friends", class='btn btn-large btn-custom btn-blue  btn-menu')="Invite Friends"
                 div(id='offline-friends')
                     h2='Offline friends'
                     ul(id='offlne-friends-ul')
+    div(id='leaderboard', style='display:none', class='container')
+        div(class='hero-unit')
+            h1='Leaderbords'

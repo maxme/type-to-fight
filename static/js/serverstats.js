@@ -12,6 +12,38 @@ var ServerStats = (function (db) {
         });
     };
 
+    ServerStats.prototype.getLeaderboard = function (userid, type, page, size, ids, callback) {
+        var that = this;
+
+        function getRevRank(from, to) {
+            that.db.zrevrange('ratings', from, to, 'withscores', function (err, ratings) {
+                var formatted = [];
+                for (var i = 0; i < ratings.length / 2; ++i) {
+                    formatted.push({rank: from + 1 + i, uid: ratings[2*i], rating: ratings[2*i+1]});
+                }
+                callback(formatted);
+            });
+        }
+
+        function getPageForUser(userid) {
+            that.db.zrevrank('ratings', '' + userid, function (err, rank) {
+                // return empty list if not ranked
+                getRevRank(rank - size / 2, rank + size / 2 - 1);
+            });
+        }
+
+        if (type === 'around') {
+            getPageForUser(userid);
+        } else {
+            if (type === 'all') {
+                getRevRank(page * size, (page + 1) * size - 1);
+            } else {
+                if (type === 'friends') {
+                }
+            }
+        }
+    };
+
     ServerStats.prototype.getRating = function (userid, callback) {
         var userRating = 100000;
         var userRank = -1;
