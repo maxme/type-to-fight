@@ -43,6 +43,7 @@ var ServerStats = (function (db) {
                 var ratings = JSON.parse(jsonstr[i]);
                 res.push(ratings);
             }
+            res.reverse();
             callback(null, res);
         });
     };

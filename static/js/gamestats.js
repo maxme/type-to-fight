@@ -109,18 +109,13 @@ var GameStats = (function () {
                             visibleInLegend: false,
                             lineWidth: 2
                         },
-                        1: {
-                            color: 'red',
-                            visibleInLegend: true,
-                            lineWidth: 0,
-                            pointSize: 3
-                        }
                     }
                 };
 
                 var chart = new google.visualization.LineChart(document.getElementById('chart-rank'));
                 chart.draw(google.visualization.arrayToDataTable(res2), options);
 
+                options.series[0].color = 'red';
                 chart = new google.visualization.LineChart(document.getElementById('chart-rating'));
                 chart.draw(google.visualization.arrayToDataTable(res1), options);
             });
