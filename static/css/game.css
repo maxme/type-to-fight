@@ -20,6 +20,12 @@
     display: none;
 }
 
+.spinner {
+    top: 50%;
+    left: 50%;
+    position: absolute;
+}
+
 /* Main Game */
 canvas {
     width:100%;

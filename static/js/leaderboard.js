@@ -17,6 +17,8 @@ var LeaderBoard = (function () {
 
     LeaderBoard.prototype.requestLoad = function (options) {
         var that = this;
+        $("#spinner").spin("very-large", "black");
+
         // options = {type: 'all', page: 12}
         function createTable(data) {
             var table = $('#lb-table-body');
@@ -57,6 +59,7 @@ var LeaderBoard = (function () {
                     for (var uid in names) {
                         $('#name-' + names[uid].id).html(names[uid].name);
                     }
+                    $("#spinner").spin(false);
                 });
                 myFB.getUserInfos(function (response) {
                     if (myFB.userInfos && myFB.userInfos.id) {

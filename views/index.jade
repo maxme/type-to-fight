@@ -15,6 +15,10 @@ block content
             h1='Loading...'
             div(class='progress progress-striped active', style='width: 50%')
                 div(class='bar', style='width: 100%')
+
+
+    dev(id='spinner', class='spinner')
+
     div(id='main', style='display:none', class='container')
         // Modal invitation
         div(id='invitations',class='modal fade hide',tabindex="-1",role="dialog",aria-labelledby="modalLabel")
@@ -50,7 +54,7 @@ block content
                         a(href="#", id='game-with-friend', class='btn btn-large btn-custom btn-blue  btn-menu')="Play with Friend"
                     div(id='online-friends')
                         h2='Online friends'
-                        ul(id='online-friends-ul', class='unstyled')
+                        ul(id='online-frienbds-ul', class='unstyled')
                     div(class='button-menu')
                         a(href="#page=leaderboard&pagen=0&type=all", id="leaderboard-btn", class='btn btn-large btn-custom btn-blue btn-menu')="Leaderboards"
                     div(class='button-menu')
@@ -80,8 +84,8 @@ block content
                     table(class='table table-striped')
                         thead
                             tr
-                                th(class='th-type span1')='Rank'
-                                th(class='th-word span9')='Name'
+                                th(class='th-type span2')='Rank'
+                                th(class='th-word span8')='Name'
                                 th(class='th-power span2')='Rating'
                         tbody(id='lb-table-body')
 
