@@ -279,11 +279,10 @@ app.post('/delete-invitation', function (req, res) {
 app.all('/leaderboard', function (req, res) {
     var userid = null;
     var type = req.param('type') || 'all';
-    var page = req.param('page') || 0;
+    var page = parseInt(req.param('page')) || 0;
     var ids = req.param('ids') || [];
-    var size = 10;
-    userid = req.param('userid');
-    /*
+    var size = 20;
+    //userid = req.param('userid');
     if (req.session && req.session.passport && req.session.passport.user && req.session.passport.user.id) {
         userid = req.session.passport.user.id;
     } else {
@@ -291,9 +290,8 @@ app.all('/leaderboard', function (req, res) {
         type = 'all';
         page = 0;
     }
-    */
     serverstats.getLeaderboard(userid, type, page, size, ids, function (leaderboarddata) {
-        console.log('userid: ' + userid + ' type: ' + type + ' page: ' + page + ' params: ' + JSON.stringify(req.body));
+        // console.log('userid: ' + userid + ' type: ' + type + ' page: ' + page + ' body: ' + JSON.stringify(req.body) + ' query: ' + JSON.stringify(req.query) + ' params: ' + JSON.stringify(req.params));
         res.json(leaderboarddata);
     });
 });

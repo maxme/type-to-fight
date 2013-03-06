@@ -30,16 +30,17 @@ var loginError = function (response) {
     window.location = '/facebook-login';
 };
 
+function mainmenu_show() {
+    $('#main').show();
+    $('#leaderboard').hide();
+}
+
 var secondStepInit = function () {
-    // Bind buttons
+    // Bind buttons and events
     $('#invite-friends').bind('mouseup', function () {
         myFB.requestMultiFriendSelector('invites you to play', function () {
             console.log('friends selected');
         });
-    });
-
-    $('#leaderboard-btn').bind('mouseup', function () {
-        leaderboard.show();
     });
 
     $('#game-with-friend').bind('mouseup', function () {
@@ -58,6 +59,19 @@ var secondStepInit = function () {
         });
     });
 
+    // Bind the event.
+    $(window).hashchange(function() {
+        var params = $.bbq.getState();
+        switch (params.page) {
+            case 'leaderboard':
+                leaderboard.show(params);
+                break ;
+            default:
+                mainmenu_show(params);
+                break ;
+        }
+    });
+
     var soundmanager = new SoundManager();
     console.log('call soundmanager load');
     soundmanager.loadSounds(thirdStepInit);
@@ -72,6 +86,7 @@ var thirdStepInit = function () {
     // ready to show main and hide loading
     $('#loading').hide();
     $('#main').show();
+    $(window).hashchange();
 
     function deleteInvitation(roomid, inviterid, playerid) {
         function endCB () {

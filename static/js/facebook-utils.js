@@ -35,7 +35,7 @@ var FBUtils = (function () {
                 typeof notlogged === 'function' && notlogged(response);
             }
         });
-    }
+    };
 
     FBUtils.prototype.request = function (message, recipient, data, cb) {
         FB.ui({method: 'apprequests',
@@ -57,15 +57,28 @@ var FBUtils = (function () {
         });
     };
 
+    FBUtils.prototype.getMultipleUserInfos = function (uids, fields, callback) {
+        //?ids=643594036,1301525299&fields=name
+        FB.api('/?ids=' + uids.join(',') + '&fields=' + fields.join(','), function (response) {
+            typeof callback === 'function' && callback(response);
+        });
+    };
+
     FBUtils.prototype.getUserInfos = function (ok) {
+        var that = this;
         if (this.userInfos === null) {
             FB.api('/me', function (response) {
-                this.userInfos = response;
+                that.userInfos = response;
                 typeof ok === 'function' && ok(response);
             });
         } else {
             typeof ok === 'function' && ok(this.userInfos);
         }
+    };
+    FBUtils.prototype.getFriendIds = function (fields, callback) {
+        FB.api('/me/friends?fields=' + fields.join(','), function (response) {
+            typeof callback === 'function' && callback(response);
+        });
     };
 
     FBUtils.prototype.getFriendsWithOnlinePresence = function (cb) {

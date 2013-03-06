@@ -12,7 +12,9 @@
     "hiredis": "*",
     "underscore": "1.4.4",
     "passport-facebook": "*",
+    "async": "*",
     "passport": "*"
+
   },
   "devDependencies": {
     "vows": "0.5.x",

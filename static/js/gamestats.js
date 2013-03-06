@@ -82,7 +82,7 @@ var GameStats = (function () {
                 }
 
                 var options = {
-                    curveType: "function",
+                    curveType: "none",
                     width: 120,
                     height: 40,
                     chartArea:{

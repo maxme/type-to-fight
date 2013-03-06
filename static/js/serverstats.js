@@ -1,6 +1,9 @@
 "use strict";
 
+
 var ServerStats = (function (db) {
+    var async = require('async');
+
     function ServerStats(db) {
         this.db = db;
     }
@@ -16,6 +19,7 @@ var ServerStats = (function (db) {
         var that = this;
 
         function getRevRank(from, to) {
+            console.log('from= ' + from + ' to= ' + to);
             that.db.zrevrange('ratings', from, to, 'withscores', function (err, ratings) {
                 var formatted = [];
                 for (var i = 0; i < ratings.length / 2; ++i) {
@@ -39,6 +43,19 @@ var ServerStats = (function (db) {
                 getRevRank(page * size, (page + 1) * size - 1);
             } else {
                 if (type === 'friends') {
+                    async.mapLimit(ids, 5, function (item, callback) {
+                        that.db.zscore('ratings', item, function (err_zscore, rating) {
+                            if (!err_zscore && rating) {
+                                that.db.zrevrank('ratings', item, function (err_zrank, rank) {
+                                    callback(null, {uid: item, rating: rating, rank: rank + 1});
+                                });
+                            } else {
+                                callback(null, {uid: item, rating: -1, rank: -1});
+                            }
+                        });
+                    }, function (err, results) {
+                        callback(results);
+                    });
                 }
             }
         }

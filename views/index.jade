@@ -52,7 +52,7 @@ block content
                         h2='Online friends'
                         ul(id='online-friends-ul', class='unstyled')
                     div(class='button-menu')
-                        a(href="#leaderboard", id="leaderboard-btn", class='btn btn-large btn-custom btn-blue btn-menu')="Leaderboards"
+                        a(href="#page=leaderboard&pagen=0&type=all", id="leaderboard-btn", class='btn btn-large btn-custom btn-blue btn-menu')="Leaderboards"
                     div(class='button-menu')
                         a(href="#", id="stats", class='btn btn-large btn-custom btn-blue  btn-menu')="Game Stats"
                     div(class='button-menu')
@@ -60,6 +60,34 @@ block content
                 div(id='offline-friends')
                     h2='Offline friends'
                     ul(id='offlne-friends-ul')
+
+
+
     div(id='leaderboard', style='display:none', class='container')
         div(class='hero-unit')
-            h1='Leaderbords'
+            div(id='lb-header')
+                h1='Leaderbords'
+                div(class='tabbable')
+                    ul(class='nav nav-tabs', style='margin: 0;')
+                        li(id='li-all',class='active')
+                            a(href='#page=leaderboard&pagen=0&type=all')='All'
+                        li(id='li-around', class='')
+                            a(href='#page=leaderboard&pagen=0&type=around')='Around Me'
+                        li(id='li-friends', class='')
+                            a(href='#page=leaderboard&pagen=0&type=friends')='Friends'
+            div(id='lb-main',style='background-color: white;')
+                div(id='lb-table')
+                    table(class='table table-striped')
+                        thead
+                            tr
+                                th(class='th-type span1')='Rank'
+                                th(class='th-word span9')='Name'
+                                th(class='th-power span2')='Rating'
+                        tbody(id='lb-table-body')
+
+            div(id='lb-footer')
+                ul(class='pager')
+                    li(class='previous')
+                        a(id='lb-btn-previous', href='#page=leaderboard&pagen=0&type=all')='&larr; Previous'
+                    li(class='next')
+                        a(id='lb-btn-next', href='#page=leaderboard&pagen=1&type=all')='Next &rarr;'
