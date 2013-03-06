@@ -1,6 +1,5 @@
 "use strict";
 
-
 var ServerStats = (function (db) {
     var async = require('async');
 
@@ -19,11 +18,10 @@ var ServerStats = (function (db) {
         var that = this;
 
         function getRevRank(from, to) {
-            console.log('from= ' + from + ' to= ' + to);
             that.db.zrevrange('ratings', from, to, 'withscores', function (err, ratings) {
                 var formatted = [];
                 for (var i = 0; i < ratings.length / 2; ++i) {
-                    formatted.push({rank: from + 1 + i, uid: ratings[2*i], rating: ratings[2*i+1]});
+                    formatted.push({rank: from + 1 + i, uid: ratings[2 * i], rating: ratings[2 * i + 1]});
                 }
                 callback(formatted);
             });
@@ -32,7 +30,11 @@ var ServerStats = (function (db) {
         function getPageForUser(userid) {
             that.db.zrevrank('ratings', '' + userid, function (err, rank) {
                 // return empty list if not ranked
-                getRevRank(rank - size / 2, rank + size / 2 - 1);
+                if (err || !rank) {
+                    callback([]);
+                } else {
+                    getRevRank(rank - size / 2, rank + size / 2 - 1);
+                }
             });
         }
 
@@ -99,8 +101,9 @@ var ServerStats = (function (db) {
 
     ServerStats.prototype.updateRatings = function (player1id, player2id, player1_is_victorious, callback) {
         var that = this;
+
         function calcRating(a, b, a_is_victorious) {
-            var MMAX = 5000, MMIN= 1000, MREL = 50000, BMIN = 1000, BMAX = 200000;
+            var MMAX = 5000, MMIN = 1000, MREL = 50000, BMIN = 1000, BMAX = 200000;
             var tmp = MMIN + Math.max(0, ((MREL - Math.abs(a - b)) / MREL) * (MMAX - MMIN) / 2);
             if (a_is_victorious) {
                 a = Math.min(BMAX, a + tmp);
@@ -129,7 +132,7 @@ var ServerStats = (function (db) {
                     player2_new_rank: player1Rating.nscores
                 };
                 res.player1_new_rating = calcRating(res.player1_old_rating, res.player2_old_rating, player1_is_victorious);
-                res.player2_new_rating = calcRating(res.player2_old_rating, res.player1_old_rating, ! player1_is_victorious);
+                res.player2_new_rating = calcRating(res.player2_old_rating, res.player1_old_rating, !player1_is_victorious);
                 // set new ratings
                 that.db.zadd('ratings', res.player1_new_rating, player1id, function () {
                     that.db.zadd('ratings', res.player2_new_rating, player2id, function () {

@@ -45,6 +45,13 @@ var FBUtils = (function () {
         }, cb);
     };
 
+    FBUtils.prototype.requestSelector = function (message, ids, cb) {
+        FB.ui({method: 'apprequests',
+            message: message,
+            to: ids
+        }, cb);
+    };
+
     FBUtils.prototype.requestMultiFriendSelector = function (message, cb) {
         FB.ui({method: 'apprequests',
             message: message

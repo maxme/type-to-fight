@@ -21,44 +21,49 @@ var LeaderBoard = (function () {
         function createTable(data) {
             var table = $('#lb-table-body');
             table.html('');
-            var uids = [];
-            if (data.length !== 20) {
-                that.lastpage = true;
+            if (data.length === 0) {
+                table.append('<tr />').children('tr:last')
+                    .append('<td></td><td>Sorry you\'re not ranked yet</td>');
             } else {
-                that.lastpage = false;
-            }
-            data = data.sort(function (a, b) {
-                return parseFloat(b.rating) - parseFloat(a.rating);
-            });
-            for (var i = 0; i < data.length; ++i) {
-                uids.push(data[i].uid);
-                if (data[i].rank !== -1) {
-                    table.append('<tr />').children('tr:last')
-                        .append('<td>' + data[i].rank + '</td>')
-                        .append('<td id="name-' + data[i].uid + '"></td>')
-                        .append('<td>' + Math.floor(data[i].rating) + '</td>');
+                var uids = [];
+                if (data.length !== 20) {
+                    that.lastpage = true;
                 } else {
-                    table.append('<tr />').children('tr:last')
-                        .append('<td>na</td>')
-                        .append('<td id="name-' + data[i].uid + '"></td>')
-                        .append('<td><a id="invite-' + data[i].uid + '" href="' + window.location.hash +
-                            '" class="btn btn-custom btn-blue">Invite</a></td>');
+                    that.lastpage = false;
+                }
+                data = data.sort(function (a, b) {
+                    return parseFloat(b.rating) - parseFloat(a.rating);
+                });
+                for (var i = 0; i < data.length; ++i) {
+                    uids.push(data[i].uid);
+                    if (data[i].rank !== -1) {
+                        table.append('<tr />').children('tr:last')
+                            .append('<td>' + data[i].rank + '</td>')
+                            .append('<td id="name-' + data[i].uid + '"></td>')
+                            .append('<td>' + Math.floor(data[i].rating) + '</td>');
+                    } else {
+                        table.append('<tr />').children('tr:last')
+                            .append('<td>na</td>')
+                            .append('<td id="name-' + data[i].uid + '"></td>')
+                            .append('<td><a id="invite-' + data[i].uid + '" href="' + window.location.hash +
+                                '" class="btn btn-custom btn-blue">Invite</a></td>');
 
-                    $('#invite-' + data[i].uid).bind('click', function () {
-                        myFB.request('Invite', $(this).attr('id').replace('invite-', ''));
-                    });
+                        $('#invite-' + data[i].uid).bind('click', function () {
+                            myFB.requestSelector('Play with me!', [$(this).attr('id').replace('invite-', '')]);
+                        });
+                    }
                 }
+                myFB.getMultipleUserInfos(uids, ['name'], function (names) {
+                    for (var uid in names) {
+                        $('#name-' + names[uid].id).html(names[uid].name);
+                    }
+                });
+                myFB.getUserInfos(function (response) {
+                    if (myFB.userInfos && myFB.userInfos.id) {
+                        $('#name-' + myFB.userInfos.id).parent().children().css({'background-color': '#9cf'});
+                    }
+                });
             }
-            myFB.getMultipleUserInfos(uids, ['name'], function (names) {
-                for (var uid in names) {
-                    $('#name-' + names[uid].id).html(names[uid].name);
-                }
-            });
-            myFB.getUserInfos(function (response) {
-                if (myFB.userInfos && myFB.userInfos.id) {
-                    $('#name-' + myFB.userInfos.id).parent().children().css({'background-color': '#9cf'});
-                }
-            });
         }
 
         function getJSON() {
@@ -118,6 +123,13 @@ var LeaderBoard = (function () {
         }
         $('#lb-btn-previous').attr('href', '#page=leaderboard&pagen=' + prevPage + '&type=' + this.type);
         $('#lb-btn-next').attr('href', '#page=leaderboard&pagen=' + nextPage + '&type=' + this.type);
+        if (this.type === 'all') {
+            $('#lb-btn-previous').show();
+            $('#lb-btn-next').show();
+        } else {
+            $('#lb-btn-previous').hide();
+            $('#lb-btn-next').hide();
+        }
     };
 
     LeaderBoard.prototype.hide = function () {
