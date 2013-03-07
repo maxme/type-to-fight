@@ -276,6 +276,17 @@ app.post('/delete-invitation', function (req, res) {
     res.send(200);
 });
 
+app.all('/stats/json', ensureAuthenticated, function (req, res) {
+    if (req.session && req.session.passport && req.session.passport.user && req.session.passport.user.id) {
+        userid = req.session.passport.user.id;
+        serverstats.getFullStats(userid, function (err, fullstats) {
+            res.json(fullstats);
+        });
+    } else {
+        res.json({});
+    }
+});
+
 app.all('/leaderboard', function (req, res) {
     var userid = null;
     var type = req.param('type') || 'all';

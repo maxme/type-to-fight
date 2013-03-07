@@ -11,6 +11,7 @@ var LeaderBoard = (function () {
         this.page = parseInt(params.pagen);
         this.type = params.type;
         $('#main').hide();
+        $('#stats').hide();
         $('#leaderboard').show();
         this.requestLoad({type: this.type, page: this.page});
     };
@@ -26,6 +27,7 @@ var LeaderBoard = (function () {
             if (data.length === 0) {
                 table.append('<tr />').children('tr:last')
                     .append('<td></td><td>Sorry you\'re not ranked yet</td>');
+                $("#spinner").spin(false);
             } else {
                 var uids = [];
                 if (data.length !== 20) {
@@ -37,7 +39,9 @@ var LeaderBoard = (function () {
                     return parseFloat(b.rating) - parseFloat(a.rating);
                 });
                 for (var i = 0; i < data.length; ++i) {
-                    uids.push(data[i].uid);
+                    if (data[i].uid && data[i].uid != 'undefined') {
+                        uids.push(data[i].uid);
+                    }
                     if (data[i].rank !== -1) {
                         table.append('<tr />').children('tr:last')
                             .append('<td>' + data[i].rank + '</td>')
@@ -135,12 +139,6 @@ var LeaderBoard = (function () {
         }
     };
 
-    LeaderBoard.prototype.hide = function () {
-        // hide mainmenu
-
-        // show leader
-
-    };
 
     return LeaderBoard;
 })();

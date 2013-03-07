@@ -233,31 +233,41 @@ var RoomManager = (function () {
         });
     };
 
-    RoomManager.prototype.deleteRoom = function (roomid, playerid) {
+    RoomManager.prototype.deleteRoom = function (roomid, playerid, callback) {
+        console.log("delete room:" + roomid);
         // delete roomid
-        this.db.del('roomid:' + roomid);
+        this.db.del('roomid:' + roomid, callback);
     };
 
     RoomManager.prototype.askReplay = function (roomid, playerid, oppid) {
         var that = this;
-        if (roomid === 'practice') {
-            this.emitPracticeStart(playerid);
-            return ;
-        }
-        this.db.hgetall('roomid:' + roomid, function (err, obj) {
-            if (obj && obj.state === 'end') {
-                // delete roomid
-                that.db.del('roomid:' + roomid);
-                // recreate the room
-                that.connectUserToGame(roomid, playerid);
-            } else {
-                that.connectUserToGame(roomid, playerid);
-            }
+        function signalOpp() {
             if (that.clients[oppid]) {
                 that.clients[oppid].emit('opp_ask_replay', {roomid: roomid, oppid: playerid});
             } else {
                 // opponent disconnected, so tell the asker he can't replay
                 that.clients[playerid].emit('opp_ask_replay', {roomid: roomid, oppid: oppid, error: 1});
+            }
+        }
+
+        if (roomid === 'practice') {
+            this.emitPracticeStart(playerid);
+            return ;
+        }
+        this.db.hgetall('roomid:' + roomid, function (err, obj) {
+            console.log('askreplay room: ' + obj);
+            console.log('askreplay room err: ' + err);
+
+            if (obj && obj.state === 'end') {
+                // delete roomid
+                that.deleteRoom(roomid, playerid, function () {
+                    // recreate the room
+                    that.connectUserToGame(roomid, playerid);
+                    signalOpp();
+                });
+            } else {
+                that.connectUserToGame(roomid, playerid);
+                signalOpp();
             }
         });
     };
@@ -317,6 +327,7 @@ var RoomManager = (function () {
         };
         this.db.hmset('roomid:' + roomid, obj);
         this.db.expire('roomid:' + roomid, EXPIRATION_TIME); // expire rooms
+        console.log('create room:' + roomid);
     };
 
     RoomManager.prototype.connectUserToGame = function (roomid, playerid, callback) {

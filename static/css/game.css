@@ -80,8 +80,10 @@ tbody td span {
 }
 
 .timer {
+    /*
     padding-top: 10px;
     height: 40px;
+    */
     font-size: 50px;
     text-align: center;
 }
@@ -109,7 +111,7 @@ tbody td span {
 }
 
 .lifebar-bg {
-    height: 40px;
+    height: 30px;
     position: absolute;
     z-index: 1;
     margin: 0;
@@ -117,7 +119,7 @@ tbody td span {
 }
 
 .lifebar {
-    height: 40px;
+    height: 30px;
     background-color: #ff5a00;
     position: relative;
     z-index: 2;
@@ -324,7 +326,7 @@ body {
 }
 
 .game-container {
-    padding: 15px;
+    padding: 0 15px 10px 15px;
     background-color: #eef1f7;
     -webkit-border-radius: 6px;
     -moz-border-radius: 6px;

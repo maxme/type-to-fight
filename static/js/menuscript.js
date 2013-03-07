@@ -3,6 +3,7 @@
 // GLOBAL
 var myFB = null;
 var leaderboard = new LeaderBoard();
+var statspage = new StatsPage();
 
 // Menu init method called after FB init
 var menuInit = function () {
@@ -33,6 +34,7 @@ var loginError = function (response) {
 function mainmenu_show() {
     $('#main').show();
     $('#leaderboard').hide();
+    $('#stats').hide();
 }
 
 var secondStepInit = function () {
@@ -65,6 +67,9 @@ var secondStepInit = function () {
         switch (params.page) {
             case 'leaderboard':
                 leaderboard.show(params);
+                break ;
+            case 'stats':
+                statspage.show(params);
                 break ;
             default:
                 mainmenu_show(params);

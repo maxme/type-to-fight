@@ -31,7 +31,7 @@ var ready = function () {
     // Show modal
     smodalmessage.html('Connecting...');
     $('#modal').html($('#modal-start')[0].children);
-    $('#modal').modal({keyboard: false, backdrop: 'static'}).css('top', '25%');
+    $('#modal').modal({keyboard: false, backdrop: 'static'});
     $('#inputurl').val(window.location.href);
     splayinput.focus();
 

@@ -14,6 +14,42 @@ var ServerStats = (function (db) {
         });
     };
 
+    ServerStats.prototype.getFullStats = function (userid, callback) {
+        var that = this;
+        var fullstats = {};
+        this.db.get('stats:' + userid, function (err, jstats) {
+            // current stats
+            fullstats.stats = JSON.parse(jstats);
+
+            // rating history
+            that.db.zrevrange('ratingHistory:' + userid, 0, 200, 'withscores', function (err, jsonstr) {
+                var res = [];
+                if (!err && jsonstr) {
+                    for (var i = 0; i < jsonstr.length / 2; ++i) {
+                        var ratings = JSON.parse(jsonstr[i * 2]);
+                        ratings.date = jsonstr[i * 2 + 1];
+                        res.push(ratings);
+                    }
+                    res.reverse();
+                }
+                fullstats.ratings_history = res;
+                that.db.zrevrange('statsHistory:' + userid, 0, 200, 'withscores', function (err2, jsonstr2) {
+                    var res2 = [];
+                    if (!err2 && jsonstr2) {
+                        for (var i = 0; i < jsonstr2.length / 2; ++i) {
+                            var stats = JSON.parse(jsonstr2[i * 2]);
+                            stats.date = jsonstr2[i * 2 + 1];
+                            res2.push(stats);
+                        }
+                        res2.reverse();
+                    }
+                    fullstats.stats_history = res2;
+                    callback(null, fullstats);
+                });
+            });
+        });
+    };
+
     ServerStats.prototype.getLeaderboard = function (userid, type, page, size, ids, callback) {
         var that = this;
 
@@ -30,10 +66,18 @@ var ServerStats = (function (db) {
         function getPageForUser(userid) {
             that.db.zrevrank('ratings', '' + userid, function (err, rank) {
                 // return empty list if not ranked
-                if (err || !rank) {
+                console.log('err: ' + err + ' - ' + rank);
+                if (err) {
                     callback([]);
                 } else {
-                    getRevRank(rank - size / 2, rank + size / 2 - 1);
+                    var min = rank - size / 2;
+                    var max = rank + size / 2 - 1;
+                    if (min < 0) {
+                        max = max - min;
+                        min = 0;
+                    }
+                    console.log('min: ' + min + ' max:' + max);
+                    getRevRank(min, max);
                 }
             });
         }

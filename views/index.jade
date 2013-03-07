@@ -17,7 +17,7 @@ block content
                 div(class='bar', style='width: 100%')
 
 
-    dev(id='spinner', class='spinner')
+    div(id='spinner', class='spinner')
 
     div(id='main', style='display:none', class='container')
         // Modal invitation
@@ -54,11 +54,11 @@ block content
                         a(href="#", id='game-with-friend', class='btn btn-large btn-custom btn-blue  btn-menu')="Play with Friend"
                     div(id='online-friends')
                         h2='Online friends'
-                        ul(id='online-frienbds-ul', class='unstyled')
+                        ul(id='online-friends-ul', class='unstyled')
                     div(class='button-menu')
                         a(href="#page=leaderboard&pagen=0&type=all", id="leaderboard-btn", class='btn btn-large btn-custom btn-blue btn-menu')="Leaderboards"
                     div(class='button-menu')
-                        a(href="#", id="stats", class='btn btn-large btn-custom btn-blue  btn-menu')="Game Stats"
+                        a(href="#page=stats&type=current", id="stats-btn", class='btn btn-large btn-custom btn-blue  btn-menu')="Game Stats"
                     div(class='button-menu')
                         a(href="#", id="invite-friends", class='btn btn-large btn-custom btn-blue  btn-menu')="Invite Friends"
                 div(id='offline-friends')
@@ -70,6 +70,7 @@ block content
     div(id='leaderboard', style='display:none', class='container')
         div(class='hero-unit')
             div(id='lb-header')
+                a(href='/', style='margin-top: -30px;',class='btn btn-custom btn-red')='&larr; Back to Menu'
                 h1='Leaderbords'
                 div(class='tabbable')
                     ul(class='nav nav-tabs', style='margin: 0;')
@@ -95,3 +96,21 @@ block content
                         a(id='lb-btn-previous', href='#page=leaderboard&pagen=0&type=all', class='btn btn-custom btn-blue')='&larr; Previous'
                     li(class='next')
                         a(id='lb-btn-next', href='#page=leaderboard&pagen=1&type=all', class='btn btn-custom btn-blue')='Next &rarr;'
+
+    div(id='stats', style='display:none', class='container')
+        div(class='hero-unit')
+            div(id='sp-header')
+                a(href='/', style='margin-top: -30px;',class='btn btn-custom btn-red')='&larr; Back to Menu'
+                h1='Stats'
+                div(class='tabbable')
+                    ul(class='nav nav-tabs', style='margin: 0;')
+                        li(id='sp-current', class='active')
+                            a(href='#page=stats&type=current')='Current'
+                        li(id='sp-stats-history', class='')
+                            a(href='#page=stats&type=stats-history')='Stats History'
+                        li(id='sp-rank-history', class='')
+                            a(href='#page=stats&type=rank-history')='Rank History'
+
+            div(id='sp-main',style='background-color: white;')
+
+            div(id='sp-footer')
