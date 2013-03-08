@@ -70,7 +70,7 @@ block content
     div(id='leaderboard', style='display:none', class='container')
         div(class='hero-unit')
             div(id='lb-header')
-                a(href='/', style='margin-top: -30px;',class='btn btn-custom btn-red')='&larr; Back to Menu'
+                a(href='#page=menu', style='margin-top: -30px;',class='btn btn-custom btn-red')='&larr; Back to Menu'
                 h1='Leaderbords'
                 div(class='tabbable')
                     ul(class='nav nav-tabs', style='margin: 0;')
@@ -100,7 +100,7 @@ block content
     div(id='stats', style='display:none', class='container')
         div(class='hero-unit')
             div(id='sp-header')
-                a(href='/', style='margin-top: -30px;',class='btn btn-custom btn-red')='&larr; Back to Menu'
+                a(href='#page=menu', style='margin-top: -30px;',class='btn btn-custom btn-red')='&larr; Back to Menu'
                 h1='Stats'
                 div(class='tabbable')
                     ul(class='nav nav-tabs', style='margin: 0;')
@@ -111,6 +111,10 @@ block content
                         li(id='sp-rank-history', class='')
                             a(href='#page=stats&type=rank-history')='Rank History'
 
-            div(id='sp-main',style='background-color: white;')
-
+            div(id='sp-main', class='main-stats', style='background-color: white;')
+                div(id='sp-tab-current')
+                    table(class='table table-striped')
+                        tbody()
+                div(id='sp-tab-stats-history')
+                div(id='sp-tab-rank-history')
             div(id='sp-footer')
