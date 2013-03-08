@@ -207,6 +207,8 @@ var ServerStats = (function (db) {
             stats.cumulWords += parseInt(newstats.words);
             stats.cumulKeyPressed += parseInt(newstats.nkeypressed);
             stats.cumulKeyError += parseInt(newstats.nkeyerror);
+            stats.victory = parseInt(stats.victory);
+            stats.defeat = parseInt(stats.defeat);
             stats.averageSpeed = (stats.averageSpeed * stats.gamesPlayed + parseFloat(newstats.speed)) / (stats.gamesPlayed + 1);
             stats.averageAccuracy = (stats.averageAccuracy * stats.gamesPlayed + parseFloat(newstats.accuracy)) / (stats.gamesPlayed + 1);
             stats.gamesPlayed += 1;
@@ -230,7 +232,7 @@ var ServerStats = (function (db) {
                 averageSpeed: parseFloat(newstats.speed),
                 averageAccuracy: parseFloat(newstats.accuracy)
             };
-            if (newstats.victory === 1) {
+            if (parseInt(newstats.victory) === 1) {
                 stats.victory = 1;
             } else {
                 stats.defeat = 1;
@@ -248,23 +250,17 @@ var ServerStats = (function (db) {
             var stats = {};
             if (!err && jstats) { // update stats
                 stats = JSON.parse(jstats);
-                if (!(newstats.nkeypressed <= 15 || newstats.speed < 10 || newstats.accuracy < 0.1)) {
-                    if (roomid !== 'practice') {
-                        stats = updateStats(stats, newstats);
-                    }
+                if (roomid !== 'practice') {
+                    stats = updateStats(stats, newstats);
                 }
             } else { // create stats
                 stats = newStats(newstats);
             }
-            if (!(newstats.nkeypressed <= 15 || newstats.speed < 10 || newstats.accuracy < 0.1)) {
-                if (stats && Object.keys(stats).length !== 0) {
-                    if (roomid !== 'practice') {
-                        that.db.set('stats:' + userid, JSON.stringify(stats));
-                    }
+            if (stats && Object.keys(stats).length !== 0) {
+                if (roomid !== 'practice') {
+                    that.db.set('stats:' + userid, JSON.stringify(stats));
+                    addStatsHistory(userid, stats);
                 }
-            }
-            if (roomid !== 'practice') {
-                addStatsHistory(userid, stats);
             }
             typeof callback === 'function' && callback(null, stats);
         });

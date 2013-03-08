@@ -221,7 +221,7 @@ var ready = function () {
             soundmanager.play('countdown-beep');
             if (remainingSeconds === 0) {
                 text = 'GO !';
-                soundmanager.play('gamestart');
+                soundmanager.play('gamestart', 1000);
             }
             scountdown.html(text);
         }, startGame);

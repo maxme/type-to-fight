@@ -57,9 +57,9 @@ var SoundManager = (function () {
         this.play('v' + r);
     };
 
-    SoundManager.prototype.play = function (name) {
+    SoundManager.prototype.play = function (name, delay) {
         if (this.soundstatus) {
-            createjs.Sound.play(name);
+            createjs.Sound.play(name, createjs.Sound.INTERRUPT_ANY, delay);
         }
     };
 

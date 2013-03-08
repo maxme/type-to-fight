@@ -61,7 +61,7 @@ var GamePlay = (function () {
             "<td class='" + this.attackTypeToClass(wordobj.type) + "'>" + this.attackTypeToHtml(wordobj.type) + "</td>" + // type
             "<td class='myword'>" + wordobj.word + "</td>" + // word
             "<td>" + wordobj.power + "</td></tr>"; // power
-        $(html).appendTo('#wordlist').hide().show(70, done);
+        $(html).appendTo('#wordlist').hide().show(120, done);
         this.displayedWords.push(wordobj.word);
     };
 

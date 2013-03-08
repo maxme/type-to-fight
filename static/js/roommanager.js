@@ -47,7 +47,7 @@ var RoomManager = (function () {
     RoomManager.prototype.playerWinWord = function (roomid, playerid, word, callback) {
         var that = this;
         that.db.hgetall('roomid:' + roomid, function (err, room) {
-            if (room) {
+            if (room && room.state === "playing") {
                 var words = JSON.parse(room.words);
                 var wordlist = words.map(function (e) { return e.word; });
                 if (wordlist.indexOf(word) !== -1) {
@@ -206,7 +206,7 @@ var RoomManager = (function () {
         var that = this;
         this.db.hgetall('roomid:' + roomid, function (err, obj) {
             // update state
-            if (obj.state === 'playing') {
+            if (!err && obj && obj.state === 'playing') {
                 that.db.hmset('roomid:' + roomid, {state: 'end'});
                 // send message to clients
                 var scores = {
@@ -214,19 +214,20 @@ var RoomManager = (function () {
                     player2: parseFloat(obj['scoreofplayer2'])
                 };
                 var player1_is_victorious = scores.player1 > scores.player2;
-                that.serverstats.updateRatings(obj.player1, obj.player2, player1_is_victorious, function (err, ratings) {
-                    if (that.clients[obj.player1]) {
-                        that.clients[obj.player1].emit('game_end', {
-                            you: 'player1', opp: 'player2', scores: scores, ratings: ratings
-                        });
-                    }
-                    if (that.clients[obj.player2]) {
-                        that.clients[obj.player2].emit('game_end', {
-                            you: 'player2', opp: 'player1', scores: scores, ratings: ratings
-                        });
-                    }
+                that.deleteRoom(roomid, null, function () {
+                    that.serverstats.updateRatings(obj.player1, obj.player2, player1_is_victorious, function (err, ratings) {
+                        if (that.clients[obj.player1]) {
+                            that.clients[obj.player1].emit('game_end', {
+                                you: 'player1', opp: 'player2', scores: scores, ratings: ratings
+                            });
+                        }
+                        if (that.clients[obj.player2]) {
+                            that.clients[obj.player2].emit('game_end', {
+                                you: 'player2', opp: 'player1', scores: scores, ratings: ratings
+                            });
+                        }
+                    });
                 });
-                that.deleteRoom(roomid);
             } else {
                 console.log('error 4: want to end a non-playing room');
             }
@@ -255,10 +256,10 @@ var RoomManager = (function () {
             return ;
         }
         this.db.hgetall('roomid:' + roomid, function (err, obj) {
-            console.log('askreplay room: ' + obj);
+            console.log('askreplay room: ' + JSON.stringify(obj));
             console.log('askreplay room err: ' + err);
 
-            if (obj && obj.state === 'end') {
+            if (obj && obj.state !== 'new') {
                 // delete roomid
                 that.deleteRoom(roomid, playerid, function () {
                     // recreate the room
