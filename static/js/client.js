@@ -274,20 +274,14 @@ var ready = function () {
         }, (common.GAME_TIME_S - 3) * 1000);
     } else {
         // Init bot
-        var res = true;
-        var dt = 0;
         var lastTime = (new Date()).getTime();
         var botTick = function () {
-            if (res) {
-                dt = (new Date()).getTime() - lastTime;
-            } else {
-                dt += (new Date()).getTime() - lastTime;
-            }
+            var diffTime = (new Date()).getTime() - lastTime;
             if (gameManager.gameState === 3) {
-                lastTime = (new Date()).getTime();
-                res = gamePlay.practiceBotTick(dt);
+                gamePlay.practiceBotTick(diffTime / 1000.);
             }
-            setTimeout(botTick, 1000);
+            lastTime = (new Date()).getTime();
+            setTimeout(botTick, 100);
         };
         botTick();
     }

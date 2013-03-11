@@ -9,6 +9,9 @@ var GamePlay = (function () {
         this.reset();
         this.winword_cb = null;
         this.endgame_cb = undefined;
+        // practice bot data
+        this.bot_key_pressed = 0;
+        this.bot_time = 0;
         var that = this;
         String.prototype.startsWith = function (str) {
             return this.slice(0, str.length) === str;
@@ -29,6 +32,11 @@ var GamePlay = (function () {
         this.oppHealth = this.MAX_HEALTH;
         this.attackPlayer(0);
         this.attackOpp(0);
+        if (this.gamestats.averageSpeed > 10) {
+            this.bot_target_speed = Math.max(50, this.gamestats.averageSpeed);
+        } else {
+            this.bot_target_speed = 200;
+        }
         this.gamestats.reset();
     };
 
@@ -104,12 +112,17 @@ var GamePlay = (function () {
     };
 
     GamePlay.prototype.practiceBotTick = function (dt) {
-        if (dt > 5000) {
+        this.bot_time += dt;
+        if (this.bot_time < 2) {
+            return ;
+        }
+        var avg_speed = ((this.bot_key_pressed / this.bot_time) * 60);
+        if (avg_speed < (this.bot_target_speed * 0.9)) {
             var randword = this.allWords[randomRange(0, this.allWords.length - 1)].word;
             this.oppWinWord(randword);
-            return true;
+            this.bot_key_pressed += randword.length;
+            console.log(avg_speed);
         }
-        return false;
     };
 
     GamePlay.prototype.getPractiseEndScores = function () {

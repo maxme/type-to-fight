@@ -350,7 +350,7 @@ app.get('/test', function (req, res) {
 app.get('/game/:roomid', ensureAuthenticated, function (req, res) {
     res.render('game.jade', {
         title: 'New Game',
-        description: 'FIXME: Your Page Description',
+        description: 'Type to fight: webgame to test your typing skills',
         author: 'Maxime Biais',
         roomid: req.params.roomid,
         analyticssiteid: 'FIXME: XXXXXXX'
