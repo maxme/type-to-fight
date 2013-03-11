@@ -92,7 +92,7 @@ var thirdStepInit = function () {
             sendPlayRequestTo(this.id.replace('play', ''));
         });
     });
-    
+
     // ready to show main and hide loading
     $('#loading').hide();
     $('#main').show();
@@ -199,7 +199,7 @@ var thirdStepInit = function () {
             $(id + ' tbody').append('<tr>');
         }
         $(id + ' tbody tr:last').append(
-            '<td><a id="play' + friend.uid + '" href="#" class="ofriend">' + img +
+            '<td style="width: 33%;"><a id="play' + friend.uid + '" href="#" class="ofriend">' + img +
             friend.name +
             '</a></td>');
     }

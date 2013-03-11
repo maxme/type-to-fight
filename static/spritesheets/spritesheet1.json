@@ -8,9 +8,97 @@
 	"spriteSourceSize": {"x":0,"y":0,"w":1022,"h":10},
 	"sourceSize": {"w":1022,"h":10}
 },
+"char1-parts/arm-left.png":
+{
+	"frame": {"x":511,"y":12,"w":91,"h":152},
+	"rotated": false,
+	"trimmed": false,
+	"spriteSourceSize": {"x":0,"y":0,"w":91,"h":152},
+	"sourceSize": {"w":91,"h":152}
+},
+"char1-parts/arm-right.png":
+{
+	"frame": {"x":486,"y":165,"w":91,"h":152},
+	"rotated": false,
+	"trimmed": false,
+	"spriteSourceSize": {"x":0,"y":0,"w":91,"h":152},
+	"sourceSize": {"w":91,"h":152}
+},
+"char1-parts/eyes-dead.png":
+{
+	"frame": {"x":394,"y":318,"w":91,"h":152},
+	"rotated": false,
+	"trimmed": false,
+	"spriteSourceSize": {"x":0,"y":0,"w":91,"h":152},
+	"sourceSize": {"w":91,"h":152}
+},
+"char1-parts/eyes.png":
+{
+	"frame": {"x":419,"y":12,"w":91,"h":152},
+	"rotated": false,
+	"trimmed": false,
+	"spriteSourceSize": {"x":0,"y":0,"w":91,"h":152},
+	"sourceSize": {"w":91,"h":152}
+},
+"char1-parts/hair.png":
+{
+	"frame": {"x":394,"y":165,"w":91,"h":152},
+	"rotated": false,
+	"trimmed": false,
+	"spriteSourceSize": {"x":0,"y":0,"w":91,"h":152},
+	"sourceSize": {"w":91,"h":152}
+},
+"char1-parts/head.png":
+{
+	"frame": {"x":302,"y":318,"w":91,"h":152},
+	"rotated": false,
+	"trimmed": false,
+	"spriteSourceSize": {"x":0,"y":0,"w":91,"h":152},
+	"sourceSize": {"w":91,"h":152}
+},
+"char1-parts/leg-left.png":
+{
+	"frame": {"x":327,"y":12,"w":91,"h":152},
+	"rotated": false,
+	"trimmed": false,
+	"spriteSourceSize": {"x":0,"y":0,"w":91,"h":152},
+	"sourceSize": {"w":91,"h":152}
+},
+"char1-parts/leg-right.png":
+{
+	"frame": {"x":302,"y":165,"w":91,"h":152},
+	"rotated": false,
+	"trimmed": false,
+	"spriteSourceSize": {"x":0,"y":0,"w":91,"h":152},
+	"sourceSize": {"w":91,"h":152}
+},
+"char1-parts/mouth-close.png":
+{
+	"frame": {"x":235,"y":12,"w":91,"h":152},
+	"rotated": false,
+	"trimmed": false,
+	"spriteSourceSize": {"x":0,"y":0,"w":91,"h":152},
+	"sourceSize": {"w":91,"h":152}
+},
+"char1-parts/mouth-open.png":
+{
+	"frame": {"x":210,"y":207,"w":91,"h":152},
+	"rotated": false,
+	"trimmed": false,
+	"spriteSourceSize": {"x":0,"y":0,"w":91,"h":152},
+	"sourceSize": {"w":91,"h":152}
+},
+"char1-parts/torso.png":
+{
+	"frame": {"x":118,"y":207,"w":91,"h":152},
+	"rotated": false,
+	"trimmed": false,
+	"spriteSourceSize": {"x":0,"y":0,"w":91,"h":152},
+	"sourceSize": {"w":91,"h":152}
+},
 "char1/char1a.png":
 {
-	"frame": {"x":235,"y":12,"w":116,"h":194},
+	"frame": {"x":118,"y":12,"w":116,"h":194},
 	"rotated": false,
 	"trimmed": false,
 	"spriteSourceSize": {"x":0,"y":0,"w":116,"h":194},
@@ -18,7 +106,7 @@
 },
 "char1/char1b.png":
 {
-	"frame": {"x":118,"y":12,"w":116,"h":194},
+	"frame": {"x":1,"y":207,"w":116,"h":194},
 	"rotated": false,
 	"trimmed": false,
 	"spriteSourceSize": {"x":0,"y":0,"w":116,"h":194},
@@ -34,7 +122,7 @@
 },
 "misc/shout.png":
 {
-	"frame": {"x":352,"y":12,"w":57,"h":62},
+	"frame": {"x":1,"y":402,"w":57,"h":62},
 	"rotated": false,
 	"trimmed": false,
 	"spriteSourceSize": {"x":0,"y":0,"w":57,"h":62},
@@ -45,8 +133,8 @@
 	"version": "1.0",
 	"image": "spritesheet1.png",
 	"format": "RGBA8888",
-	"size": {"w":1024,"h":207},
+	"size": {"w":1024,"h":471},
 	"scale": "1",
-	"smartupdate": "$TexturePacker:SmartUpdate:c730d59300909ffa1abf4107b1541009$"
+	"smartupdate": "$TexturePacker:SmartUpdate:3dae6bb6d6e3f22507604ec96813ab7e$"
 }
 }

@@ -71,6 +71,111 @@ var Background = (function () {
     return Background;
 })();
 
+
+
+var Character = (function () {
+    function Character(spritesheet, left, layer, w) {
+        this.w = w;
+        this.spritesheet = spritesheet;
+        this.layer = layer;
+        this.left = left;
+        this.armleft = this.spritesheet.createSprite('char1-parts/arm-left.png', this.layer);
+        this.armright = this.spritesheet.createSprite('char1-parts/arm-right.png', this.layer);
+        this.eyes = this.spritesheet.createSprite('char1-parts/eyes.png', this.layer);
+        this.eyesdead = this.spritesheet.createSprite('char1-parts/eyes-dead.png', this.layer);
+        this.head = this.spritesheet.createSprite('char1-parts/head.png', this.layer);
+        this.hair = this.spritesheet.createSprite('char1-parts/hair.png', this.layer);
+        this.legleft = this.spritesheet.createSprite('char1-parts/leg-left.png', this.layer);
+        this.legright = this.spritesheet.createSprite('char1-parts/leg-right.png', this.layer);
+        this.mouthopen = this.spritesheet.createSprite('char1-parts/mouth-open.png', this.layer);
+        this.mouthclose = this.spritesheet.createSprite('char1-parts/mouth-close.png', this.layer);
+        this.torso = this.spritesheet.createSprite('char1-parts/torso.png', this.layer);
+        this.sprites = [this.armleft, this.torso, this.legleft, this.legright, this.head, this.hair, this.armright,
+                       this.mouthopen, this.mouthclose, this.eyes, this.eyesdead
+                       ];
+        this.moveSprites();
+        this.createShoutSprite();
+    }
+    
+    Character.prototype.createShoutSprite = function () {
+        this.shout = this.spritesheet.createSprite('misc/shout.png', this.layer);
+        this.sprites.push(this.shout);
+        var scale = 0.8;
+        this.shout.setXScale(scale);
+        this.shout.setYScale(scale);
+        if (this.left) {
+            this.shout.move(90 + 50, 110);
+        } else {
+            this.shout.setXScale(-this.shout.xscale);
+            this.shout.move(this.w - this.shout.w - 90 - 50, 110);
+        }
+        
+        this.shout.setOpacity(0);
+    };
+    
+    Character.prototype.timedAnim = function (time, func, reset_func) {
+        setTimeout(function() {
+            reset_func();
+        }, time);
+        func();
+    };
+    
+    Character.prototype.moveSprites = function () {
+        var xscale = 0.8;
+        var posX = 50
+        if (!this.left) {
+            xscale = -0.8;
+            posX = this.w - this.torso.w - posX;
+        }
+        var yscale = 0.8;
+        for (var i = 0; i < this.sprites.length; ++i) {
+            this.sprites[i].setXScale(xscale);
+            this.sprites[i].setYScale(yscale);
+            this.sprites[i].move(posX, 70);
+        }
+        this.mouthopen.setOpacity(0);
+        this.eyesdead.setOpacity(0);
+    };
+    
+    Character.prototype.update = function () {
+        for (var i = 0; i < this.sprites.length; ++i) {
+            this.sprites[i].update();
+        }
+    };
+    
+    Character.prototype.openMouth = function () {
+        this.mouthopen.setOpacity(100);
+        this.mouthclose.setOpacity(0);
+    };
+    
+    Character.prototype.closeMouth = function () {
+        this.mouthopen.setOpacity(0);
+        this.mouthclose.setOpacity(100);
+    };
+    
+    Character.prototype.hit = function (time) {
+        var that = this;
+        that.timedAnim(time, function () {
+            that.eyes.setOpacity(0);
+            that.eyesdead.setOpacity(100);
+        }, function () {
+            that.eyes.setOpacity(100);
+            that.eyesdead.setOpacity(0);
+        });
+    };
+
+    Character.prototype.attack = function (time) {
+        var that = this;
+        this.timedAnim(time, function () {
+            that.shout.setOpacity(100);
+        }, function () {
+            that.shout.setOpacity(0);
+        });
+    };
+
+    return Character;
+})();
+
 var Player = (function () {
     function Player(spritesheet, left, layer, w) {
         this.w = w;
@@ -86,12 +191,12 @@ var Player = (function () {
 
     Player.prototype.createPlayer = function () {
         this.sprite = this.spritesheet.createSprite('char1/char1a.png', this.layer);
-        var posX = 50;
+        var posX = 120;
         if (this.left) {
-            this.sprite.move(posX, 35);
+            this.sprite.move(posX, 45);
             this.sprite.setXScale(-1);
         } else {
-            this.sprite.move(this.w - this.sprite.w - posX, 35);
+            this.sprite.move(this.w - this.sprite.w - posX, 45);
         }
         this.sprite.setXScale(this.sprite.xscale / 1.5);
         this.sprite.setYScale(this.sprite.yscale / 1.5);
@@ -178,9 +283,9 @@ var GameGraphics = (function () {
         this.lbg = new Background('/images/backgrounds/bg-sand-grey.png', this.scene, this.layer, true);
 
         // Create players
-        this.lplayer = new Player(this.spritesheet, true, this.layer, this.w);
-        this.rplayer = new Player(this.spritesheet, false, this.layer, this.w);
-
+        this.lplayer = new Character(this.spritesheet, true, this.layer, this.w);
+        this.rplayer = new Character(this.spritesheet, false, this.layer, this.w);
+        
         // Create ground
         this.ground = this.spritesheet.createSprite('background/ground.png', this.layer);
         this.ground.move(0, 200);
