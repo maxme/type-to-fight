@@ -1,3 +1,13 @@
+var Sprite = sjs.Sprite;
+
+Sprite.prototype.setSpriteSourceSize = function (spriteSourceSize) {
+    this.spriteSourceSize = spriteSourceSize;
+};
+
+Sprite.prototype.getSpriteSourceSize = function () {
+    return this.spriteSourceSize;
+};
+
 var SpriteSheet = (function () {
     function SpriteSheet(scene, spritesheet_json, spritesheet_img, callback) {
         var that = this;
@@ -32,13 +42,29 @@ var SpriteSheet = (function () {
         return frame;
     };
 
+    SpriteSheet.prototype.getSpriteSourceSize = function (name) {
+        if (!this.spritesheet.frames[name]) {
+            console.log('spritename not found: ' + name + ' in: ' + Object.keys(this.spritesheet.frames));
+        }
+        if (this.spritesheet.frames[name].spriteSourceSize) {
+            var spriteSourceSize = this.spritesheet.frames[name].spriteSourceSize;
+            return spriteSourceSize;
+        }
+        return null;
+    };
+    
     SpriteSheet.prototype.createSprite = function (name, layer) {
         var frame = this.getFrame(name);
+        var spriteSourceSize = this.getSpriteSourceSize(name);
         var options = {layer: layer, x: 0, y: 0, size:[frame.w, frame.h]};
         var sprite = this.scene.Sprite(false, options);
         sprite.loadImg(this.spritesheet_img);
         sprite.setXOffset(frame.x);
         sprite.setYOffset(frame.y);
+        if (spriteSourceSize) {
+            console.log(spriteSourceSize);
+            sprite.setSpriteSourceSize(spriteSourceSize);
+        }
         return sprite;
     };
 
@@ -121,17 +147,22 @@ var Character = (function () {
     };
     
     Character.prototype.moveSprites = function () {
-        var xscale = 0.8;
+        var xscale = 1;
         var posX = 50
         if (!this.left) {
-            xscale = -0.8;
-            posX = this.w - this.torso.w - posX;
+            xscale = -1;
         }
-        var yscale = 0.8;
+        var yscale = 1;
         for (var i = 0; i < this.sprites.length; ++i) {
             this.sprites[i].setXScale(xscale);
             this.sprites[i].setYScale(yscale);
-            this.sprites[i].move(posX, 70);
+            var sss = this.sprites[i].spriteSourceSize;
+            if (!this.left) {
+                posX = this.w - this.sprites[i].w - 50;
+                this.sprites[i].move(posX - sss.x, 55 + sss.y);
+            } else {
+                this.sprites[i].move(posX + sss.x, 55 + sss.y);
+            }
         }
         this.mouthopen.setOpacity(0);
         this.eyesdead.setOpacity(0);
@@ -276,7 +307,7 @@ var GameGraphics = (function () {
 
     GameGraphics.prototype.gameLoaded = function () {
         var that = this;
-        this.layer = that.scene.Layer("layer", {useCanvas: true, autoClear: true});
+        this.layer = that.scene.Layer("layer", {useCanvas: true, autoClear: false});
 
         // Create backgrounds
         this.rbg = new Background('/images/backgrounds/bg-light-grey.png', this.scene, this.layer, false);
