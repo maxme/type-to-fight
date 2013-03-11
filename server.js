@@ -82,16 +82,14 @@ app.use(function (err, req, res, next) {
         res.render('404.jade', {
             title: '404 - Not Found',
             description: '',
-            author: '',
-            analyticssiteid: 'XXXXXXX'
+            author: ''
         });
     } else {
         res.status(500);
         res.render('500.jade', {
             title: 'The Server Encountered an Error',
             description: '',
-            error: err.stack,
-            author: '', analyticssiteid: 'XXXXXXX'
+            error: err.stack
         });
     }
 });
@@ -224,8 +222,7 @@ app.get('/facebook/error', function (req, res) {
     res.render('facebook-login.jade', {
         title: 'Type To Fight - Login error',
         description: 'Type To Fight - Web Game to test your typing skills',
-        author: 'Maxime Biais',
-        analyticssiteid: 'UA-39196609-1'
+        author: 'Maxime Biais'
     });
 });
 
@@ -243,8 +240,7 @@ app.all('/', ensureAuthenticated, function (req, res) {
         title: 'Type To Fight',
         description: 'Type To Fight - Web Game to test your typing skills',
         author: 'Maxime Biais',
-        requestids: JSON.stringify(requestids),
-        analyticssiteid: 'UA-39196609-1'
+        requestids: JSON.stringify(requestids)
     });
 });
 
@@ -342,8 +338,7 @@ app.get('/test', function (req, res) {
         title: 'Type To Fight',
         description: 'Type To Fight - Web Game to test your typing skills',
         author: 'Maxime Biais',
-        roomid: req.params.roomid,
-        analyticssiteid: 'UA-39196609-1'
+        roomid: req.params.roomid
     });
 });
 
@@ -352,8 +347,7 @@ app.get('/game/:roomid', ensureAuthenticated, function (req, res) {
         title: 'Type To Fight',
         description: 'Type To Fight - Web Game to test your typing skills',
         author: 'Maxime Biais',
-        roomid: req.params.roomid,
-        analyticssiteid: 'UA-39196609-1'
+        roomid: req.params.roomid
     });
 });
 
