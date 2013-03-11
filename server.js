@@ -222,10 +222,10 @@ app.all('/facebook/login', passport.authenticate('facebook'), function (req, res
 
 app.get('/facebook/error', function (req, res) {
     res.render('facebook-login.jade', {
-        title: 'New Game',
-        description: 'FIXME: Your Page Description',
+        title: 'Type To Fight - Login error',
+        description: 'Type To Fight - Web Game to test your typing skills',
         author: 'Maxime Biais',
-        analyticssiteid: 'FIXME: XXXXXXX'
+        analyticssiteid: 'UA-39196609-1'
     });
 });
 
@@ -240,11 +240,11 @@ app.all('/', ensureAuthenticated, function (req, res) {
         requestids = requestids.split(',');
     }
     res.render('index.jade', {
-        title: 'Play FIXME',
-        description: 'FIXME: Your Page Description',
+        title: 'Type To Fight',
+        description: 'Type To Fight - Web Game to test your typing skills',
         author: 'Maxime Biais',
         requestids: JSON.stringify(requestids),
-        analyticssiteid: 'FIXME: XXXXXXX'
+        analyticssiteid: 'UA-39196609-1'
     });
 });
 
@@ -339,21 +339,21 @@ app.post('/invited-games', function (req, res) {
 
 app.get('/test', function (req, res) {
     res.render('test.jade', {
-        title: 'New Game',
-        description: 'FIXME: Your Page Description',
+        title: 'Type To Fight',
+        description: 'Type To Fight - Web Game to test your typing skills',
         author: 'Maxime Biais',
         roomid: req.params.roomid,
-        analyticssiteid: 'FIXME: XXXXXXX'
+        analyticssiteid: 'UA-39196609-1'
     });
 });
 
 app.get('/game/:roomid', ensureAuthenticated, function (req, res) {
     res.render('game.jade', {
-        title: 'New Game',
-        description: 'Type to fight: webgame to test your typing skills',
+        title: 'Type To Fight',
+        description: 'Type To Fight - Web Game to test your typing skills',
         author: 'Maxime Biais',
         roomid: req.params.roomid,
-        analyticssiteid: 'FIXME: XXXXXXX'
+        analyticssiteid: 'UA-39196609-1'
     });
 });
 
