@@ -45,9 +45,6 @@ var secondStepInit = function () {
         });
     });
 
-    $('#game-with-friend').bind('mouseup', function () {
-        $('#online-friends').toggle(400);
-    });
 
     $('#game-with-random').bind('mouseup', function () {
         myFB.getUserInfos(function (response) {
@@ -87,7 +84,15 @@ var secondStepInit = function () {
 };
 
 var thirdStepInit = function () {
-
+    $('#game-with-friend').bind('mouseup', function () {
+        $('#modalLabel').text('Play with one of your online friend');
+        $('#modalmessage').html($('#online-friends').html());
+        $('#invitations').modal({show: true});
+        $('.ofriend').click(function () {
+            sendPlayRequestTo(this.id.replace('play', ''));
+        });
+    });
+    
     // ready to show main and hide loading
     $('#loading').hide();
     $('#main').show();
@@ -185,19 +190,18 @@ var thirdStepInit = function () {
         });
     }
 
-    function createFriendEntry(friend, id, pic) {
+    function createFriendEntry(friend, id, pic, newline) {
         var img = '';
         if (pic) {
             img = '<img src="' + friend.pic_square + '"/>';
         }
-        $('<li>' +
-            '<a id="play' + friend.uid + '" href="#">' + img +
+        if (newline) {
+            $(id + ' tbody').append('<tr>');
+        }
+        $(id + ' tbody tr:last').append(
+            '<td><a id="play' + friend.uid + '" href="#" class="ofriend">' + img +
             friend.name +
-            '</a>' +
-            '</li>').appendTo(id);
-        $('#play' + friend.uid).click(function () {
-            sendPlayRequestTo(this.id.replace('play', ''));
-        });
+            '</a></td>');
     }
 
     myFB.getFriendsWithOnlinePresence(function (response) {
@@ -220,14 +224,17 @@ var thirdStepInit = function () {
 
         // Add online friends
         if (online_friends.length === 0 && idle_friends.length === 0) {
-            $('<li>Sorry, no online friends :(</li>').appendTo('#online-friends-ul');
+            $('<tr><td>Sorry, no online friends :(</td></tr>').appendTo('#online-friends-ul');
         } else {
+            $('#online-friends').html('<tbody></tbody>');
             for (var j = 0; j < online_friends.length; ++j) {
-                createFriendEntry(online_friends[j], '#online-friends-ul', true);
+                createFriendEntry(online_friends[j], '#online-friends', true, j % 3 === 0);
             }
+            /*
             for (var j = 0; j < idle_friends.length; ++j) {
                 createFriendEntry(idle_friends[j], '#online-friends-ul', true);
             }
+            */
         }
     });
 };
