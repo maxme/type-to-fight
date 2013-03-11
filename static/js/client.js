@@ -171,6 +171,7 @@ var ready = function () {
             if (roomid === data.roomid) {
                 $('#modal-endgame-message').removeClass('alert-error').addClass('alert-success');
                 $('#modal-endgame-message').text('You\'re opponent want to replay !');
+                soundmanager.play('replay');
             } else {
                 disableReplay();
             }

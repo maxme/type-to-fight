@@ -85,6 +85,7 @@ var SoundManager = (function () {
         this.loadOneSound('gamestart');
         this.loadOneSound('countdown-beep');
         this.loadOneSound('click');
+        this.loadOneSound('replay');
         for (var i = 1; i < 10; ++i) {
             this.loadOneSound('v' + i);
         }
