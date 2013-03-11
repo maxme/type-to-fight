@@ -200,6 +200,12 @@ var ready = function () {
             $('#modalfooter').show();
         } else {
             smodalmessage.html('Waiting for your opponent to connect.');
+            runTimer(30, function () {}, function () {
+                if (gameManager.gameState !== 2) {
+                    smodalmessage.html('You\'re so patient, and your opponent is so slow...');
+                    $('#modalfooter').show();
+                }
+            });
         }
         gameManager.setGameState(1);
     });
