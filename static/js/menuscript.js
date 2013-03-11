@@ -122,7 +122,7 @@ var thirdStepInit = function () {
                             uidSet[data[i].inviter] = 1;
                             $('<tr><td><span class="uid' + data[i].inviter + '"></span> invited you '
                                 + data[i].time_delta
-                                + ' seconds ago</td><td><a href="#" class="btn" id="btn' + data[i].roomid
+                                + ' seconds ago</td><td><a href="#" class="btn btn-custom btn-grey" id="btn' + data[i].roomid
                                 + '">Join</a></td></tr>').appendTo('#modalmessage');
                             deleteInvitation(data[i].roomid, data[i].inviter, response.id);
                         }

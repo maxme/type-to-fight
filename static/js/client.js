@@ -68,12 +68,12 @@ var ready = function () {
             if (remainingSeconds === -1) {
                 endcb();
             } else {
-                update(remainingSeconds);
-                mainTimer = setTimeout(timerTick, 1000);
+                var timervar = setTimeout(timerTick, 1000);
+                update(remainingSeconds, timervar);
             }
         }
 
-        mainTimer = setTimeout(timerTick, 1000);
+        return setTimeout(timerTick, 1000);
     }
 
     function updatePlayerNames(opp_id) {
@@ -99,7 +99,8 @@ var ready = function () {
         gameManager.setGameState(3);
         gamePlay.startGame();
         splayinput.focus();
-        runTimer(common.GAME_TIME_S, function (remainingSeconds) {
+        mainTimer = runTimer(common.GAME_TIME_S, function (remainingSeconds, timervar) {
+            mainTimer = timervar;
             sgametimer.html(remainingSeconds);
         }, function () {
             if (roomid === 'practice') {

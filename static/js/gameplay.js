@@ -10,8 +10,6 @@ var GamePlay = (function () {
         this.winword_cb = null;
         this.endgame_cb = undefined;
         // practice bot data
-        this.bot_key_pressed = 0;
-        this.bot_time = 0;
         var that = this;
         String.prototype.startsWith = function (str) {
             return this.slice(0, str.length) === str;
@@ -32,6 +30,8 @@ var GamePlay = (function () {
         this.oppHealth = this.MAX_HEALTH;
         this.attackPlayer(0);
         this.attackOpp(0);
+        this.bot_key_pressed = 0;
+        this.bot_time = 0;
         if (this.gamestats.averageSpeed > 10) {
             this.bot_target_speed = Math.max(50, this.gamestats.averageSpeed);
         } else {
@@ -121,7 +121,6 @@ var GamePlay = (function () {
             var randword = this.allWords[randomRange(0, this.allWords.length - 1)].word;
             this.oppWinWord(randword);
             this.bot_key_pressed += randword.length;
-            console.log(avg_speed);
         }
     };
 
