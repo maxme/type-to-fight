@@ -1,10 +1,15 @@
 node_modules
 .idea
 
-tmp/
 .DS_Store
 
 static/js/local.js
 
 ssl/ssl-cert.pem
 ssl/ssl-key.pem
+
+# Working dirs
+contrib/
+dump.rdb
+static/tests/
+tmp/
