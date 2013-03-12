@@ -67,6 +67,10 @@ var expressConfigure = function () {
 var app = express();
 app.configure(expressConfigure);
 
+function randomRange(lower, upper) {
+    return Math.floor(Math.random() * (upper - lower + 1)) + lower;
+}
+
 function stringifyObj(obj) {
     var mop = {};
     for (var i in obj) {
@@ -182,6 +186,14 @@ io.sockets.on('connection', function (socket) {
 //              Routes                   //
 ///////////////////////////////////////////
 
+function createRandomStyleCode() {
+    res = [0,0,0,0,0,0];
+    for (var i = 0; i < 6; ++i) {
+        res[i] = randomRange(0, common.COSTUME_STYLES.length-1);
+    }
+    return res.join(',');
+}
+
 function ensureAuthenticated(req, res, next) {
     if (req.isAuthenticated()) {
         return next();
@@ -227,10 +239,6 @@ app.get('/facebook/error', function (req, res) {
 });
 
 app.all('/', ensureAuthenticated, function (req, res) {
-    console.log(JSON.stringify(req.user));
-    req.user.last_seen = JSON.stringify(new Date()).replace(/"/g, '');
-    db.hmset('user:' + req.user.id, stringifyObj(req.user));
-
     var requestids = [];
     if (req.param('request_ids')) {
         requestids = req.param('request_ids');
@@ -343,12 +351,24 @@ app.get('/test', function (req, res) {
 });
 
 app.get('/game/:roomid', ensureAuthenticated, function (req, res) {
-    res.render('game.jade', {
-        title: 'Type To Fight',
-        description: 'Type To Fight - Web Game to test your typing skills',
-        author: 'Maxime Biais',
-        roomid: req.params.roomid
+    req.user.last_seen = JSON.stringify(new Date()).replace(/"/g, '');
+    db.hget('user:' + req.user.id, 'stylecode', function (err, stylecode) {
+        if (!err && stylecode) {
+            req.user.stylecode = stylecode;
+            db.hmset('user:' + req.user.id, stringifyObj(req.user));
+        } else {
+            req.user.stylecode = createRandomStyleCode();
+            db.hmset('user:' + req.user.id, stringifyObj(req.user));
+        }
+        res.render('game.jade', {
+            title: 'Type To Fight',
+            description: 'Type To Fight - Web Game to test your typing skills',
+            author: 'Maxime Biais',
+            stylecode: req.user.stylecode,
+            roomid: req.params.roomid
+        });
     });
+
 });
 
 app.post('/associate', function (req, res) {

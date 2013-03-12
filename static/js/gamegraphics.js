@@ -62,7 +62,6 @@ var SpriteSheet = (function () {
         sprite.setXOffset(frame.x);
         sprite.setYOffset(frame.y);
         if (spriteSourceSize) {
-            console.log(spriteSourceSize);
             sprite.setSpriteSourceSize(spriteSourceSize);
         }
         return sprite;
@@ -97,31 +96,44 @@ var Background = (function () {
     return Background;
 })();
 
-
-
 var Character = (function () {
-    function Character(spritesheet, left, layer, w) {
+    var common = new Common();
+    
+    function Character(spritesheet, left, layer, w, stylecode) {
         this.w = w;
         this.spritesheet = spritesheet;
         this.layer = layer;
         this.left = left;
-        this.armleft = this.spritesheet.createSprite('char1-parts/arm-left.png', this.layer);
-        this.armright = this.spritesheet.createSprite('char1-parts/arm-right.png', this.layer);
-        this.eyes = this.spritesheet.createSprite('char1-parts/eyes.png', this.layer);
-        this.eyesdead = this.spritesheet.createSprite('char1-parts/eyes-dead.png', this.layer);
-        this.head = this.spritesheet.createSprite('char1-parts/head.png', this.layer);
-        this.hair = this.spritesheet.createSprite('char1-parts/hair.png', this.layer);
-        this.legleft = this.spritesheet.createSprite('char1-parts/leg-left.png', this.layer);
-        this.legright = this.spritesheet.createSprite('char1-parts/leg-right.png', this.layer);
-        this.mouthopen = this.spritesheet.createSprite('char1-parts/mouth-open.png', this.layer);
-        this.mouthclose = this.spritesheet.createSprite('char1-parts/mouth-close.png', this.layer);
-        this.torso = this.spritesheet.createSprite('char1-parts/torso.png', this.layer);
-        this.sprites = [this.armright, this.torso, this.armleft,this.legleft, this.legright, this.head, this.hair,
+        this.code = stylecode;
+        var names = this.codeToNames(stylecode);
+        this.eyes = this.spritesheet.createSprite('char-' + names['eyes'] + '/eyes.png', this.layer);
+        this.eyesdead = this.spritesheet.createSprite('char-' + names['eyes'] + '/eyes-dead.png', this.layer);
+        this.head = this.spritesheet.createSprite('char-' + names['head'] + '/head.png', this.layer);
+        this.hair = this.spritesheet.createSprite('char-' + names['hair'] + '/hair.png', this.layer);
+        this.legs = this.spritesheet.createSprite('char-' + names['legs'] + '/legs.png', this.layer);
+        this.mouthopen = this.spritesheet.createSprite('char-' + names['mouth'] + '/mouth-open.png', this.layer);
+        this.mouthclose = this.spritesheet.createSprite('char-' + names['mouth'] + '/mouth-close.png', this.layer);
+        this.torso = this.spritesheet.createSprite('char-' + names['torso'] + '/torso.png', this.layer);
+        this.sprites = [this.torso, this.legs, this.head, this.hair,
                        this.mouthopen, this.mouthclose, this.eyes, this.eyesdead
                        ];
         this.moveSprites();
         this.createShoutSprite();
     }
+    
+    Character.prototype.codeToNames = function (stylecode) {
+        styles = common.COSTUME_STYLES;
+        split = stylecode.split(',');
+        res = {
+            'eyes': styles[parseInt(split[0])],
+            'head': styles[parseInt(split[1])],
+            'hair': styles[parseInt(split[2])],
+            'legs': styles[parseInt(split[3])],
+            'mouth': styles[parseInt(split[4])],
+            'torso': styles[parseInt(split[5])]
+        }
+        return res;
+    };
     
     Character.prototype.createShoutSprite = function () {
         this.shout = this.spritesheet.createSprite('misc/shout.png', this.layer);
@@ -130,10 +142,10 @@ var Character = (function () {
         this.shout.setXScale(scale);
         this.shout.setYScale(scale);
         if (this.left) {
-            this.shout.move(90 + 50, 110);
+            this.shout.move(110 + 50, 100);
         } else {
             this.shout.setXScale(-this.shout.xscale);
-            this.shout.move(this.w - this.shout.w - 90 - 50, 110);
+            this.shout.move(this.w - this.shout.w - 110 - 50, 100);
         }
         
         this.shout.setOpacity(0);
@@ -159,9 +171,9 @@ var Character = (function () {
             var sss = this.sprites[i].spriteSourceSize;
             if (!this.left) {
                 posX = this.w - this.sprites[i].w - 50;
-                this.sprites[i].move(posX - sss.x, 55 + sss.y);
+                this.sprites[i].move(posX - sss.x, 22 + sss.y);
             } else {
-                this.sprites[i].move(posX + sss.x, 55 + sss.y);
+                this.sprites[i].move(posX + sss.x, 22 + sss.y);
             }
         }
         this.mouthopen.setOpacity(0);
@@ -208,6 +220,8 @@ var Character = (function () {
 })();
 
 var GameGraphics = (function () {
+    var common = new Common();
+
     function GameGraphics(parent, w, h) {
         var that = this;
         this.w = w;
@@ -226,6 +240,13 @@ var GameGraphics = (function () {
     };
 
     GameGraphics.prototype.gameLoaded = function () {
+        function createRandomStyleCode() {
+            res = [0,0,0,0,0,0];
+            for (var i = 0; i < 6; ++i) {
+                res[i] = randomRange(0, common.COSTUME_STYLES.length-1);
+            }
+            return res.join(',');
+        }
         var that = this;
         this.layer = that.scene.Layer("layer", {useCanvas: true, autoClear: false});
 
@@ -234,8 +255,14 @@ var GameGraphics = (function () {
         this.lbg = new Background('/images/backgrounds/bg-sand-grey.png', this.scene, this.layer, true);
 
         // Create players
-        this.lplayer = new Character(this.spritesheet, true, this.layer, this.w);
-        this.rplayer = new Character(this.spritesheet, false, this.layer, this.w);
+        if (typeof(opp_stylecode) == 'undefined') {
+            opp_stylecode = createRandomStyleCode();
+        }
+        if (typeof(stylecode) == 'undefined') {
+            stylecode = createRandomStyleCode();
+        }
+        this.lplayer = new Character(this.spritesheet, true, this.layer, this.w, stylecode);
+        this.rplayer = new Character(this.spritesheet, false, this.layer, this.w, opp_stylecode);
         
         // Create ground
         this.ground = this.spritesheet.createSprite('background/ground.png', this.layer);
