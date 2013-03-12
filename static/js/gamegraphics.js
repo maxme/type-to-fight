@@ -116,7 +116,7 @@ var Character = (function () {
         this.mouthopen = this.spritesheet.createSprite('char1-parts/mouth-open.png', this.layer);
         this.mouthclose = this.spritesheet.createSprite('char1-parts/mouth-close.png', this.layer);
         this.torso = this.spritesheet.createSprite('char1-parts/torso.png', this.layer);
-        this.sprites = [this.armleft, this.torso, this.legleft, this.legright, this.head, this.hair, this.armright,
+        this.sprites = [this.armright, this.torso, this.armleft,this.legleft, this.legright, this.head, this.hair,
                        this.mouthopen, this.mouthclose, this.eyes, this.eyesdead
                        ];
         this.moveSprites();
@@ -205,86 +205,6 @@ var Character = (function () {
     };
 
     return Character;
-})();
-
-var Player = (function () {
-    function Player(spritesheet, left, layer, w) {
-        this.w = w;
-        this.spritesheet = spritesheet;
-        this.layer = layer;
-        this.left = left;
-        this.createPlayer();
-        this.createShoutSprite();
-        this.mouth_close = this.spritesheet.getFrame('char1/char1a.png');
-        this.mouth_open = this.spritesheet.getFrame('char1/char1b.png');
-        this.hitframe = this.spritesheet.getFrame('char1/char1c.png');
-    }
-
-    Player.prototype.createPlayer = function () {
-        this.sprite = this.spritesheet.createSprite('char1/char1a.png', this.layer);
-        var posX = 120;
-        if (this.left) {
-            this.sprite.move(posX, 45);
-            this.sprite.setXScale(-1);
-        } else {
-            this.sprite.move(this.w - this.sprite.w - posX, 45);
-        }
-        this.sprite.setXScale(this.sprite.xscale / 1.5);
-        this.sprite.setYScale(this.sprite.yscale / 1.5);
-    };
-
-    Player.prototype.createShoutSprite = function () {
-        this.shout = this.spritesheet.createSprite('misc/shout.png', this.layer);
-        if (this.left) {
-            this.shout.move(120 + 50, 100);
-        } else {
-            this.shout.setXScale(-1);
-            this.shout.move(this.w - this.shout.w - 120 - 50, 100);
-        }
-        this.shout.setOpacity(0);
-    };
-
-    Player.prototype.timedAnim = function (time, func, reset_func) {
-        setTimeout(function() {
-            reset_func();
-        }, time);
-        func();
-    };
-
-    Player.prototype.openMouth = function (time) {
-        this.sprite.setXOffset(this.mouth_open.x);
-        this.sprite.setYOffset(this.mouth_open.y);
-    };
-
-    Player.prototype.closeMouth = function (time) {
-        this.sprite.setXOffset(this.mouth_close.x);
-        this.sprite.setYOffset(this.mouth_close.y);
-    };
-
-    Player.prototype.hit = function (time) {
-        var that = this;
-        that.timedAnim(time, function () {
-                that.sprite.setXOffset(that.hitframe.x);
-                that.sprite.setYOffset(that.hitframe.y);
-            },
-            function () {
-                that.sprite.setXOffset(that.mouth_close.x);
-                that.sprite.setYOffset(that.mouth_close.y);
-            });
-    };
-
-    Player.prototype.attack = function (time) {
-        var that = this;
-        this.timedAnim(time, function () {that.shout.setOpacity(1);},
-            function () {that.shout.setOpacity(0);});
-    };
-
-    Player.prototype.update = function () {
-        this.sprite.update();
-        this.shout.update();
-    };
-
-    return Player;
 })();
 
 var GameGraphics = (function () {
