@@ -211,8 +211,10 @@ var Character = (function () {
         var that = this;
         this.timedAnim(time, function () {
             that.shout.setOpacity(100);
+            that.openMouth();            
         }, function () {
             that.shout.setOpacity(0);
+            that.closeMouth();
         });
     };
 
