@@ -5,7 +5,7 @@ var Common = (function () {
         this.GAME_TIME_S = 60;
         this.GAME_COUNTDOWN = 3;
         this.MAX_WORD_LIST = 60;
-        this.COSTUME_STYLES = ["afro", "base", "bald", "stache", "duce", "girl", "punk"];
+        this.COSTUME_STYLES = ["afro", "base", "bald", "stache", "duce", "girl", "punk", "beard", "french", "chinese"];
     }
 
     return Common;
