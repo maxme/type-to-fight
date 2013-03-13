@@ -35,6 +35,14 @@ function mainmenu_show() {
     $('#main').show();
     $('#leaderboard').hide();
     $('#stats').hide();
+    $('#help').hide();
+}
+
+function help_show() {
+    $('#main').hide();
+    $('#leaderboard').hide();
+    $('#stats').hide();
+    $('#help').show();
 }
 
 var secondStepInit = function () {
@@ -67,6 +75,9 @@ var secondStepInit = function () {
                 break ;
             case 'stats':
                 statspage.show(params);
+                break ;
+            case 'help':
+                help_show(params);
                 break ;
             default:
                 mainmenu_show(params);

@@ -12,6 +12,7 @@ var LeaderBoard = (function () {
         this.type = params.type;
         $('#main').hide();
         $('#stats').hide();
+        $('#help').hide();
         $('#leaderboard').show();
         this.requestLoad({type: this.type, page: this.page});
     };

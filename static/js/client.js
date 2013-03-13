@@ -6,11 +6,7 @@ var playerid = null;
 var soundmanager = null;
 
 function log(message, obj) {
-    var tmp = '';
-    if (obj) {
-        tmp = JSON.stringify(obj);
-    }
-    $("#logs").append(message + ' ' + tmp + '<br/>');
+    // do nothing in production mode
 }
 
 var ready = function () {

@@ -66,7 +66,6 @@ var ServerStats = (function (db) {
         function getPageForUser(userid) {
             that.db.zrevrank('ratings', '' + userid, function (err, rank) {
                 // return empty list if not ranked
-                console.log('err: ' + err + ' - ' + rank);
                 if (err) {
                     callback([]);
                 } else {
@@ -76,7 +75,6 @@ var ServerStats = (function (db) {
                         max = max - min;
                         min = 0;
                     }
-                    console.log('min: ' + min + ' max:' + max);
                     getRevRank(min, max);
                 }
             });

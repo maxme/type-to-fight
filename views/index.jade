@@ -43,9 +43,9 @@ block content
                                 i(class='icon-white icon-volume-down')
                                 span=' Sound'
                         div(class='menu-small-buttons2')
-                            a(href="#", id="btn-music", class='btn btn-large btn-float-right btn-custom btn-green btn-menu-small')
-                                i(class='icon-white icon-music')
-                                span=' Music'
+                            a(href="#page=help", id="btn-help", class='btn btn-large btn-float-right btn-custom btn-red btn-menu-small')
+                                i(class='icon-white icon-question-sign')
+                                span=' Help'
 
                     div(class='button-menu')
                         a(href="/game/practice", id='game-practice', class='btn btn-large btn-custom btn-blue btn-menu')="Practice"
@@ -117,3 +117,32 @@ block content
                 div(id='sp-tab-stats-history')
                 div(id='sp-tab-rank-history')
             div(id='sp-footer')
+                h3='About stats'
+                p(style='background: white; padding: 10px;')='Statistics are only updated when you play against real players. Practice mode will not change your stats.'
+
+    div(id='help', style='display:none', class='container')
+        div(class='hero-unit')
+            div(id='help-header')
+                a(href='#page=menu', style='margin-top: -30px;',class='btn btn-custom btn-red')='&larr; Back to Menu'
+                h1='Help'
+                p(style='background-color: white; padding: 10px')
+                  | Type To Fight is a 1 versus 1 game. You play against another
+                  | player or a bot if you play in "Practice mode".
+                  | By typing presented words you send attacks to your opponent or you heal yourself.<br/>
+                  | When one of the player lifebar is empty or the countdown is ended the game is finished.
+                h3='Contact'
+                p(style='background-color: white; padding: 10px')
+                  | You found a bug or something strange ? Want to propose us new features ?
+                  | Contact us
+                  | <script type="text/javascript">
+                  |   document.write('<a href="mailto:' + 'ttf.mop@bmopbiaamopis.org.mop'.replace(/.mop/g,'') + '">by email</a>')
+                  | </script>
+
+                h3='Donate'
+                p(style='background-color: white; padding: 10px')
+                  | This game is free, developers and artists need money to eat
+                  | and buy tools to make other games, you can help them by sending
+                  | <a href="http://http://www.weusecoins.com/">bitcoins</a> to this address: <br/>
+                  | <strong>1ttfNGuYwRhLzyNnqaa98AV1ANRVA5wkr</strong> <br/><br/>
+                  | Also, If you don't know what is Bitcoin, you should go there: <a href="http://www.weusecoins.com/">http://www.weusecoins.com/</a>
+

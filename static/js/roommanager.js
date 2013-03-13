@@ -168,9 +168,9 @@ var RoomManager = (function () {
         for (var i = 0; i < size; ++i) {
             var word = tmpArray[i % tmpArray.length];
             var type = this.getAttackType();
-            var power = word.length * 2;
+            var power = Math.ceil(word.length * 1.2);
             if (type === 1) {
-                power = Math.floor(word.length * 1.2);
+                power = Math.ceil(word.length * 0.8);
             }
             res.push({word: word, type: type, power: power});
         }

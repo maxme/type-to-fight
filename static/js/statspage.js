@@ -16,6 +16,7 @@ var StatsPage = (function () {
         this.type = params.type;
         $('#main').hide();
         $('#leaderboard').hide();
+        $('#help').hide();
         $('#stats').show();
         this.requestLoad({});
     };
