@@ -59,12 +59,12 @@
      id="namedview3573"
      showgrid="false"
      inkscape:zoom="3.2406102"
-     inkscape:cx="54.855444"
-     inkscape:cy="59.205165"
+     inkscape:cx="67.507382"
+     inkscape:cy="82.966122"
      inkscape:window-x="0"
      inkscape:window-y="0"
      inkscape:window-maximized="0"
-     inkscape:current-layer="layer6"
+     inkscape:current-layer="layer4"
      showguides="true"
      inkscape:guide-bbox="true" /><g
      id="Layer_1"
@@ -75,13 +75,13 @@
 		<image
    sodipodi:absref="/Users/max/work/keyfight/graphics/characters/../../../tmp/inspiration/bighead1.jpg"
    xlink:href="../../../tmp/inspiration/bighead1.jpg"
-   style="display:inline;overflow:visible"
-   display="inline"
-   overflow="visible"
-   width="128"
-   height="232"
+   id="image3504"
    transform="translate(11.5,-20.3335)"
-   id="image3504">
+   height="232"
+   width="128"
+   overflow="visible"
+   display="inline"
+   style="display:inline;overflow:visible">
 	</image>
 </g><g
      id="eyes-hit"
@@ -183,7 +183,7 @@
          d="m 47.691908,153.50938 c 0.296,5.618 1.493092,6.94362 1.493092,6.94362 l 60.04,0 c 0,0 -1.513,-42.284 -3.461,-44.255 -1.948,-1.972 -52.077263,1.89293 -52.077263,1.89293 0,0 -6.290829,29.80145 -5.994829,35.41845 z"
          id="path3522-8"
          inkscape:connector-curvature="0"
-         style="fill:#f381ee;fill-opacity:1;stroke:#000000;stroke-width:2.66109991;stroke-miterlimit:10"
+         style="fill:#cf14c7;fill-opacity:1;stroke:#000000;stroke-width:2.66109990999999990;stroke-miterlimit:10"
          sodipodi:nodetypes="sccccs" /></g><path
        style="fill:#f1e8d9;stroke:#000000;stroke-width:2.66109991;stroke-miterlimit:10"
        inkscape:connector-curvature="0"
@@ -262,18 +262,18 @@
        sodipodi:cy="93.83033"
        sodipodi:rx="8.2945051"
        sodipodi:ry="9.3501701"
-       d="m 40.718482,93.83033 c 0,5.163956 -3.713576,9.35017 -8.294505,9.35017 -4.580929,0 -8.294505,-4.186214 -8.294505,-9.35017 0,-5.163956 3.713576,-9.35017 8.294505,-9.35017 4.580929,0 8.294505,4.186214 8.294505,9.35017 z"
+       d="m 40.718482,93.83033 a 8.2945051,9.3501701 0 1 1 -16.58901,0 8.2945051,9.3501701 0 1 1 16.58901,0 z"
        transform="matrix(0.7432725,0,0,1,36.391287,-5.9271008)" /></g><g
      inkscape:groupmode="layer"
      id="layer4"
      inkscape:label="hair"
      style="display:inline"
      transform="translate(0,40)"><path
-       style="fill:#d8a43f;fill-opacity:1;stroke:#000000;stroke-width:3;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none;display:inline"
-       d="m 97.552554,69.710574 c -6.316164,1.84715 -5.802542,25.13161 -11.637315,28.182537 -10.978064,4.000199 -30.375745,6.291359 -47.78737,4.393029 -0.127343,-3.994681 8.205744,-21.737608 13.534147,-32.03138 5.12935,-9.909229 8.621971,-21.888972 17.654261,-28.440368 9.679706,-7.020987 26.308793,-8.455294 34.847243,-8.519879 12.96518,-0.09807 29.74023,7.035075 37.0539,17.942147 10.25938,10.476131 4.80353,16.974948 1.64566,15.917921 -9.55688,-0.247092 -20.72975,-6.088727 -31.05951,-4.450231 -5.22802,0.829263 -6.03804,4.604354 -14.251016,7.006224 z"
+       style="fill:#ffd521;fill-opacity:1;stroke:#000000;stroke-width:3;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none;display:inline"
+       d="m 97.552554,69.710574 c -4.916348,4.374404 1.912054,22.354355 -3.922719,25.405282 -10.978064,4.000199 -21.735397,5.057024 -39.147022,3.158699 -0.127343,-3.994686 -4.938918,-18.874743 -2.820797,-28.019795 2.51772,-10.870333 8.621971,-21.888972 17.654261,-28.440368 9.679706,-7.020987 26.308793,-8.455294 34.847243,-8.519879 12.96518,-0.09807 28.50589,4.25782 35.81956,15.164892 10.25938,10.476131 6.03787,19.752203 2.88,18.695176 -0.47944,-0.0124 -3.29487,7.314391 -4.84857,6.128678 -1.60329,-1.223568 -1.96309,-10.951342 -3.60273,-10.332324 -3.25327,1.228218 -5.48983,9.070009 -7.31036,8.321589 -3.38263,-1.390599 -0.18296,-9.965274 -3.00833,-9.329696 -3.44211,0.774316 -3.93316,9.880662 -6.40168,9.388362 -3.94926,-0.787607 -2.04533,-9.236334 -5.88784,-8.62684 -2.42068,0.383966 -3.32143,7.725231 -5.42538,8.66064 -2.44,1.084821 -6.07247,-4.104092 -8.825636,-1.654416 z"
        id="path4603"
        inkscape:connector-curvature="0"
-       sodipodi:nodetypes="sccaasccas" /></g><g
+       sodipodi:nodetypes="sccaasccssssssss" /></g><g
      inkscape:groupmode="layer"
      id="layer5"
      inkscape:label="mouth-open"
@@ -283,7 +283,7 @@
        id="mouth-close-3-5"
        transform="matrix(-1,0,0,1,170.89824,4.331886)"><path
          stroke-miterlimit="10"
-         d="m 29.770456,105.51845 c 10.594223,4.16641 3.914384,-2.20434 5.820048,-3.40467 8.371338,-5.272876 -10.639755,-4.925428 -10.982059,-5.082635"
+         d="m 28.227537,105.20987 c 10.594223,4.16641 7.925974,-1.89576 9.831638,-3.09609 8.371338,-5.272876 -13.108426,-4.925428 -13.45073,-5.082635"
          id="path3568-5-6"
          inkscape:connector-curvature="0"
          style="fill:#ffffff;fill-opacity:1;stroke:#000000;stroke-width:2.66109991;stroke-miterlimit:10"
@@ -361,7 +361,7 @@
      inkscape:label="legs"
      style="display:inline"
      transform="translate(0,40)"><polygon
-       style="fill:#ab1f23;fill-opacity:1;stroke:#000000;stroke-width:2.66109990999999990;stroke-miterlimit:10"
+       style="fill:#ab1f58;fill-opacity:1;stroke:#000000;stroke-width:2.66109990999999990;stroke-miterlimit:10"
        id="polygon3512-6"
        points="107.951,187.223 109.674,161.671 78.472,161.671 79.811,187.223 "
        stroke-miterlimit="10"
@@ -371,7 +371,7 @@
        id="path3514-0"
        d="m 100.18276,195.974 c -1.873,3.236 -31.033,1.13 -31.033,1.13 v -5.826 c 5.694,0.252 35.768,-3.477 31.033,4.696 z"
        stroke-miterlimit="10" /><polygon
-       style="fill:#ab1f23;fill-opacity:1;stroke:#000000;stroke-width:2.66109990999999990;stroke-miterlimit:10"
+       style="fill:#ab1f58;fill-opacity:1;stroke:#000000;stroke-width:2.66109990999999990;stroke-miterlimit:10"
        id="polygon3507-4"
        points="80.542,187.223 80.542,161.671 49.185,161.671 51.064,187.223 "
        stroke-miterlimit="10"
