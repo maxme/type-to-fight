@@ -216,8 +216,13 @@ var ready = function () {
         splayinput.focus();
         gameManager.setGameState(2);
         oppid = data.player1;
+        var oppstylecode = data.player1_stylecode;
         if (oppid === playerid) {
             oppid = data.player2;
+            oppstylecode = data.player2_stylecode;
+        }
+        if (oppstylecode) {
+            gameGraphics.createRightPlayer(oppstylecode);
         }
         updatePlayerNames(oppid);
         runTimer(common.GAME_COUNTDOWN - 1, function (remainingSeconds) {
@@ -278,6 +283,9 @@ var ready = function () {
         }, (common.GAME_TIME_S - 3) * 1000);
     } else {
         // Init bot
+//        var randomStyle = common.createRandomStyle();
+//        gameGraphics.createRightPlayer(randomStyle);
+
         var lastTime = (new Date()).getTime();
         var botTick = function () {
             var diffTime = (new Date()).getTime() - lastTime;

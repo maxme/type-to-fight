@@ -282,6 +282,7 @@ var RoomManager = (function () {
     };
 
     RoomManager.prototype.emitGameStart = function (player1, player2, obj) {
+        var that = this;
         if (!this.clients[player1]) {
             // FIXME: emit game_start error to player2
             console.log('player1 ' + player1 + ' disconnected');
@@ -292,9 +293,19 @@ var RoomManager = (function () {
             console.log('player2 ' + player2 + ' disconnected');
             return;
         }
-        obj.words = JSON.parse(obj.words);
-        this.clients[player1].emit('game_start', obj);
-        this.clients[player2].emit('game_start', obj);
+        that.db.hget('user:' + player1, 'stylecode', function (err1, stylecode1) {
+            that.db.hget('user:' + player2, 'stylecode', function (err2, stylecode2) {
+                obj.words = JSON.parse(obj.words);
+                if (!err1 && stylecode1) {
+                    obj.player1_stylecode = stylecode1;
+                }
+                if (!err2 && stylecode2) {
+                    obj.player2_stylecode = stylecode2;
+                }
+                that.clients[player1].emit('game_start', obj);
+                that.clients[player2].emit('game_start', obj);
+            });
+        });
     };
 
     RoomManager.prototype.roomExists = function (roomid) {

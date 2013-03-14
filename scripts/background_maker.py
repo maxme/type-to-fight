@@ -10,9 +10,9 @@ class BackgroundMaker(object):
         layer.load()
         self.mask_alpha = layer.split()[-1]
 
-
     def make_background(self, filename, out):
         cur_img = Image.open(filename)
+        cur_img.thumbnail((400, 400), Image.ANTIALIAS)
         new_img = Image.new('RGBA', (self.w, self.h))
         w, h = cur_img.size
         for x in range(int(self.w / w)+1):

@@ -186,14 +186,6 @@ io.sockets.on('connection', function (socket) {
 //              Routes                   //
 ///////////////////////////////////////////
 
-function createRandomStyleCode() {
-    res = [0,0,0,0,0,0];
-    for (var i = 0; i < 6; ++i) {
-        res[i] = randomRange(0, common.COSTUME_STYLES.length-1);
-    }
-    return res.join(',');
-}
-
 function ensureAuthenticated(req, res, next) {
     if (req.isAuthenticated()) {
         return next();
@@ -357,7 +349,7 @@ app.get('/game/:roomid', ensureAuthenticated, function (req, res) {
             req.user.stylecode = stylecode;
             db.hmset('user:' + req.user.id, stringifyObj(req.user));
         } else {
-            req.user.stylecode = createRandomStyleCode();
+            req.user.stylecode = common.createRandomStyle();
             db.hmset('user:' + req.user.id, stringifyObj(req.user));
         }
         res.render('game.jade', {

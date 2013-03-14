@@ -52,7 +52,7 @@ var SpriteSheet = (function () {
         }
         return null;
     };
-    
+
     SpriteSheet.prototype.createSprite = function (name, layer) {
         var frame = this.getFrame(name);
         var spriteSourceSize = this.getSpriteSourceSize(name);
@@ -98,7 +98,7 @@ var Background = (function () {
 
 var Character = (function () {
     var common = new Common();
-    
+
     function Character(spritesheet, left, layer, w, stylecode) {
         this.w = w;
         this.spritesheet = spritesheet;
@@ -120,7 +120,7 @@ var Character = (function () {
         this.moveSprites();
         this.createShoutSprite();
     }
-    
+
     Character.prototype.codeToNames = function (stylecode) {
         styles = common.COSTUME_STYLES;
         split = stylecode.split(',');
@@ -134,7 +134,7 @@ var Character = (function () {
         }
         return res;
     };
-    
+
     Character.prototype.createShoutSprite = function () {
         this.shout = this.spritesheet.createSprite('misc/shout.png', this.layer);
         this.sprites.push(this.shout);
@@ -147,17 +147,17 @@ var Character = (function () {
             this.shout.setXScale(-this.shout.xscale);
             this.shout.move(this.w - this.shout.w - 110 - 50, 100);
         }
-        
+
         this.shout.setOpacity(0);
     };
-    
+
     Character.prototype.timedAnim = function (time, func, reset_func) {
         setTimeout(function() {
             reset_func();
         }, time);
         func();
     };
-    
+
     Character.prototype.moveSprites = function () {
         var xscale = 1;
         var posX = 50
@@ -179,23 +179,23 @@ var Character = (function () {
         this.mouthopen.setOpacity(0);
         this.eyesdead.setOpacity(0);
     };
-    
+
     Character.prototype.update = function () {
         for (var i = 0; i < this.sprites.length; ++i) {
             this.sprites[i].update();
         }
     };
-    
+
     Character.prototype.openMouth = function () {
         this.mouthopen.setOpacity(100);
         this.mouthclose.setOpacity(0);
     };
-    
+
     Character.prototype.closeMouth = function () {
         this.mouthopen.setOpacity(0);
         this.mouthclose.setOpacity(100);
     };
-    
+
     Character.prototype.hit = function (time) {
         var that = this;
         that.timedAnim(time, function () {
@@ -211,7 +211,7 @@ var Character = (function () {
         var that = this;
         this.timedAnim(time, function () {
             that.shout.setOpacity(100);
-            that.openMouth();            
+            that.openMouth();
         }, function () {
             that.shout.setOpacity(0);
             that.closeMouth();
@@ -236,64 +236,81 @@ var GameGraphics = (function () {
             });
     }
 
-    GameGraphics.prototype.update = function () {
-        this.lplayer.update();
-        this.rplayer.update();
-    };
-
     GameGraphics.prototype.gameLoaded = function () {
-        function createRandomStyleCode() {
-            res = [0,0,0,0,0,0];
-            for (var i = 0; i < 6; ++i) {
-                res[i] = randomRange(0, common.COSTUME_STYLES.length-1);
-            }
-            return res.join(',');
-        }
         var that = this;
-        this.layer = that.scene.Layer("layer", {useCanvas: true, autoClear: false});
+        this.layer = that.scene.Layer("layer", {useCanvas: true, autoClear: true});
 
         // Create backgrounds
-        this.rbg = new Background('/images/backgrounds/bg-light-grey.png', this.scene, this.layer, false);
-        this.lbg = new Background('/images/backgrounds/bg-sand-grey.png', this.scene, this.layer, true);
-
+        //this.rbg = new Background('/images/backgrounds/bg-light-grey.png', this.scene, this.layer, false);
+        //this.lbg = new Background('/images/backgrounds/bg-sand-grey.png', this.scene, this.layer, true);
+        this.rbg = null;  
+        this.lbg = null;
+        this.lplayer = null;
+        this.rplayer = null;
         // Create players
-        if (typeof(opp_stylecode) == 'undefined') {
-            opp_stylecode = createRandomStyleCode();
+        if (typeof(stylecode) !== 'undefined' && stylecode) {
+            this.createLeftPlayer(stylecode);
         }
-        if (typeof(stylecode) == 'undefined') {
-            stylecode = createRandomStyleCode();
+        if (typeof(opp_stylecode) !== 'undefined' && opp_stylecode) {
+            this.createRightPlayer(opp_stylecode);
+        } else {
+            if (roomid === 'practice') {
+                this.createRightPlayer(common.createRandomStyle());
+            }
         }
-        this.lplayer = new Character(this.spritesheet, true, this.layer, this.w, stylecode);
-        this.rplayer = new Character(this.spritesheet, false, this.layer, this.w, opp_stylecode);
-        
+
         // Create ground
         this.ground = this.spritesheet.createSprite('background/ground.png', this.layer);
         this.ground.move(0, 200);
-        
+
         function paint() {
             // that.cycle.next(ticker.lastTicksElapsed);
-            that.rbg.sprite.update();
-            that.lbg.sprite.update();
-            that.update();
+            if (that.rbg) {
+                that.rbg.sprite.update();
+            }
+            if (that.lbg) {
+                that.lbg.sprite.update();
+            }
+            if (that.lplayer) {
+                that.lplayer.update();
+            }
+            if (that.rplayer) {
+                that.rplayer.update();
+            }
             that.ground.update();
         }
 
-        var ticker = that.scene.Ticker(30, paint);
+        var ticker = that.scene.Ticker(100, paint);
         ticker.run();
     };
 
+    GameGraphics.prototype.createLeftPlayer = function (code) {
+        delete this.lplayer;
+        delete this.lbg;
+        this.lplayer = new Character(this.spritesheet, true, this.layer, this.w, code);
+        var bgcode = code.split(',')[6];
+        this.lbg = new Background('/images/backgrounds/bg-' + bgcode + '.png', this.scene, this.layer, false);
+    };
 
+    GameGraphics.prototype.createRightPlayer = function (code) {
+        delete this.rplayer;
+        delete this.rbg;
+        this.rplayer = new Character(this.spritesheet, false, this.layer, this.w, code);
+        var bgcode = code.split(',')[6];
+        this.rbg = new Background('/images/backgrounds/bg-' + bgcode + '.png', this.scene, this.layer, true);
+    };
+    
     // External API
     GameGraphics.prototype.keydown = function () {
-        this.lplayer.openMouth();
+        this.lplayer && this.lplayer.openMouth();
     };
 
     GameGraphics.prototype.keyup = function () {
-        this.lplayer.closeMouth();
+        this.lplayer && this.lplayer.closeMouth();
     };
 
     GameGraphics.prototype.playerHit = function () {
-        this.lplayer.hit(400);
+        this.lplayer && this.lplayer.hit(400);
     };
 
     GameGraphics.prototype.playerHeal = function () {
@@ -301,7 +318,7 @@ var GameGraphics = (function () {
     };
 
     GameGraphics.prototype.oppHit = function () {
-        this.rplayer.hit(400);
+        this.rplayer && this.rplayer.hit(400);
     };
 
     GameGraphics.prototype.oppHeal = function () {
@@ -309,11 +326,11 @@ var GameGraphics = (function () {
     };
 
     GameGraphics.prototype.playerAttack = function () {
-        this.lplayer.attack(200);
+        this.lplayer && this.lplayer.attack(200);
     };
 
     GameGraphics.prototype.oppAttack = function () {
-        this.rplayer.attack(200);
+        this.rplayer && this.rplayer.attack(200);
     };
 
     return GameGraphics;
