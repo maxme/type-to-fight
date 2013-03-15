@@ -222,6 +222,14 @@ app.get('/facebook/callback', function (req, res, next) {
 app.all('/facebook/login', passport.authenticate('facebook'), function (req, res) {
 });
 
+app.all('/home', function (req, res) {
+    res.render('home.jade', {
+        title: 'Type To Fight',
+        description: 'Type To Fight - Web Game to test your typing skills',
+        author: 'Maxime Biais'
+    });
+});
+
 app.get('/facebook/error', function (req, res) {
     res.render('facebook-login.jade', {
         title: 'Type To Fight - Login error',

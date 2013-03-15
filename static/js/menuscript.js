@@ -7,18 +7,15 @@ var statspage = new StatsPage();
 
 // Menu init method called after FB init
 var menuInit = function () {
-    console.log("menu init1");
     var myLogin = function () {
         var scope = {scope: 'email,publish_actions,friends_online_presence'};
         myFB.login(scope, secondStepInit, loginError);
     };
 
-    console.log("menu init2");
 
     myFB = new FBUtils({appid: (new Local()).FB_APP_ID}, function () {
         console.log('user seems logged in facebook');
     });
-    console.log("menu init3");
 
     myFB.getLoginStatus(function () {
         console.log('user is logged in facebook');
@@ -28,7 +25,7 @@ var menuInit = function () {
 
 var loginError = function (response) {
     console.log('login error: ' + response.status);
-    window.location = '/facebook-login';
+    window.location = '/facebook/error';
 };
 
 function mainmenu_show() {

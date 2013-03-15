@@ -1,0 +1,15 @@
+extends layout
+
+block pagestyle
+    link(rel='stylesheet', href='/css/game.css')
+
+block pagescript
+    script(defer, src='/js/home.js')
+    script(defer, src='/js/facebook-utils.js')
+
+block content
+    div(class='container', id='loading')
+       div(class='hero-unit')
+            h1='Loading...'
+            div(class='progress progress-striped active', style='width: 50%')
+                div(class='bar', style='width: 100%')
