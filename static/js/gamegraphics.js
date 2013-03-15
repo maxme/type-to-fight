@@ -8,6 +8,8 @@ Sprite.prototype.getSpriteSourceSize = function () {
     return this.spriteSourceSize;
 };
 
+var g_common = new Common();
+
 var SpriteSheet = (function () {
     function SpriteSheet(scene, spritesheet_json, spritesheet_img, callback) {
         var that = this;
@@ -80,24 +82,61 @@ var SpriteSheet = (function () {
 
 
 var Background = (function () {
-    function Background(image, scene, layer, left) {
-        this.image = image;
+    function Background(code, scene, layer, spritesheet, left, scene_w) {
+        this.code = code;
+        this.left = left;
+        this.spritesheet = spritesheet;
+        var bgcode = code.split(',')[6];
+        this.image = '/images/backgrounds/bg-' + bgcode + '.png';
         this.scene = scene;
         this.layer = layer;
+        this.scene_w = scene_w;
         var w = 373, h = 207;
         var options = {layer: layer, x: 0, y: 0, size: [w, h]};
-        this.sprite = this.scene.Sprite(image, options);
-        if (left) {
+        this.sprite = this.scene.Sprite(this.image, options);
+        if (!left) {
             this.sprite.move(352, 1);
             this.sprite.rotate(Math.PI);
         }
+        this.decoration_codes = code.split(',').slice(7, 13);
+        this.decoration_codes = this.decoration_codes.map(function (a, b, c) { return [parseInt(a), parseInt(c[b+1])];}).filter(function (a, b) { return b % 2-1;});
+        this.addDecorations();
     }
+
+    Background.prototype.addDecorations = function () {
+        this.decorations = [];
+        for (var i = 0; i < this.decoration_codes.length; ++i) {
+            var deco = this.decoration_codes[i];
+            if (deco[0] === 0) {
+                continue;
+            }
+            var posX = deco[1];
+            var sprite = this.spritesheet.createSprite('background/' + g_common.DECO_STYLES[deco[0]] + '.png', this.layer);
+            var sss = sprite.spriteSourceSize;
+            if (!this.left) {
+                posX = deco[1];
+                sprite.setXScale(-1);
+                var moveToX = this.scene_w - posX - sss.x - sprite.w;
+                console.log("move to: " + moveToX);
+                sprite.move(moveToX, sss.y);
+            } else {
+                sprite.move(posX + sss.x, sss.y);
+            }
+            this.decorations.push(sprite);
+        }
+    };
+
+    Background.prototype.update = function () {
+        this.sprite.update();
+        for (var i = 0; i < this.decorations.length; ++i) {
+            this.decorations[i].update();
+        }
+    };
 
     return Background;
 })();
 
 var Character = (function () {
-    var common = new Common();
 
     function Character(spritesheet, left, layer, w, stylecode) {
         this.w = w;
@@ -122,7 +161,7 @@ var Character = (function () {
     }
 
     Character.prototype.codeToNames = function (stylecode) {
-        styles = common.COSTUME_STYLES;
+        styles = g_common.COSTUME_STYLES;
         split = stylecode.split(',');
         res = {
             'eyes': styles[parseInt(split[0])],
@@ -222,8 +261,6 @@ var Character = (function () {
 })();
 
 var GameGraphics = (function () {
-    var common = new Common();
-
     function GameGraphics(parent, w, h) {
         var that = this;
         this.w = w;
@@ -241,9 +278,7 @@ var GameGraphics = (function () {
         this.layer = that.scene.Layer("layer", {useCanvas: true, autoClear: true});
 
         // Create backgrounds
-        //this.rbg = new Background('/images/backgrounds/bg-light-grey.png', this.scene, this.layer, false);
-        //this.lbg = new Background('/images/backgrounds/bg-sand-grey.png', this.scene, this.layer, true);
-        this.rbg = null;  
+        this.rbg = null;
         this.lbg = null;
         this.lplayer = null;
         this.rplayer = null;
@@ -255,7 +290,7 @@ var GameGraphics = (function () {
             this.createRightPlayer(opp_stylecode);
         } else {
             if (roomid === 'practice') {
-                this.createRightPlayer(common.createRandomStyle());
+                this.createRightPlayer(g_common.createRandomStyle());
             }
         }
 
@@ -266,10 +301,10 @@ var GameGraphics = (function () {
         function paint() {
             // that.cycle.next(ticker.lastTicksElapsed);
             if (that.rbg) {
-                that.rbg.sprite.update();
+                that.rbg.update();
             }
             if (that.lbg) {
-                that.lbg.sprite.update();
+                that.lbg.update();
             }
             if (that.lplayer) {
                 that.lplayer.update();
@@ -288,16 +323,14 @@ var GameGraphics = (function () {
         delete this.lplayer;
         delete this.lbg;
         this.lplayer = new Character(this.spritesheet, true, this.layer, this.w, code);
-        var bgcode = code.split(',')[6];
-        this.lbg = new Background('/images/backgrounds/bg-' + bgcode + '.png', this.scene, this.layer, false);
+        this.lbg = new Background(code, this.scene, this.layer, this.spritesheet, true, this.w);
     };
 
     GameGraphics.prototype.createRightPlayer = function (code) {
         delete this.rplayer;
         delete this.rbg;
         this.rplayer = new Character(this.spritesheet, false, this.layer, this.w, code);
-        var bgcode = code.split(',')[6];
-        this.rbg = new Background('/images/backgrounds/bg-' + bgcode + '.png', this.scene, this.layer, true);
+        this.rbg = new Background(code, this.scene, this.layer, this.spritesheet, false, this.w);
     };
     
     // External API

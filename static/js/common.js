@@ -7,7 +7,8 @@ var Common = (function () {
         this.MAX_WORD_LIST = 60;
         this.COSTUME_STYLES = ["afro", "base", "bald", "stache", "duce", "girl", "punk", "beard", "french", "chinese",
             "english"];
-        this.MAX_BACKGROUNDS = 44;
+        this.DECO_STYLES = [0, "door", "closet", "painting1", "painting2"];
+        this.MAX_BACKGROUNDS = 18;
     }
 
     Common.prototype.createRandomStyle = function () {
@@ -24,7 +25,11 @@ var Common = (function () {
         res[6] = randomRange(0, this.MAX_BACKGROUNDS - 1);
 
         // Background elements
-        // FIXME
+        var n =  randomRange(0, 2);
+        for (var i = 0; i < n; ++i) {
+            res.push(randomRange(0, this.DECO_STYLES.length - 1));
+            res.push(i * 155 + randomRange(-10, 10));
+        }
         return res.join(',');
     };
 

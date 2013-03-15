@@ -1,8 +1,9 @@
 CHARSVG=$(shell find . -name "char*svg")
 
 
-all: charsprites
-	echo $(OUT_BG)
+all: charsprites backgrounds spritesheet
+
+spritesheet:
 	TexturePacker spritesheet1.tps
 
 charsprites:
@@ -15,3 +16,4 @@ backgrounds:
 clean:
 	rm -f ../static/spritesheets/spritesheet1.png
 	rm -rf spritesheet1/char-*
+	rm -rf ../static/images/backgrounds/*
