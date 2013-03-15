@@ -15,9 +15,9 @@
    version="1.1"
    inkscape:version="0.48.2 r9819"
    sodipodi:docname="background-items.svg"
-   inkscape:export-filename="/Users/max/work/keyfight/graphics/background/door.png"
-   inkscape:export-xdpi="139.94176"
-   inkscape:export-ydpi="139.94176">
+   inkscape:export-filename="/Users/max/work/keyfight/graphics/bg-items.png"
+   inkscape:export-xdpi="72.003326"
+   inkscape:export-ydpi="72.003326">
   <defs
      id="defs4">
     <inkscape:path-effect
@@ -1253,8 +1253,8 @@
      inkscape:pageopacity="0.0"
      inkscape:pageshadow="2"
      inkscape:zoom="0.78913811"
-     inkscape:cx="728.1327"
-     inkscape:cy="23.195604"
+     inkscape:cx="1255.2901"
+     inkscape:cy="128.37364"
      inkscape:document-units="px"
      inkscape:current-layer="layer1"
      showgrid="false"
@@ -1285,7 +1285,7 @@
         <dc:format>image/svg+xml</dc:format>
         <dc:type
            rdf:resource="http://purl.org/dc/dcmitype/StillImage" />
-        <dc:title />
+        <dc:title></dc:title>
       </cc:Work>
     </rdf:RDF>
   </metadata>

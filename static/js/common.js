@@ -10,7 +10,7 @@ var Common = (function () {
         this.DECO_STYLES = [0, "door", "closet", "painting1", "painting2", "painting3",
             "painting4", "painting5", "painting6", "painting7", "painting8" , "fridge", "light1", "light2",
             "table1", "table2", "tv"];
-        this.MAX_BACKGROUNDS = 18;
+        this.MAX_BACKGROUNDS = 24;
     }
 
     Common.prototype.createRandomStyle = function () {
