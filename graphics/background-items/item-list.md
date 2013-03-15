@@ -1,22 +1,25 @@
 # TODO
-* painting1
-* painting2
-* painting3
-* painting4
-* fridge
 * desk
 * sofa
 * chair
 * tv
 * bed
-* armoire
 * commode
 * armchair
-* tv-furniture
 * library
-* kitchen-table
 
 # LINE-DONE
+* painting1
+* painting2
+* painting3
+* painting4
 * door
+* kitchen-table
+* light1
+* light2
+* light3
+* tv-furniture
+* closet
+* fridge
 
 # FINISHED
