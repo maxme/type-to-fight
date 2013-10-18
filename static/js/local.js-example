@@ -2,8 +2,7 @@
 
 var Local = (function () {
     function Local() {
-        this.FB_APP_ID = '411686932258644';
-        this.FB_APP_SECRET = '';
+        this.MY_SECRET = 't1reda2dojQad1aADCVqsBefTHth123kdjoi13'
     }
 
     return Local;

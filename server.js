@@ -5,14 +5,12 @@ var RoomManager = require('./static/js/roommanager.js');
 var ServerStats = require('./static/js/serverstats.js');
 var Common = require('./static/js/common.js');
 var local = new (require('./static/js/local.js'))();
-
 // libs
 var fs = require('fs');
 var connect = require('connect');
 var express = require('express');
 var sio = require('socket.io');
 var http = require('http');
-var https = require('https');
 var redis = require('redis');
 var port = (process.env.PORT || 8082);
 
@@ -26,30 +24,6 @@ process.on('uncaughtException', function (err) {
 //setup redis
 var db = redis.createClient();
 
-// Passport OAUTH
-var passport = require('passport'),
-    FacebookStrategy = require('passport-facebook').Strategy;
-
-passport.use(new FacebookStrategy({
-        clientID: local.FB_APP_ID,
-        clientSecret: local.FB_APP_SECRET,
-        callbackURL: local.HOST_NAME + "/facebook/callback"
-    },
-    function (accessToken, refreshToken, profile, done) {
-        process.nextTick(function () {
-            return done(null, profile);
-        });
-    }
-));
-
-passport.serializeUser(function (user, done) {
-    done(null, user._json);
-});
-
-passport.deserializeUser(function (obj, done) {
-    done(null, obj);
-});
-
 //Setup Express
 var expressConfigure = function () {
     app.set('views', __dirname + '/views');
@@ -59,8 +33,6 @@ var expressConfigure = function () {
     app.use(connect.bodyParser());
     app.use(express.cookieParser());
     app.use(express.session({ secret: local.MY_SECRET }));
-    app.use(passport.initialize());
-    app.use(passport.session());
     app.use(app.router);
 };
 
@@ -99,13 +71,11 @@ app.use(function (err, req, res, next) {
 });
 
 // https
-var serverHttps = https.createServer({
-    key: fs.readFileSync('ssl/ssl-key.pem'),
-    cert: fs.readFileSync('ssl/ssl-cert.pem')}, app);
-serverHttps.listen(port);
+var serverHttp = http.createServer(app);
+serverHttp.listen(port);
 
-//Setup Socket.IO
-var io = sio.listen(serverHttps);
+// Setup Socket.IO
+var io = sio.listen(serverHttp);
 var clients = {};
 var serverstats = new ServerStats(db);
 var rooms = new RoomManager(clients, db, serverstats);
@@ -196,32 +166,6 @@ function ensureAuthenticated(req, res, next) {
 
 /////// ADD ALL YOUR ROUTES HERE  /////////
 
-// Facebook routes
-app.get('/facebook/callback', function (req, res, next) {
-    passport.authenticate('facebook', function (err, user, info) {
-        var redirectUrl = '/';
-        if (err) {
-            return next(err);
-        }
-        if (!user) {
-            return res.redirect('/');
-        }
-        if (req.session.redirectUrl) {
-            redirectUrl = req.session.redirectUrl;
-            req.session.redirectUrl = null;
-        }
-        req.logIn(user, function (err) {
-            if (err) {
-                return next(err);
-            }
-        });
-        res.redirect(redirectUrl);
-    })(req, res, next);
-});
-
-app.all('/facebook/login', passport.authenticate('facebook'), function (req, res) {
-});
-
 app.all('/home', function (req, res) {
     res.render('home.jade', {
         title: 'Type To Fight',
@@ -230,15 +174,7 @@ app.all('/home', function (req, res) {
     });
 });
 
-app.get('/facebook/error', function (req, res) {
-    res.render('facebook-login.jade', {
-        title: 'Type To Fight - Login error',
-        description: 'Type To Fight - Web Game to test your typing skills',
-        author: 'Maxime Biais'
-    });
-});
-
-app.all('/', ensureAuthenticated, function (req, res) {
+app.all('/', function (req, res) {
     var requestids = [];
     if (req.param('request_ids')) {
         requestids = req.param('request_ids');
@@ -252,7 +188,7 @@ app.all('/', ensureAuthenticated, function (req, res) {
     });
 });
 
-app.post('/endgame', ensureAuthenticated, function (req, res) {
+app.post('/endgame', function (req, res) {
     process.nextTick(function () {
         if (req.session && req.session.passport && req.session.passport.user && req.session.passport.user.id) {
             var userid = req.session.passport.user.id;
@@ -280,7 +216,7 @@ app.post('/delete-invitation', function (req, res) {
     res.send(200);
 });
 
-app.all('/stats/json', ensureAuthenticated, function (req, res) {
+app.all('/stats/json', function (req, res) {
     if (req.session && req.session.passport && req.session.passport.user && req.session.passport.user.id) {
         userid = req.session.passport.user.id;
         serverstats.getFullStats(userid, function (err, fullstats) {
@@ -391,4 +327,4 @@ function NotFound(msg) {
     Error.captureStackTrace(this, arguments.callee);
 }
 
-console.log('Listening on https://localhost:' + port);
+console.log('Listening on http://localhost:' + port);

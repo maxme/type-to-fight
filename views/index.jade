@@ -5,7 +5,6 @@ block pagestyle
 
 block pagescript
     script(defer, src='/js/menuscript.js')
-    script(defer, src='/js/facebook-utils.js')
     script
         var requestids = !{requestids}
 
@@ -15,7 +14,6 @@ block content
             h1='Loading...'
             div(class='progress progress-striped active', style='width: 50%')
                 div(class='bar', style='width: 100%')
-
 
     div(id='spinner', class='spinner')
 
@@ -146,4 +144,3 @@ block content
                   | <a href="http://http://www.weusecoins.com/">bitcoins</a> to this address: <br/>
                   | <strong>1ttfNGuYwRhLzyNnqaa98AV1ANRVA5wkr</strong> <br/><br/>
                   | Also, If you don't know what is Bitcoin, you should go there: <a href="http://www.weusecoins.com/">http://www.weusecoins.com/</a>
-
