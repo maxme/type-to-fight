@@ -1,6 +1,6 @@
 'use strict';
 
-var playerid = null;
+var playerid = randomRange(100000000, 99999999999);
 var soundmanager = null;
 
 function log(message, obj) {
@@ -286,9 +286,6 @@ var ready = function () {
         }, (common.GAME_TIME_S - 3) * 1000);
     } else {
         // Init bot
-//        var randomStyle = common.createRandomStyle();
-//        gameGraphics.createRightPlayer(randomStyle);
-
         var lastTime = (new Date()).getTime();
         var botTick = function () {
             var diffTime = (new Date()).getTime() - lastTime;

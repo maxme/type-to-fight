@@ -4,11 +4,6 @@
 var leaderboard = new LeaderBoard();
 var statspage = new StatsPage();
 
-var loginError = function (response) {
-    console.log('login error: ' + response.status);
-    window.location = '/facebook/error';
-};
-
 function mainmenu_show() {
     $('#main').show();
     $('#leaderboard').hide();
@@ -25,6 +20,16 @@ function help_show() {
 
 var secondStepInit = function () {
     // Bind buttons and events
+
+    $('#game-with-random').bind('mouseup', function () {
+        $.ajax({
+            type: "POST",
+            url: '/newgame/random/' + 12,
+            success: function (data) {
+                window.location = '/game/' + data.roomid;
+            }
+        });
+    });
 
     // Bind the event.
     $(window).on('hashchange', function() {

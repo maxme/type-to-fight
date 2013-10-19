@@ -97,6 +97,7 @@ function checkTimeMessage(roomid, callback) {
 io.sockets.on('connection', function (socket) {
     console.log('Client Connected: ' + socket.id);
     socket.on('connection', function (data) {
+    console.log("Connection message - playerid:" + data.playerid);
         data.socket_id = socket.id;
         data.error = 0;
         clients[data.playerid] = socket;
@@ -280,6 +281,8 @@ app.get('/test', function (req, res) {
 
 app.get('/game/:roomid',  function (req, res) {
     last_seen = JSON.stringify(new Date()).replace(/"/g, ''); // FIXME: unused
+    console.log("/game/:roomid");
+    console.log(req);
     user = {id: 1, stylecode: 0}; // FIXME: create/get user ?
     db.hget('user:' + user.id, 'stylecode', function (err, stylecode) {
         if (!err && stylecode) {
