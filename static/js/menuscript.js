@@ -1,7 +1,6 @@
 'use strict';
 
 // GLOBAL
-var myFB = null;
 var leaderboard = new LeaderBoard();
 var statspage = new StatsPage();
 
@@ -85,15 +84,6 @@ var thirdStepInit = function () {
         });
     }
 
-    // because we are using our own invitation system
-    function deleteFacebookInvitations() {
-        myFB.getUserInfos(function (response) {
-            myFB.deleteRequests(requestids, response.id);
-        });
-    }
-
-    deleteFacebookInvitations();
-    checkRecentInvitation();
 
     function createFriendEntry(friend, id, pic, newline) {
         var img = '';
@@ -108,40 +98,6 @@ var thirdStepInit = function () {
             friend.name +
             '</a></td>');
     }
-
-    myFB.getFriendsWithOnlinePresence(function (response) {
-        var online_friends = [];
-        var idle_friends = [];
-        var offline_friends = [];
-        var res = response.data[0].fql_result_set;
-        for (var i = 0; i < res.length; ++i) {
-            var friend = res[i];
-            if (friend.online_presence === "active") {
-                online_friends.push(friend);
-            } else {
-                if (friend.online_presence === "idle") {
-                    idle_friends.push(friend);
-                } else {
-                    offline_friends.push(friend);
-                }
-            }
-        }
-
-        // Add online friends
-        if (online_friends.length === 0 && idle_friends.length === 0) {
-            $('<tr><td>Sorry, no online friends :(</td></tr>').appendTo('#online-friends-ul');
-        } else {
-            $('#online-friends').html('<tbody></tbody>');
-            for (var j = 0; j < online_friends.length; ++j) {
-                createFriendEntry(online_friends[j], '#online-friends', true, j % 3 === 0);
-            }
-            /*
-            for (var j = 0; j < idle_friends.length; ++j) {
-                createFriendEntry(idle_friends[j], '#online-friends-ul', true);
-            }
-            */
-        }
-    });
 };
 
 secondStepInit();

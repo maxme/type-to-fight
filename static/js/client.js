@@ -1,7 +1,5 @@
 'use strict';
-/* Author: Maxime Biais */
 
-var myFB = null;
 var playerid = null;
 var soundmanager = null;
 
@@ -10,7 +8,7 @@ function log(message, obj) {
 }
 
 var ready = function () {
-    var url = 'https://' + window.location.host;
+    var url = 'http://' + window.location.host;
 
     var doc, splayinput, sgametimer, scountdown, smodalmessage;
     splayinput = $('#play-input');
@@ -50,7 +48,7 @@ var ready = function () {
     var gamePlay = new GamePlay(gameStats, gameGraphics);
     gamePlay.winword_cb = winword_cb;
     gamePlay.endgame_cb = endgame_cb;
-    var socket = io.connect(url, {secure: true});
+    var socket = io.connect(url);
     var mainTimer;
     var oppid;
 
@@ -75,16 +73,21 @@ var ready = function () {
     function updatePlayerNames(opp_id) {
         if (roomid == 'practice') {
             $('#lifebar-name-right').text('John Bot');
-            myFB.getOtherUserInfos(playerid, function (userdata) {
-                $('.lifebar-name-left').text(userdata.name);
-            });
+            $('#lifebar-name-left').text('You');
+
+            // FIXME: fuck
+            //myFB.getOtherUserInfos(playerid, function (userdata) {
+            //    $('.lifebar-name-left').text(userdata.name);
+            //});
         } else {
-            myFB.getOtherUserInfos(opp_id, function (userdata) {
-                $('.lifebar-name-right').text(userdata.name);
-            });
-            myFB.getOtherUserInfos(playerid, function (userdata) {
-                $('.lifebar-name-left').text(userdata.name);
-            });
+            $('#lifebar-name-right').text('Opponent');
+            $('#lifebar-name-left').text('You');
+            //myFB.getOtherUserInfos(opp_id, function (userdata) {
+            //    $('.lifebar-name-right').text(userdata.name);
+            //});
+            //myFB.getOtherUserInfos(playerid, function (userdata) {
+            //    $('.lifebar-name-left').text(userdata.name);
+            //});
         }
     }
 
@@ -302,34 +305,10 @@ var ready = function () {
     socket.emit('connection', {lang: "french", roomid: roomid, playerid: playerid});
 };
 
-var gameInit2 = function () {
-    myFB.getUserInfos(function (response) {
-        playerid = response.id;
-
-        // load sounds
-        soundmanager = new SoundManager();
-        soundmanager.loadSounds(ready);
-    });
-};
-
 var gameInit = function () {
-    var loginError = function (response) {
-        console.log('login error: ' + response.status);
-        window.location = '/facebook-login';
-    };
-
-    var myLogin = function () {
-        var scope = {scope: 'email,publish_actions,friends_online_presence'};
-        myFB.login(scope, gameInit2, loginError);
-    };
-
-    var loginCB = function (res) {
-        console.log('user login status: ' + res.status);
-    };
-
-    myFB = new FBUtils({appid: (new Local()).FB_APP_ID}, loginCB);
-    myFB.getLoginStatus(function () {
-        console.log('user is logged in facebook');
-        gameInit2();
-    }, myLogin, myLogin);
+    // load sounds
+    soundmanager = new SoundManager();
+    soundmanager.loadSounds(ready);
 };
+
+gameInit();

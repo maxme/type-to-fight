@@ -156,14 +156,6 @@ io.sockets.on('connection', function (socket) {
 //              Routes                   //
 ///////////////////////////////////////////
 
-function ensureAuthenticated(req, res, next) {
-    if (req.isAuthenticated()) {
-        return next();
-    }
-    req.session.redirectUrl = req.url;
-    res.redirect('/facebook/error');
-}
-
 /////// ADD ALL YOUR ROUTES HERE  /////////
 
 app.all('/home', function (req, res) {
@@ -247,7 +239,7 @@ app.all('/leaderboard', function (req, res) {
     });
 });
 
-app.all('/stats/history/rating', ensureAuthenticated, function (req, res) {
+app.all('/stats/history/rating', function (req, res) {
     if (req.session && req.session.passport && req.session.passport.user && req.session.passport.user.id) {
         var userid = req.session.passport.user.id;
         serverstats.getRatingHistory(userid, function (err, data) {
@@ -286,25 +278,25 @@ app.get('/test', function (req, res) {
     });
 });
 
-app.get('/game/:roomid', ensureAuthenticated, function (req, res) {
-    req.user.last_seen = JSON.stringify(new Date()).replace(/"/g, '');
-    db.hget('user:' + req.user.id, 'stylecode', function (err, stylecode) {
+app.get('/game/:roomid',  function (req, res) {
+    last_seen = JSON.stringify(new Date()).replace(/"/g, ''); // FIXME: unused
+    user = {id: 1, stylecode: 0}; // FIXME: create/get user ?
+    db.hget('user:' + user.id, 'stylecode', function (err, stylecode) {
         if (!err && stylecode) {
-            req.user.stylecode = stylecode;
-            db.hmset('user:' + req.user.id, stringifyObj(req.user));
+            user.stylecode = stylecode;
+            db.hmset('user:' + user.id, stringifyObj(user));
         } else {
-            req.user.stylecode = common.createRandomStyle();
-            db.hmset('user:' + req.user.id, stringifyObj(req.user));
+            user.stylecode = common.createRandomStyle();
+            db.hmset('user:' + user.id, stringifyObj(user));
         }
         res.render('game.jade', {
             title: 'Type To Fight',
             description: 'Type To Fight - Web Game to test your typing skills',
             author: 'Maxime Biais',
-            stylecode: req.user.stylecode,
+            stylecode: user.stylecode,
             roomid: req.params.roomid
         });
     });
-
 });
 
 app.post('/associate', function (req, res) {
