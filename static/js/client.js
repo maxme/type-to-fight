@@ -195,7 +195,7 @@ var ready = function () {
      */
 
     socket.on('connection_ok', function (data) {
-        log('connection_ok=', data);
+        console.log('connection_ok=', data);
         if (data.error === 3) {
             smodalmessage.html('Something gone wrong, I can\'t connect you to this game session');
             $('#modalfooter').show();
@@ -208,6 +208,7 @@ var ready = function () {
                 }
             });
         }
+        gameGraphics.createLeftPlayer(data.user.stylecode);
         gameManager.setGameState(1);
     });
 
@@ -306,6 +307,7 @@ var gameInit = function () {
     // load sounds
     soundmanager = new SoundManager();
     soundmanager.loadSounds(ready);
+
 };
 
 gameInit();

@@ -49,7 +49,8 @@ var SoundManager = (function () {
 
     SoundManager.prototype.loadOneSound = function (name) {
         this.ntoload += 1;
-        createjs.Sound.registerSound('/sounds/' + name + '.mp3|/sounds/' + name + '.ogg', name, 5);
+        createjs.Sound.registerSound('/sounds/' + name + '.mp3|/sounds/' + name + '.ogg',
+                                     name, 5);
     };
 
     SoundManager.prototype.playRandomVoice = function () {

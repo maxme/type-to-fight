@@ -94,13 +94,28 @@ function checkTimeMessage(roomid, callback) {
     });
 }
 
+function getUserInfos(playerid) {
+    last_seen = JSON.stringify(new Date()).replace(/"/g, ''); // FIXME: unused
+    user = {id: playerid, stylecode: 0, last_seen: last_seen};
+    db.hget('user:' + user.id, 'stylecode', function (err, stylecode) {
+        if (!err && stylecode) {
+            user.stylecode = stylecode;
+            db.hmset('user:' + user.id, stringifyObj(user));
+        } else {
+            user.stylecode = common.createRandomStyle();
+            db.hmset('user:' + user.id, stringifyObj(user));
+        }
+    });
+    return user;
+}
+
 io.sockets.on('connection', function (socket) {
-    console.log('Client Connected: ' + socket.id);
+
     socket.on('connection', function (data) {
-    console.log("Connection message - playerid:" + data.playerid);
         data.socket_id = socket.id;
         data.error = 0;
         clients[data.playerid] = socket;
+        data.user = getUserInfos(data.playerid);
         if (data.roomid === 'practice') {
             rooms.emitPracticeStart(data.playerid, function () {
                 socket.emit('connection_ok', data);
@@ -280,25 +295,11 @@ app.get('/test', function (req, res) {
 });
 
 app.get('/game/:roomid',  function (req, res) {
-    last_seen = JSON.stringify(new Date()).replace(/"/g, ''); // FIXME: unused
-    console.log("/game/:roomid");
-    console.log(req);
-    user = {id: 1, stylecode: 0}; // FIXME: create/get user ?
-    db.hget('user:' + user.id, 'stylecode', function (err, stylecode) {
-        if (!err && stylecode) {
-            user.stylecode = stylecode;
-            db.hmset('user:' + user.id, stringifyObj(user));
-        } else {
-            user.stylecode = common.createRandomStyle();
-            db.hmset('user:' + user.id, stringifyObj(user));
-        }
-        res.render('game.jade', {
-            title: 'Type To Fight',
-            description: 'Type To Fight - Web Game to test your typing skills',
-            author: 'Maxime Biais',
-            stylecode: user.stylecode,
-            roomid: req.params.roomid
-        });
+    res.render('game.jade', {
+        title: 'Type To Fight',
+        description: 'Type To Fight - Web Game to test your typing skills',
+        author: 'Maxime Biais',
+        roomid: req.params.roomid
     });
 });
 
